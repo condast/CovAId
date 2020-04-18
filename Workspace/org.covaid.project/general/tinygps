@@ -1,0 +1,429 @@
+Feb 23, 2018 11:19:35 AM org.satr.arnac.rest.model.ResponseModel getUpdateResponse
+INFO: [{"s":0.0,"b":127.48,"t":0,"c":"Feb 23, 2018 11:19:35 AM","position":{"id":"[52.07° N(lat), 5.11° W(lng)]","la":52.07,"lo":5.11,"ht":0.0},"i":0,"e":false}]
+INFO: $GPGGA,101936.000,5204.3198,N,00506.3825,E,1,6,1.55,13.2,M,47.1,M,,*6A
+INFO: 0,127.48,230218,,,A*6E
+INFO: 12,284,33*72
+INFO: $GPGGA,101941.000,5204.3198,N,00506.3825,E,1,6,1.55,13.2,M,47.1,M,,*6A
+INFO: $GPGGA,101943.000,5204.3198,N,00506.3825,E,1,6,1.55,13.2,M,47.1,M,,*68
+INFO: $GPGGA,101945.000,5204.3198,N,00506.3825,E,1,7,1.48,13.2,M,47.1,M,,*63
+INFO: 8.000,5204.3198,N,00506.3825,E,1,7,1.48,13.2,M,47.1,M,,*6E
+INFO: .00,127.48,230218,,,A*67
+INFO: 05,219,,08,04,063,*75
+INFO: $GPGGA,101953.000,5204.3198,N,00506.3825,E,1,8,1.29,13.2,M,47.1,M,,*6C
+INFO: $GPGGA,101956.000,5204.3198,N,00506.3825,E,1,8,1.29,13.2,M,47.1,M,,*69
+Feb 23, 2018 11:19:57 AM org.satr.arnac.rest.model.ResponseModel getUpdateResponse
+INFO: [{"s":0.0,"b":127.48,"t":0,"c":"Feb 23, 2018 11:19:57 AM","position":{"id":"[52.07° N(lat), 5.11° W(lng)]","la":52.07,"lo":5.11,"ht":0.0},"i":0,"e":false}]
+Feb 23, 2018 11:19:58 AM org.satr.arnac.rest.resources.RESTResource getNmea
+INFO: $GPGGA,101959.000,5204.3198,N,00506.3825,E,1,8,1.29,13.2,M,47.1,M,,*66
+Feb 23, 2018 11:20:00 AM org.satr.arnac.rest.resources.RESTResource getNmea
+INFO: $GPGGA,102001.000,5204.3198,N,00506.3825,E,1,8,1.29,13.2,M,47.1,M,,*61
+Feb 23, 2018 11:20:02 AM org.satr.arnac.rest.resources.RESTResource getNmea
+INFO: $GPGGA,102003.000,5204.3198,N,00506.3825,E,1,8,1.29,13.2,M,47.1,M,,*63
+Feb 23, 2018 11:20:04 AM org.satr.arnac.rest.resources.RESTResource getOptions
+INFO: {"o":3}
+Feb 23, 2018 11:20:04 AM org.satr.arnac.rest.resources.RESTResource getNmea
+INFO: $GPGGA,102005.000,5204.3198,N,00506.3825,E,1,8,1.29,13.2,M,47.1,M,,*65
+Feb 23, 2018 11:20:06 AM org.satr.arnac.rest.resources.RESTResource getOptions
+INFO: {"o":3}
+Feb 23, 2018 11:20:06 AM org.satr.arnac.rest.resources.RESTResource getOptions
+INFO: {"o":3}
+Feb 23, 2018 11:20:06 AM org.satr.arnac.rest.resources.RESTResource getNmea
+INFO: $GPGGA,102007.000,5204.3198,N,00506.3825,E,1,8,1.29,13.2,M,47.1,M,,*67
+Feb 23, 2018 11:20:08 AM org.satr.arnac.rest.resources.RESTResource getOptions
+INFO: {"o":3}
+Feb 23, 2018 11:20:08 AM org.satr.arnac.rest.resources.RESTResource getOptions
+INFO: {"o":3}
+Feb 23, 2018 11:20:08 AM org.satr.arnac.rest.resources.RESTResource getOptions
+INFO: {"o":3}
+Feb 23, 2018 11:20:08 AM org.satr.arnac.rest.resources.RESTResource getNmea
+INFO: $GPGGA,102009.000,5204.3198,N,00506.3825,E,1,8,1.29,13.2,M,47.1,M,,*69
+Feb 23, 2018 11:20:10 AM org.satr.arnac.rest.resources.RESTResource getNmea
+INFO: $GPGGA,102011.000,5204.3198,N,00506.3825,E,1,8,1.29,13.2,M,47.1,M,,*60
+Feb 23, 2018 11:20:12 AM org.satr.arnac.rest.resources.RESTResource getNmea
+INFO: 8,,,A*63
+Feb 23, 2018 11:20:13 AM org.satr.arnac.rest.resources.RESTResource getNmea
+INFO: $GPGGA,102014.000,5204.3198,N,00506.3825,E,1,8,1.29,13.2,M,47.1,M,,*65
+Feb 23, 2018 11:20:15 AM org.satr.arnac.rest.resources.RESTResource getOptions
+INFO: {"o":3}
+Feb 23, 2018 11:20:15 AM org.satr.arnac.rest.resources.RESTResource getOptions
+INFO: {"o":3}
+Feb 23, 2018 11:20:15 AM org.satr.arnac.rest.resources.RESTResource getNmea
+INFO: $GPGGA,102016.000,5204.3198,N,00506.3825,E,1,8,1.29,13.2,M,47.1,M,,*67
+Feb 23, 2018 11:20:17 AM org.satr.arnac.rest.resources.RESTResource getOptions
+INFO: {"o":3}
+Feb 23, 2018 11:20:17 AM org.satr.arnac.rest.resources.RESTResource getOptions
+INFO: {"o":3}
+Feb 23, 2018 11:20:17 AM org.satr.arnac.rest.resources.RESTResource getOptions
+INFO: {"o":3}
+Feb 23, 2018 11:20:17 AM org.satr.arnac.rest.resources.RESTResource getNmea
+INFO: $GPGGA,102018.000,5204.3198,N,00506.3825,E,1,8,1.29,13.2,M,47.1,M,,*69
+Feb 23, 2018 11:20:19 AM org.satr.arnac.rest.resources.RESTResource getNmea
+INFO: $GPGGA,102020.000,5204.3198,N,00506.3825,E,1,8,1.29,13.2,M,47.1,M,,*62
+Feb 23, 2018 11:20:21 AM org.satr.arnac.rest.resources.RESTResource getOptions
+INFO: {"o":3}
+Feb 23, 2018 11:20:21 AM org.satr.arnac.rest.resources.RESTResource getOptions
+INFO: {"o":3}
+Feb 23, 2018 11:20:21 AM org.satr.arnac.rest.resources.RESTResource getOptions
+INFO: {"o":3}
+Feb 23, 2018 11:20:21 AM org.satr.arnac.rest.resources.RESTResource update
+INFO: ID: ANNA,  Token: 2048
+Feb 23, 2018 11:20:21 AM org.satr.arnac.rest.model.ResponseModel getUpdateResponse
+INFO: [{"s":0.0,"b":127.48,"t":0,"c":"Feb 23, 2018 11:20:21 AM","position":{"id":"[52.07° N(lat), 5.11° W(lng)]","la":52.07,"lo":5.11,"ht":0.0},"i":0,"e":false}]
+Feb 23, 2018 11:20:22 AM org.satr.arnac.rest.resources.RESTResource getOptions
+INFO: {"o":3}
+Feb 23, 2018 11:20:22 AM org.satr.arnac.rest.resources.RESTResource getOptions
+INFO: {"o":3}
+Feb 23, 2018 11:20:22 AM org.satr.arnac.rest.resources.RESTResource getOptions
+INFO: {"o":3}
+Feb 23, 2018 11:20:22 AM org.satr.arnac.rest.resources.RESTResource getOptions
+INFO: {"o":3}
+Feb 23, 2018 11:20:22 AM org.satr.arnac.rest.resources.RESTResource getOptions
+INFO: {"o":3}
+Feb 23, 2018 11:20:22 AM org.satr.arnac.rest.resources.RESTResource update
+INFO: ID: ANNA,  Token: 2048
+Feb 23, 2018 11:20:22 AM org.satr.arnac.rest.model.ResponseModel getUpdateResponse
+INFO: [{"s":0.0,"b":127.48,"t":0,"c":"Feb 23, 2018 11:20:22 AM","position":{"id":"[52.07° N(lat), 5.11° W(lng)]","la":52.07,"lo":5.11,"ht":0.0},"i":0,"e":false}]
+Feb 23, 2018 11:20:23 AM org.satr.arnac.rest.resources.RESTResource getOptions
+INFO: {"o":3}
+Feb 23, 2018 11:20:23 AM org.satr.arnac.rest.resources.RESTResource getOptions
+INFO: {"o":3}
+Feb 23, 2018 11:20:23 AM org.satr.arnac.rest.resources.RESTResource update
+INFO: ID: ANNA,  Token: 2048
+Feb 23, 2018 11:20:23 AM org.satr.arnac.rest.model.ResponseModel getUpdateResponse
+INFO: [{"s":0.0,"b":127.48,"t":0,"c":"Feb 23, 2018 11:20:23 AM","position":{"id":"[52.07° N(lat), 5.11° W(lng)]","la":52.07,"lo":5.11,"ht":0.0},"i":0,"e":false}]
+Feb 23, 2018 11:20:24 AM org.satr.arnac.rest.resources.RESTResource getNmea
+INFO: ,06,027,17,02,05,219,15*7C
+Feb 23, 2018 11:20:25 AM org.satr.arnac.rest.resources.RESTResource getNmea
+INFO: $GPGGA,102026.000,5204.3198,N,00506.3825,E,1,9,0.92,13.2,M,47.1,M,,*64
+Feb 23, 2018 11:20:27 AM org.satr.arnac.rest.resources.RESTResource getNmea
+INFO: $GPGGA,102028.000,5204.3198,N,00506.3825,E,1,9,0.91,13.2,M,47.1,M,,*69
+Feb 23, 2018 11:20:29 AM org.satr.arnac.rest.resources.RESTResource getOptions
+INFO: {"o":3}
+Feb 23, 2018 11:20:29 AM org.satr.arnac.rest.resources.RESTResource getNmea
+INFO: $GPGGA,102030.000,5204.3198,N,00506.3825,E,1,9,0.91,13.2,M,47.1,M,,*60
+Feb 23, 2018 11:20:31 AM org.satr.arnac.rest.resources.RESTResource getNmea
+INFO: ,,,A*62
+Feb 23, 2018 11:20:32 AM org.satr.arnac.rest.resources.RESTResource getOptions
+INFO: {"o":3}
+Feb 23, 2018 11:20:32 AM org.satr.arnac.rest.resources.RESTResource getOptions
+INFO: {"o":3}
+Feb 23, 2018 11:20:32 AM org.satr.arnac.rest.resources.RESTResource getOptions
+INFO: {"o":3}
+Feb 23, 2018 11:20:32 AM org.satr.arnac.rest.resources.RESTResource getOptions
+INFO: {"o":3}
+Feb 23, 2018 11:20:32 AM org.satr.arnac.rest.resources.RESTResource update
+INFO: ID: ANNA,  Token: 2048
+Feb 23, 2018 11:20:32 AM org.satr.arnac.rest.model.ResponseModel getUpdateResponse
+INFO: [{"s":0.0,"b":127.48,"t":0,"c":"Feb 23, 2018 11:20:32 AM","position":{"id":"[52.07° N(lat), 5.11° W(lng)]","la":52.07,"lo":5.11,"ht":0.0},"i":0,"e":false}]
+Feb 23, 2018 11:20:33 AM org.satr.arnac.rest.resources.RESTResource getNmea
+INFO: $GPGGA,102034.000,5204.3198,N,00506.3825,E,1,9,0.91,13.2,M,47.1,M,,*64
+Feb 23, 2018 11:20:35 AM org.satr.arnac.rest.resources.RESTResource getOptions
+INFO: {"o":3}
+Feb 23, 2018 11:20:35 AM org.satr.arnac.rest.resources.RESTResource getOptions
+INFO: {"o":3}
+Feb 23, 2018 11:20:35 AM org.satr.arnac.rest.resources.RESTResource update
+INFO: ID: ANNA,  Token: 2048
+Feb 23, 2018 11:20:35 AM org.satr.arnac.rest.model.ResponseModel getUpdateResponse
+INFO: [{"s":0.0,"b":127.48,"t":0,"c":"Feb 23, 2018 11:20:35 AM","position":{"id":"[52.07° N(lat), 5.11° W(lng)]","la":52.07,"lo":5.11,"ht":0.0},"i":0,"e":false}]
+Feb 23, 2018 11:20:36 AM org.satr.arnac.rest.resources.RESTResource getNmea
+INFO: $GPGGA,102037.000,5204.3198,N,00506.3825,E,1,9,0.91,13.2,M,47.1,M,,*67
+Feb 23, 2018 11:20:38 AM org.satr.arnac.rest.resources.RESTResource getNmea
+INFO: $GPGGA,102039.000,5204.3198,N,00506.3825,E,1,9,0.91,13.2,M,47.1,M,,*69
+Feb 23, 2018 11:20:41 AM org.satr.arnac.rest.resources.RESTResource getNmea
+INFO: $GPGGA,102041.000,5204.3198,N,00506.3825,E,1,9,0.91,13.2,M,47.1,M,,*66
+Feb 23, 2018 11:20:42 AM org.satr.arnac.rest.resources.RESTResource getOptions
+INFO: {"o":3}
+Feb 23, 2018 11:20:42 AM org.satr.arnac.rest.resources.RESTResource getOptions
+INFO: {"o":3}
+Feb 23, 2018 11:20:43 AM org.satr.arnac.rest.resources.RESTResource getOptions
+INFO: {"o":3}
+Feb 23, 2018 11:20:43 AM org.satr.arnac.rest.resources.RESTResource update
+INFO: ID: ANNA,  Token: 2048
+Feb 23, 2018 11:20:43 AM org.satr.arnac.rest.model.ResponseModel getUpdateResponse
+INFO: [{"s":0.0,"b":127.48,"t":0,"c":"Feb 23, 2018 11:20:43 AM","position":{"id":"[52.07° N(lat), 5.11° W(lng)]","la":52.07,"lo":5.11,"ht":0.0},"i":0,"e":false}]
+Feb 23, 2018 11:20:43 AM org.satr.arnac.rest.resources.RESTResource getOptions
+INFO: {"o":3}
+Feb 23, 2018 11:20:44 AM org.satr.arnac.rest.resources.RESTResource getOptions
+INFO: {"o":3}
+Feb 23, 2018 11:20:44 AM org.satr.arnac.rest.resources.RESTResource update
+INFO: ID: ANNA,  Token: 2048
+Feb 23, 2018 11:20:44 AM org.satr.arnac.rest.model.ResponseModel getUpdateResponse
+INFO: [{"s":0.0,"b":127.48,"t":0,"c":"Feb 23, 2018 11:20:44 AM","position":{"id":"[52.07° N(lat), 5.11° W(lng)]","la":52.07,"lo":5.11,"ht":0.0},"i":0,"e":false}]
+Feb 23, 2018 11:20:45 AM org.satr.arnac.rest.resources.RESTResource getNmea
+INFO: $GPGGA,102045.000,5204.3198,N,00506.3825,E,1,9,0.91,13.2,M,47.1,M,,*62
+Feb 23, 2018 11:20:46 AM org.satr.arnac.rest.resources.RESTResource getOptions
+INFO: {"o":3}
+Feb 23, 2018 11:20:47 AM org.satr.arnac.rest.resources.RESTResource getNmea
+INFO: $GPGGA,102047.000,5204.3198,N,00506.3825,E,1,9,0.91,13.2,M,47.1,M,,*60
+Feb 23, 2018 11:20:49 AM org.satr.arnac.rest.resources.RESTResource getNmea
+INFO: $GPGGA,102049.000,5204.3198,N,00506.3825,E,1,9,0.91,13.2,M,47.1,M,,*6E
+Feb 23, 2018 11:20:50 AM org.satr.arnac.rest.resources.RESTResource getOptions
+INFO: {"o":3}
+Feb 23, 2018 11:20:50 AM org.satr.arnac.rest.resources.RESTResource getOptions
+INFO: {"o":3}
+Feb 23, 2018 11:20:51 AM org.satr.arnac.rest.resources.RESTResource getNmea
+INFO: $GPGGA,102051.000,5204.3198,N,00506.3825,E,1,9,0.91,13.2,M,47.1,M,,*67
+Feb 23, 2018 11:20:52 AM org.satr.arnac.rest.resources.RESTResource getOptions
+INFO: {"o":3}
+Feb 23, 2018 11:20:53 AM org.satr.arnac.rest.resources.RESTResource getNmea
+INFO: $GPGGA,102053.000,5204.3198,N,00506.3825,E,1,9,0.91,13.2,M,47.1,M,,*65
+Feb 23, 2018 11:20:54 AM org.satr.arnac.rest.resources.RESTResource getOptions
+INFO: {"o":3}
+Feb 23, 2018 11:20:55 AM org.satr.arnac.rest.resources.RESTResource getNmea
+INFO: $GPGGA,102055.000,5204.3198,N,00506.3825,E,1,8,1.29,13.2,M,47.1,M,,*60
+Feb 23, 2018 11:20:56 AM org.satr.arnac.rest.resources.RESTResource getNmea
+INFO: ,,A*63
+Feb 23, 2018 11:20:58 AM org.satr.arnac.rest.resources.RESTResource getNmea
+INFO: $GPGGA,102058.000,5204.3198,N,00506.3825,E,1,8,1.29,13.2,M,47.1,M,,*6D
+Feb 23, 2018 11:20:59 AM org.satr.arnac.rest.resources.RESTResource getOptions
+INFO: {"o":3}
+Feb 23, 2018 11:21:00 AM org.satr.arnac.rest.resources.RESTResource update
+INFO: ID: ANNA,  Token: 2048
+Feb 23, 2018 11:21:00 AM org.satr.arnac.rest.model.ResponseModel getUpdateResponse
+INFO: [{"s":0.0,"b":127.48,"t":0,"c":"Feb 23, 2018 11:21:00 AM","position":{"id":"[52.07° N(lat), 5.11° W(lng)]","la":52.07,"lo":5.11,"ht":0.0},"i":0,"e":false}]
+Feb 23, 2018 11:21:00 AM org.satr.arnac.rest.resources.RESTResource getOptions
+INFO: {"o":3}
+Feb 23, 2018 11:21:01 AM org.satr.arnac.rest.resources.RESTResource getOptions
+INFO: {"o":3}
+Feb 23, 2018 11:21:01 AM org.satr.arnac.rest.resources.RESTResource update
+INFO: ID: ANNA,  Token: 2048
+Feb 23, 2018 11:21:01 AM org.satr.arnac.rest.model.ResponseModel getUpdateResponse
+INFO: [{"s":0.0,"b":127.48,"t":0,"c":"Feb 23, 2018 11:21:01 AM","position":{"id":"[52.07° N(lat), 5.11° W(lng)]","la":52.07,"lo":5.11,"ht":0.0},"i":0,"e":false}]
+Feb 23, 2018 11:21:02 AM org.satr.arnac.rest.resources.RESTResource getNmea
+INFO: $GPGGA,102102.000,5204.3198,N,00506.3825,E,1,8,1.29,13.2,M,47.1,M,,*63
+Feb 23, 2018 11:21:04 AM org.satr.arnac.rest.resources.RESTResource getNmea
+INFO: $GPGGA,102104.000,5204.3198,N,00506.3825,E,1,8,1.29,13.2,M,47.1,M,,*65
+Feb 23, 2018 11:21:05 AM org.satr.arnac.rest.resources.RESTResource getOptions
+INFO: {"o":3}
+Feb 23, 2018 11:21:05 AM org.satr.arnac.rest.resources.RESTResource getOptions
+INFO: {"o":3}
+Feb 23, 2018 11:21:05 AM org.satr.arnac.rest.resources.RESTResource getOptions
+INFO: {"o":3}
+Feb 23, 2018 11:21:06 AM org.satr.arnac.rest.resources.RESTResource getNmea
+INFO: $GPGGA,102106.000,5204.3198,N,00506.3825,E,1,8,1.29,13.2,M,47.1,M,,*67
+Feb 23, 2018 11:21:07 AM org.satr.arnac.rest.resources.RESTResource getNmea
+INFO: 00,127.48,230218,,,A*66
+Feb 23, 2018 11:21:09 AM org.satr.arnac.rest.resources.RESTResource getNmea
+INFO: $GPGGA,102109.000,5204.3198,N,00506.3825,E,1,8,1.29,13.2,M,47.1,M,,*68
+Feb 23, 2018 11:21:11 AM org.satr.arnac.rest.resources.RESTResource getNmea
+INFO: $GPGGA,102111.000,5204.3198,N,00506.3825,E,1,8,1.29,13.2,M,47.1,M,,*61
+Feb 23, 2018 11:21:12 AM org.satr.arnac.rest.resources.RESTResource getOptions
+INFO: {"o":3}
+Feb 23, 2018 11:21:13 AM org.satr.arnac.rest.resources.RESTResource getNmea
+INFO: $GPGGA,102113.000,5204.3065,N,00506.4058,E,1,8,1.29,-2.3,M,47.1,M,,*79
+Feb 23, 2018 11:21:14 AM org.satr.arnac.rest.resources.RESTResource getOptions
+INFO: {"o":3}
+Feb 23, 2018 11:21:15 AM org.satr.arnac.rest.resources.RESTResource getNmea
+INFO: $GPGGA,102115.000,5204.3056,N,00506.4053,E,1,8,1.29,-2.4,M,47.1,M,,*73
+Feb 23, 2018 11:21:16 AM org.satr.arnac.rest.resources.RESTResource update
+INFO: ID: ANNA,  Token: 2048
+Feb 23, 2018 11:21:16 AM org.satr.arnac.rest.model.ResponseModel getUpdateResponse
+INFO: [{"s":0.0,"b":204.19,"t":0,"c":"Feb 23, 2018 11:21:16 AM","position":{"id":"[52.07° N(lat), 5.11° W(lng)]","la":52.07,"lo":5.11,"ht":0.0},"i":0,"e":false}]
+Feb 23, 2018 11:21:17 AM org.satr.arnac.rest.resources.RESTResource getNmea
+INFO: $GPGGA,102117.000,5204.3043,N,00506.4047,E,1,8,1.28,-2.5,M,47.1,M,,*70
+Feb 23, 2018 11:21:18 AM org.satr.arnac.rest.resources.RESTResource getOptions
+INFO: {"o":3}
+Feb 23, 2018 11:21:18 AM org.satr.arnac.rest.resources.RESTResource getOptions
+INFO: {"o":3}
+Feb 23, 2018 11:21:19 AM org.satr.arnac.rest.resources.RESTResource getNmea
+INFO: ,30,15,05,07,20,09,,,,,1.52,1.28,0.81*09
+Feb 23, 2018 11:21:20 AM org.satr.arnac.rest.resources.RESTResource getOptions
+INFO: {"o":3}
+Feb 23, 2018 11:21:20 AM org.satr.arnac.rest.resources.RESTResource getOptions
+INFO: {"o":3}
+Feb 23, 2018 11:21:21 AM org.satr.arnac.rest.resources.RESTResource update
+INFO: ID: ANNA,  Token: 2048
+Feb 23, 2018 11:21:21 AM org.satr.arnac.rest.model.ResponseModel getUpdateResponse
+INFO: [{"s":0.0,"b":204.19,"t":0,"c":"Feb 23, 2018 11:21:21 AM","position":{"id":"[52.07° N(lat), 5.11° W(lng)]","la":52.07,"lo":5.11,"ht":0.0},"i":0,"e":false}]
+Feb 23, 2018 11:21:21 AM org.satr.arnac.rest.resources.RESTResource getOptions
+INFO: {"o":3}
+Feb 23, 2018 11:21:21 AM org.satr.arnac.rest.resources.RESTResource getOptions
+INFO: {"o":3}
+Feb 23, 2018 11:21:21 AM org.satr.arnac.rest.resources.RESTResource getOptions
+INFO: {"o":3}
+Feb 23, 2018 11:21:21 AM org.satr.arnac.rest.resources.RESTResource getOptions
+INFO: {"o":3}
+Feb 23, 2018 11:21:22 AM org.satr.arnac.rest.resources.RESTResource getOptions
+INFO: {"o":3}
+Feb 23, 2018 11:21:22 AM org.satr.arnac.rest.resources.RESTResource getOptions
+INFO: {"o":3}
+Feb 23, 2018 11:21:22 AM org.satr.arnac.rest.resources.RESTResource update
+INFO: ID: ANNA,  Token: 2048
+Feb 23, 2018 11:21:22 AM org.satr.arnac.rest.model.ResponseModel getUpdateResponse
+INFO: [{"s":0.0,"b":204.19,"t":0,"c":"Feb 23, 2018 11:21:22 AM","position":{"id":"[52.07° N(lat), 5.11° W(lng)]","la":52.07,"lo":5.11,"ht":0.0},"i":0,"e":false}]
+Feb 23, 2018 11:21:22 AM org.satr.arnac.rest.resources.RESTResource getOptions
+INFO: {"o":3}
+Feb 23, 2018 11:21:22 AM org.satr.arnac.rest.resources.RESTResource getOptions
+INFO: {"o":3}
+Feb 23, 2018 11:21:23 AM org.satr.arnac.rest.resources.RESTResource getOptions
+INFO: {"o":3}
+Feb 23, 2018 11:21:23 AM org.satr.arnac.rest.resources.RESTResource update
+INFO: ID: ANNA,  Token: 2048
+Feb 23, 2018 11:21:23 AM org.satr.arnac.rest.model.ResponseModel getUpdateResponse
+INFO: [{"s":0.0,"b":204.19,"t":0,"c":"Feb 23, 2018 11:21:23 AM","position":{"id":"[52.07° N(lat), 5.11° W(lng)]","la":52.07,"lo":5.11,"ht":0.0},"i":0,"e":false}]
+Feb 23, 2018 11:21:24 AM org.satr.arnac.rest.resources.RESTResource getNmea
+INFO: $GPGGA,102124.000,5204.3033,N,00506.4043,E,1,8,1.28,-2.6,M,47.1,M,,*70
+Feb 23, 2018 11:21:25 AM org.satr.arnac.rest.resources.RESTResource getOptions
+INFO: {"o":3}
+Feb 23, 2018 11:21:26 AM org.satr.arnac.rest.resources.RESTResource getNmea
+INFO: $GPGGA,102126.000,5204.3033,N,00506.4043,E,1,8,1.28,-2.6,M,47.1,M,,*72
+Feb 23, 2018 11:21:28 AM org.satr.arnac.rest.resources.RESTResource getNmea
+INFO: $GPGGA,102128.000,5204.3033,N,00506.4043,E,1,8,1.28,-2.6,M,47.1,M,,*7C
+Feb 23, 2018 11:21:29 AM org.satr.arnac.rest.resources.RESTResource getOptions
+INFO: {"o":3}
+Feb 23, 2018 11:21:30 AM org.satr.arnac.rest.resources.RESTResource getNmea
+INFO: $GPGGA,102130.000,5204.3033,N,00506.4043,E,1,8,1.28,-2.6,M,47.1,M,,*75
+Feb 23, 2018 11:21:31 AM org.satr.arnac.rest.resources.RESTResource getOptions
+INFO: {"o":3}
+Feb 23, 2018 11:21:31 AM org.satr.arnac.rest.resources.RESTResource getOptions
+INFO: {"o":3}
+Feb 23, 2018 11:21:32 AM org.satr.arnac.rest.resources.RESTResource getNmea
+INFO: $GPGGA,102132.000,5204.3033,N,00506.4043,E,1,8,1.28,-2.6,M,47.1,M,,*77
+Feb 23, 2018 11:21:33 AM org.satr.arnac.rest.resources.RESTResource getOptions
+INFO: {"o":3}
+Feb 23, 2018 11:21:34 AM org.satr.arnac.rest.resources.RESTResource getNmea
+INFO: $GPGGA,102134.000,5204.3033,N,00506.4043,E,1,8,1.28,-2.6,M,47.1,M,,*71
+Feb 23, 2018 11:21:35 AM org.satr.arnac.rest.resources.RESTResource getOptions
+INFO: {"o":3}
+Feb 23, 2018 11:21:35 AM org.satr.arnac.rest.resources.RESTResource getOptions
+INFO: {"o":3}
+Feb 23, 2018 11:21:36 AM org.satr.arnac.rest.resources.RESTResource getNmea
+INFO: $GPGGA,102136.000,5204.3033,N,00506.4043,E,1,8,1.28,-2.6,M,47.1,M,,*73
+Feb 23, 2018 11:21:37 AM org.satr.arnac.rest.resources.RESTResource getOptions
+INFO: {"o":3}
+Feb 23, 2018 11:21:37 AM org.satr.arnac.rest.resources.RESTResource getOptions
+INFO: {"o":3}
+Feb 23, 2018 11:21:38 AM org.satr.arnac.rest.resources.RESTResource getNmea
+INFO: $GPGGA,102138.000,5204.3033,N,00506.4043,E,1,8,1.28,-2.6,M,47.1,M,,*7D
+Feb 23, 2018 11:21:39 AM org.satr.arnac.rest.resources.RESTResource getOptions
+INFO: {"o":3}
+Feb 23, 2018 11:21:40 AM org.satr.arnac.rest.resources.RESTResource getNmea
+INFO: $GPGGA,102140.000,5204.3033,N,00506.4043,E,1,8,1.28,-2.6,M,47.1,M,,*72
+Feb 23, 2018 11:21:41 AM org.satr.arnac.rest.resources.RESTResource getOptions
+INFO: {"o":3}
+Feb 23, 2018 11:21:42 AM org.satr.arnac.rest.resources.RESTResource update
+INFO: ID: ANNA,  Token: 2048
+Feb 23, 2018 11:21:42 AM org.satr.arnac.rest.model.ResponseModel getUpdateResponse
+INFO: [{"s":0.0,"b":204.19,"t":0,"c":"Feb 23, 2018 11:21:42 AM","position":{"id":"[52.07° N(lat), 5.11° W(lng)]","la":52.07,"lo":5.11,"ht":0.0},"i":0,"e":false}]
+Feb 23, 2018 11:21:43 AM org.satr.arnac.rest.resources.RESTResource getNmea
+INFO: $GPGGA,102143.000,5204.3033,N,00506.4043,E,1,8,1.28,-2.6,M,47.1,M,,*71
+Feb 23, 2018 11:21:44 AM org.satr.arnac.rest.resources.RESTResource getNmea
+INFO: 7
+Feb 23, 2018 11:21:46 AM org.satr.arnac.rest.resources.RESTResource getNmea
+INFO: $GPGGA,102146.000,5204.3033,N,00506.4043,E,1,8,1.28,-2.6,M,47.1,M,,*74
+Feb 23, 2018 11:21:48 AM org.satr.arnac.rest.resources.RESTResource getNmea
+INFO: $GPGGA,102148.000,5204.3033,N,00506.4043,E,1,8,1.28,-2.6,M,47.1,M,,*7A
+Feb 23, 2018 11:21:50 AM org.satr.arnac.rest.resources.RESTResource getNmea
+INFO: $GPGGA,102150.000,5204.3033,N,00506.4043,E,1,8,1.28,-2.6,M,47.1,M,,*73
+Feb 23, 2018 11:21:51 AM org.satr.arnac.rest.resources.RESTResource getOptions
+INFO: {"o":3}
+Feb 23, 2018 11:21:52 AM org.satr.arnac.rest.resources.RESTResource getNmea
+INFO: $GPGGA,102152.000,5204.3033,N,00506.4043,E,1,8,1.36,-2.6,M,47.1,M,,*7E
+Feb 23, 2018 11:21:53 AM org.satr.arnac.rest.resources.RESTResource getOptions
+INFO: {"o":3}
+Feb 23, 2018 11:21:54 AM org.satr.arnac.rest.resources.RESTResource update
+INFO: ID: ANNA,  Token: 2048
+Feb 23, 2018 11:21:54 AM org.satr.arnac.rest.model.ResponseModel getUpdateResponse
+INFO: [{"s":0.0,"b":204.19,"t":0,"c":"Feb 23, 2018 11:21:54 AM","position":{"id":"[52.07° N(lat), 5.11° W(lng)]","la":52.07,"lo":5.11,"ht":0.0},"i":0,"e":false}]
+Feb 23, 2018 11:21:54 AM org.satr.arnac.rest.resources.RESTResource getOptions
+INFO: {"o":3}
+Feb 23, 2018 11:21:55 AM org.satr.arnac.rest.resources.RESTResource getOptions
+INFO: {"o":3}
+Feb 23, 2018 11:21:55 AM org.satr.arnac.rest.resources.RESTResource getOptions
+INFO: {"o":3}
+Feb 23, 2018 11:21:55 AM org.satr.arnac.rest.resources.RESTResource getNmea
+INFO: ,2,13,28,31,139,14,20,26,309,18,09,13,101,20,15,13,284,33*7F
+Feb 23, 2018 11:21:57 AM org.satr.arnac.rest.resources.RESTResource getNmea
+INFO: $GPGGA,102157.000,5204.3033,N,00506.4043,E,1,7,1.29,-2.6,M,47.1,M,,*7A
+Feb 23, 2018 11:21:59 AM org.satr.arnac.rest.resources.RESTResource getNmea
+INFO: $GPGGA,102159.000,5204.3033,N,00506.4043,E,1,7,1.29,-2.6,M,47.1,M,,*74
+Feb 23, 2018 11:22:00 AM org.satr.arnac.rest.resources.RESTResource getOptions
+INFO: {"o":3}
+Feb 23, 2018 11:22:00 AM org.satr.arnac.rest.resources.RESTResource getOptions
+INFO: {"o":3}
+Feb 23, 2018 11:22:01 AM org.satr.arnac.rest.resources.RESTResource getNmea
+INFO: $GPGGA,102201.000,5204.3033,N,00506.4043,E,1,7,1.29,-2.6,M,47.1,M,,*7A
+Feb 23, 2018 11:22:02 AM org.satr.arnac.rest.resources.RESTResource getOptions
+INFO: {"o":3}
+Feb 23, 2018 11:22:02 AM org.satr.arnac.rest.resources.RESTResource getOptions
+INFO: {"o":3}
+Feb 23, 2018 11:22:02 AM org.satr.arnac.rest.resources.RESTResource getOptions
+INFO: {"o":3}
+Feb 23, 2018 11:22:03 AM org.satr.arnac.rest.resources.RESTResource getNmea
+INFO: 1.29,-2.6,M,47.1,M,,*78
+Feb 23, 2018 11:22:04 AM org.satr.arnac.rest.resources.RESTResource getOptions
+INFO: {"o":3}
+Feb 23, 2018 11:22:04 AM org.satr.arnac.rest.resources.RESTResource getNmea
+INFO: ,230218,,,A*6E
+Feb 23, 2018 11:22:05 AM org.satr.arnac.rest.resources.RESTResource getOptions
+INFO: {"o":3}
+Feb 23, 2018 11:22:05 AM org.satr.arnac.rest.resources.RESTResource getOptions
+INFO: {"o":3}
+Feb 23, 2018 11:22:06 AM org.satr.arnac.rest.resources.RESTResource update
+INFO: ID: ANNA,  Token: 2048
+Feb 23, 2018 11:22:06 AM org.satr.arnac.rest.model.ResponseModel getUpdateResponse
+INFO: [{"s":0.0,"b":204.19,"t":0,"c":"Feb 23, 2018 11:22:06 AM","position":{"id":"[52.07° N(lat), 5.11° W(lng)]","la":52.07,"lo":5.11,"ht":0.0},"i":0,"e":false}]
+Feb 23, 2018 11:22:06 AM org.satr.arnac.rest.resources.RESTResource getNmea
+INFO: ,,,*70
+Feb 23, 2018 11:22:08 AM org.satr.arnac.rest.resources.RESTResource getNmea
+INFO: $GPGGA,102208.000,5204.3033,N,00506.4043,E,1,7,1.29,-2.6,M,47.1,M,,*73
+Feb 23, 2018 11:22:10 AM org.satr.arnac.rest.resources.RESTResource getNmea
+INFO: $GPGGA,102210.000,5204.3033,N,00506.4043,E,1,7,1.29,-2.6,M,47.1,M,,*7A
+Feb 23, 2018 11:22:11 AM org.satr.arnac.rest.resources.RESTResource getOptions
+INFO: {"o":3}
+Feb 23, 2018 11:22:12 AM org.satr.arnac.rest.resources.RESTResource getNmea
+INFO: $GPGGA,102212.000,5204.3033,N,00506.4043,E,1,7,1.29,-2.6,M,47.1,M,,*78
+Feb 23, 2018 11:22:14 AM org.satr.arnac.rest.resources.RESTResource getNmea
+INFO: $GPGGA,102214.000,5204.3033,N,00506.4043,E,1,7,1.29,-2.6,M,47.1,M,,*7E
+Feb 23, 2018 11:22:16 AM org.satr.arnac.rest.resources.RESTResource getNmea
+INFO: $GPGGA,102216.000,5204.3033,N,00506.4043,E,1,8,1.28,-2.6,M,47.1,M,,*72
+Feb 23, 2018 11:22:17 AM org.satr.arnac.rest.resources.RESTResource getOptions
+INFO: {"o":3}
+Feb 23, 2018 11:22:18 AM org.satr.arnac.rest.resources.RESTResource getNmea
+INFO: $GPGGA,102218.000,5204.3033,N,00506.4043,E,1,8,1.28,-2.6,M,47.1,M,,*7C
+Feb 23, 2018 11:22:19 AM org.satr.arnac.rest.resources.RESTResource getOptions
+INFO: {"o":3}
+Feb 23, 2018 11:22:19 AM org.satr.arnac.rest.resources.RESTResource getOptions
+INFO: {"o":3}
+Feb 23, 2018 11:22:19 AM org.satr.arnac.rest.resources.RESTResource getOptions
+INFO: {"o":3}
+Feb 23, 2018 11:22:20 AM org.satr.arnac.rest.resources.RESTResource update
+INFO: ID: ANNA,  Token: 2048
+Feb 23, 2018 11:22:20 AM org.satr.arnac.rest.model.ResponseModel getUpdateResponse
+INFO: [{"s":0.0,"b":204.19,"t":0,"c":"Feb 23, 2018 11:22:20 AM","position":{"id":"[52.07° N(lat), 5.11° W(lng)]","la":52.07,"lo":5.11,"ht":0.0},"i":0,"e":false}]
+Feb 23, 2018 11:22:21 AM org.satr.arnac.rest.resources.RESTResource getNmea
+INFO: $GPGGA,102221.000,5204.3033,N,00506.4043,E,1,8,1.28,-2.6,M,47.1,M,,*76
+Feb 23, 2018 11:22:23 AM org.satr.arnac.rest.resources.RESTResource getNmea
+INFO: $GPGGA,102223.000,5204.3033,N,00506.4043,E,1,8,1.28,-2.6,M,47.1,M,,*74
+Feb 23, 2018 11:22:24 AM org.satr.arnac.rest.resources.RESTResource getOptions
+INFO: {"o":3}
+Feb 23, 2018 11:22:25 AM org.satr.arnac.rest.resources.RESTResource getOptions
+INFO: {"o":3}
+Feb 23, 2018 11:22:25 AM org.satr.arnac.rest.resources.RESTResource getNmea
+INFO: 
+Feb 23, 2018 11:22:26 AM org.satr.arnac.rest.resources.RESTResource getNmea
+INFO: $GPGGA,102227.000,5204.3033,N,00506.4043,E,1,8,1.28,-2.6,M,47.1,M,,*70
+Feb 23, 2018 11:22:28 AM org.satr.arnac.rest.resources.RESTResource getOptions
+INFO: {"o":3}
+Feb 23, 2018 11:22:28 AM org.satr.arnac.rest.resources.RESTResource getNmea
+INFO: $GPGGA,102229.000,5204.3033,N,00506.4043,E,1,8,1.28,-2.6,M,47.1,M,,*7E
+Feb 23, 2018 11:22:30 AM org.satr.arnac.rest.resources.RESTResource getNmea
+INFO: $GPGGA,102231.000,5204.3033,N,00506.4043,E,1,8,1.28,-2.6,M,47.1,M,,*77
+Feb 23, 2018 11:22:32 AM org.satr.arnac.rest.resources.RESTResource getOptions
+INFO: {"o":3}
+Feb 23, 2018 11:22:32 AM org.satr.arnac.rest.resources.RESTResource getNmea
+INFO: $GPGGA,102233.000,5204.3033,N,00506.4043,E,1,8,1.28,-2.6,M,47.1,M,,*75
+Feb 23, 2018 11:22:34 AM org.satr.arnac.rest.resources.RESTResource getNmea
+INFO: $GPGGA,102235.000,5204.3033,N,00506.4043,E,1,8,1.28,-2.6,M,47.1,M,,*73
+Feb 23, 2018 11:22:36 AM org.satr.arnac.rest.resources.RESTResource getOptions
+INFO: {"o":3}
+Feb 23, 2018 11:22:36 AM org.satr.arnac.rest.resources.RESTResource getOptions
+INFO: {"o":3}
+Feb 23, 2018 11:22:36 AM org.satr.arnac.rest.resources.RESTResource getOptions
+INFO: {"o":3}
+Feb 23, 2018 11:22:36 AM org.satr.arnac.rest.resources.RESTResource getNmea
+INFO: $GPGGA,102237.000,5204.3033,N,00506.4043,E,1,8,1.28,-2.6,M,47.1,M,,*71
+Feb 23, 2018 11:22:38 AM org.satr.arnac.rest.resources.RESTResource getNmea
+INFO: $GPGGA,102239.000,5204.3033,N,00506.4043,E,1,7,1.48,-2.6,M,47.1,M,,*76
+Feb 23, 2018 11:22:40 AM org.satr.arnac.rest.resources.RESTResource getNmea
+INFO: $GPGGA,102241.000,5204.3033,N,00506.4043,E,1,6,1.54,-2.6,M,47.1,M,,*75

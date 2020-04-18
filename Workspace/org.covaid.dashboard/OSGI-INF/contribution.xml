@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<scr:component xmlns:scr="http://www.osgi.org/xmlns/scr/v1.1.0" name="CovAId Application">
+   <implementation class="org.covaid.dashboard.BasicApplication"/>
+   <property name="contextName" type="String" value="covaid"/>
+   <service>
+      <provide interface="org.eclipse.rap.rwt.application.ApplicationConfiguration"/>
+   </service>
+</scr:component>

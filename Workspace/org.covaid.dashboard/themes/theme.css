@@ -1,0 +1,267 @@
+/*******************************************************************************
+ * Copyright (c) 2011, 2012 EclipseSource and others.
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
+ *
+ * Contributors:
+ *    EclipseSource - initial API and implementation
+ ******************************************************************************/
+
+/* Theme contribution to RAP default theme for Examples demo */
+
+.footer{
+  background-color : #e5e5e5;
+  border: 1px solid #bdbdbd;
+}
+
+Button.delete{
+  background-image: url( "resources/delete-32.png" );
+  background-color: transparent;
+  background-repeat: no-repeat;
+}
+
+Composite{
+	background-color: transparent;
+}
+
+Composite.emptyComposite{
+	background-color: #B8EAE6;
+}
+
+Composite.frontbody{
+	background-color: white;
+	padding: 0px;
+}
+
+Composite.wizard-container{
+	background-color: white;
+	padding: 0px;
+}
+
+Composite.arnac{
+	background-color: #7092BE;
+}
+
+Composite.highlight{
+	background-color: #E0FDFE;
+}
+
+Composite.wizard-toolbar{
+	background-color: #CCE3F7;
+	width: 40px;
+	padding: 0px;
+}
+
+Composite.middle{
+	background-color: #FF00FF;
+}
+
+Composite.mainContentArea{
+  background-color: #FF0000;
+}
+
+Composite.centerArea{
+  background-color: #fff;
+}
+
+Composite.nav-bar{
+  background-color: #34332F;
+}
+
+Composite.infobox{
+  background-color: #34332F;
+  border-radius: 0 50px 0 50px;
+}
+
+Composite.search{
+  background-color: #004D9D;
+}
+
+Composite.wizard{
+  background-color: #004D9D;
+}
+
+Group.arnac{
+  background-color: #7092BE;
+}
+
+TabFolder{
+  background-color: #7092BE;
+}
+
+TabItem{
+  background-color: #C2C4E6;
+}
+
+ToolBar{
+  font: 15px Verdana, "Lucida Sans", Arial, Helvetica, sans-serif;
+  color: white;
+  background-color: #004D9D;
+}
+
+ToolItem{
+  background-color: transparent;
+  color: #ffffff;
+  border-radius: 2px;
+  padding: 8px;
+  text-shadow: none;
+}
+
+ToolItem:hover{
+  cursor: pointer;
+  color: #7092BE;
+  background-color: transparent;
+  border-radius: 2px;
+}
+
+ToolItem:pressed{
+  padding: 8px 8px 8px 8px;
+}
+
+
+ToolItem:selected{
+  color: #1A2F86;
+  border: none;
+  background-color: #004D9D;
+  background-image: none;
+}
+
+ToolItem-DropDownIcon:hover,
+ToolItem-DropDownIcon.selected{
+  border: none;
+  background-image: url( "/resources/down.png" );
+}
+
+Composite.navigation{
+  background-color: #004D9D;
+}
+
+Label.navigation{
+  background-color: #004D9D;
+}
+
+Button[CHECK]{
+  background-color: transparent;
+}
+
+Button.arnac{
+  background-color: transparent;
+  border: none;
+}
+
+Button.navigation{
+  background-image: url( "resources/arnac.png" );
+  background-color: transparent;
+}
+
+ToolItem.navigation:selected{
+  padding: 8px 8px 8px 8px;
+  background-color: #004D9D;
+}
+
+Menu.navigation{
+  background-color: blue;
+  color: white;
+  font: 28px Verdana, "Lucida Sans", Arial, Helvetica, sans-serif;
+  background-image: none;
+  box-shadow: none;
+  border: none;
+  padding: 0;
+}
+
+MenuItem.navigation{	
+  color: #bdbdbd;
+  background-color: #ff00ff;
+  background-image: none;
+  border-radius: 2px;
+  border: none;
+  padding: 8px;
+  text-shadow: none;
+}
+
+MenuItem.navigation:hover{
+  cursor: pointer;
+  color: white;
+  background-color: transparent;
+  border-radius: 2px;
+  background-image: none;
+  animation: none;
+}
+
+Label{
+	background-color: transparent;
+}
+
+Label.wizard-title{
+  font: 20px Verdana, "Lucida Sans", Arial, Helvetica, sans-serif;
+  background-color: transparent;
+  color: white;
+}
+
+Label.wizard{
+  background-color: transparent;
+  color: white;
+}
+
+Label.heading{
+  font: 64px Helvetica, Verdana, sans-serif;
+  color: #31619C; 
+}
+
+Label.pageHeadline{
+  font: 20px Helvetica, Verdana, sans-serif;
+  color: #31619C; 
+}
+
+Label.search{
+	font: 16px Helvetica, Verdana, sans-serif; 
+	color: white;
+	background-color: #004D9D;
+}
+
+Label.customLabel{
+	font: 64px Helvetica, Verdana, sans-serif; 
+    color: #31619C;
+}
+
+Label.footerLabel{
+  font: 14px Helvetica, Verdana, sans-serif; 
+}
+
+Label.infobox{
+  color: #e5e5e5;
+}
+
+Label.infobox-heading{
+  font: 16px Helvetica, Verdana, sans-serif;
+  color: #357cd4;
+}
+
+Label.markup{
+  font: 22px Helvetica, Verdana, sans-serif; 
+}
+
+Label.error{
+  color: red;
+}
+
+Text[MULTI].error{
+  border: 1px solid red;
+}
+
+Text.navigation{
+  background-color: #004D9D;
+  color: white;
+}
+
+Text[MULTI].error:focused{
+  border: 1px solid red;
+  box-shadow: 0 0 5px red;
+}
+
+Text.wizard{
+  background-color: #004D9D;
+  color: white;
+}

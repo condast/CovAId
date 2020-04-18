@@ -1,0 +1,20 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Core CovAId Bundle
+Bundle-SymbolicName: org.covaid.core
+Bundle-Version: 1.0.0.qualifier
+Bundle-Vendor: Condast
+Automatic-Module-Name: org.covaid.core
+Bundle-RequiredExecutionEnvironment: JavaSE-1.7
+Import-Package: org.condast.commons,
+ org.condast.commons.authentication.user,
+ org.condast.commons.data.distributed.nmea,
+ org.condast.commons.data.latlng,
+ org.condast.commons.data.plane,
+ org.condast.commons.date,
+ org.condast.commons.preferences,
+ org.condast.commons.strings,
+ org.osgi.framework,
+ org.osgi.service.prefs;version="1.1.1"
+Export-Package: org.covaid.core.data,
+ org.covaid.core.user
