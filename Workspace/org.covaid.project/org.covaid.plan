@@ -1,13 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<plan name="org.satr.arnac.wph" version="1.0.0" scoped="false" atomic="true"
+<plan name="org.org.covaid.wph" version="1.0.0" scoped="false" atomic="true"
         xmlns="http://www.eclipse.org/virgo/schema/plan"
 		xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 		xsi:schemaLocation="
 		        http://www.eclipse.org/virgo/schema/plan
 		        http://www.eclipse.org/virgo/schema/plan/eclipse-virgo-plan.xsd">
 
-     <artifact type="bundle" name="org.satr.arnac.core" version="[1.0.0, 2.0.0)"/>
-     <artifact type="bundle" name="org.satr.arnac.ui" version="[1.0.0, 2.0.0)"/>
-	 <artifact type="bundle" name="org.satr.arnac.rest" version="[1.0.0, 2.0.0)"/>
-	 <artifact type="bundle" name="org.satr.arnac.dashboard" version="[1.0.0, 2.0.0)"/>
+     <artifact type="bundle" name="org.covaid.core" version="[1.0.0, 2.0.0)"/>
+     <artifact type="bundle" name="org.covaid.ui" version="[1.0.0, 2.0.0)"/>
+	 <artifact type="bundle" name="org.covaid.commons.support" version="[1.0.0, 2.0.0)"/>
+	 <artifact type="bundle" name="org.covaid.orientdb" version="[1.0.0, 2.0.0)"/>
+	 <artifact type="bundle" name="org.covaid.dashboard" version="[1.0.0, 2.0.0)"/>
 </plan>

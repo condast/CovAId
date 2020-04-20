@@ -13,8 +13,8 @@
   <extension
          point="org.eclipse.equinox.http.registry.resources">
       <resource
-            alias="/covaid/resources"
-            base-name="/resources">
+            alias="/covaid/web"
+            base-name="/WEB-INF">
       </resource>
    </extension>
  </plugin>

@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <design>
-	<language class="org.covaid.dashboard.language.ArnacLanguage" />
-	<image-provider class="org.covaid.ui.images.ArnacImages" />
+	<language class="org.covaid.dashboard.language.covaidLanguage" />
+	<image-provider class="org.covaid.ui.images.CovaidImages" />
 	<preferences>
-		<store id="org.arnac.rwt.rest" name="Rest"/>
+		<store id="org.covaid.rwt.rest" name="Rest"/>
 	</preferences>
 	<frontend title="ACTIVE" id="org.covaid.frontend" style="SWT.NONE">
 		<layout name="grid-layout" columns="1" />
@@ -14,57 +14,7 @@
 			</layout-data>
 			<layout name="grid-layout" columns="1" />
 			<item name="Route">
-				<composite class="org.covaid.ui.swt.ArnacComposite" name="arnac-composite">
-					<layout-data type="grid-data">
-						<horizontal spacing="fill" grab-excess="true" columns="1" />
-						<vertical spacing="fill" />
-					</layout-data>
-				</composite>
-			</item>
-<!-- 
-			<item name="Bathymetry">
-				<composite class="org.covaid.ui.swt.DepthComposite" name="depth-composite">
-					<layout-data type="grid-data">
-						<horizontal spacing="fill" grab-excess="true" columns="1" />
-						<vertical spacing="fill" />
-					</layout-data>
-				</composite>
-			</item> 
-			<item name="Maintenance">
-				<composite class="org.covaid.ui.maintenance.MaintenanceComposite" name="maintenance-composite">
-					<layout-data type="grid-data">
-						<horizontal spacing="fill" grab-excess="true" columns="1" />
-						<vertical spacing="fill" grab-excess="true"/>
-					</layout-data>
-				</composite>
-			</item>
-			<item name="OPEN_ROV">
-				<composite class="org.covaid.ui.openrov.OpenROVComposite" name="openrov-composite">
-					<layout-data type="grid-data">
-						<horizontal spacing="fill" grab-excess="true" columns="1" />
-						<vertical spacing="fill" grab-excess="true"/>
-					</layout-data>
-				</composite>
-			</item>
--->			
-			<item name="Environment">
-				<composite class="org.covaid.ui.environment.EnvironmentComposite" name="environment-composite">
-					<layout-data type="grid-data">
-						<horizontal spacing="fill" grab-excess="true" columns="1" />
-						<vertical spacing="fill" grab-excess="true"/>
-					</layout-data>
-				</composite>
-			</item>
-			<item name="NMEA 0187">
-				<composite class="org.covaid.ui.modules.NmeaComposite" name="nmea-composite">
-					<layout-data type="grid-data">
-						<horizontal spacing="fill" grab-excess="true" columns="1" />
-						<vertical spacing="fill" grab-excess="true"/>
-					</layout-data>
-				</composite>
-			</item>
-			<item name="System">
-				<composite class="org.covaid.ui.swt.vessel.VesselSystemView" name="system-composite">
+				<composite class="org.covaid.ui.map.MapBrowser" name="covaid-composite">
 					<layout-data type="grid-data">
 						<horizontal spacing="fill" grab-excess="true" columns="1" />
 						<vertical spacing="fill" />

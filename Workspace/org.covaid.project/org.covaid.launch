@@ -15,12 +15,8 @@
 <setAttribute key="deselected_workspace_bundles">
 <setEntry value="nl.martijndwars.webpush"/>
 <setEntry value="org.condast.commons.legal"/>
-<setEntry value="org.condast.commons.na"/>
 <setEntry value="org.condast.commons.test"/>
-<setEntry value="org.condast.js.bootstrap"/>
 <setEntry value="org.condast.js.react"/>
-<setEntry value="org.condast.postcode.api"/>
-<setEntry value="org.openlayer.map"/>
 </setAttribute>
 <booleanAttribute key="includeOptional" value="true"/>
 <booleanAttribute key="org.eclipse.jdt.launching.ATTR_USE_START_ON_FIRST_THREAD" value="true"/>
@@ -131,12 +127,18 @@
 <setEntry value="org.condast.commons.tinkerpop@default:default"/>
 <setEntry value="org.condast.commons.ui@default:default"/>
 <setEntry value="org.condast.commons@default:default"/>
+<setEntry value="org.condast.js.bootstrap@default:default"/>
 <setEntry value="org.condast.js.commons@default:default"/>
 <setEntry value="org.covaid.commons.support@default:default"/>
 <setEntry value="org.covaid.core@default:default"/>
 <setEntry value="org.covaid.dashboard@default:default"/>
 <setEntry value="org.covaid.orientdb.rest@default:default"/>
 <setEntry value="org.covaid.orientdb@default:default"/>
+<setEntry value="org.covaid.ui@default:default"/>
+<setEntry value="org.google.geo.mapping.ui@default:default"/>
+<setEntry value="org.openlayer.map@default:default"/>
+<setEntry value="test.condast.com@default:default"/>
+<setEntry value="test.covaid.core@default:default"/>
 </setAttribute>
 <booleanAttribute key="show_selected_only" value="false"/>
 <booleanAttribute key="tracing" value="false"/>

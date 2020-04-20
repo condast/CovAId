@@ -1,17 +1,6 @@
 package org.covaid.dashboard.core;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-
-import org.condast.commons.Utils;
-import org.condast.commons.authentication.user.ILoginUser;
-import org.condast.commons.data.latlng.LatLng;
-import org.condast.commons.data.latlng.Motion;
-import org.condast.commons.data.plane.IField;
 import org.condast.commons.strings.StringStyler;
-import org.covaid.core.user.IUserRegistration;
-import org.covaid.dashboard.authentication.AuthenticationManager;
 import org.eclipse.swt.widgets.Composite;
 
 public class Dispatcher {
@@ -21,7 +10,7 @@ public class Dispatcher {
 	public static final String S_OPTIONS_CONTEXT = S_REST_CONTEXT + "options";
 
 	public enum Composites{
-		ARNAC_COMPOSITE,
+		COVAID_COMPOSITE,
 		ENVIRONMENT_COMPOSITE,
 		DEPTH_COMPOSITE,
 		MAINTENANCE_COMPOSITE,
@@ -56,7 +45,7 @@ public class Dispatcher {
 
 	public void addComposite( Composites type, Composite composite ) {
 		switch( type ){
-		case ARNAC_COMPOSITE:
+		case COVAID_COMPOSITE:
 			//ArnacComposite ac = ( ArnacComposite) composite;
 			//ac.setUserManager( AuthenticationManager.getInstance());
 			//ac.setInput(this);

@@ -5,11 +5,13 @@ import javax.persistence.*;
 import org.condast.commons.preferences.*;
 import org.condast.commons.authentication.ui.menu.*;
 import org.condast.commons.persistence.service.*;
+
+import org.covaid.ui.map.MapBrowser;
+
 import org.eclipse.core.commands.*;
 import org.eclipse.equinox.security.auth.*;
 import org.eclipse.equinox.security.auth.module.*;
 import org.condast.commons.ui.controller.*;
-import org.condast.commons.ui.nmea.*;
 import org.condast.js.commons.controller.*;
 import org.eclipse.swt.graphics.*;
 import com.google.gson.*;
