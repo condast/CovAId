@@ -8,13 +8,11 @@ Automatic-Module-Name: org.covaid.core
 Bundle-RequiredExecutionEnvironment: JavaSE-1.7
 Import-Package: org.condast.commons,
  org.condast.commons.authentication.user,
- org.condast.commons.data.distributed.nmea,
  org.condast.commons.data.latlng,
- org.condast.commons.data.plane,
  org.condast.commons.date,
  org.condast.commons.preferences,
  org.condast.commons.strings,
- org.osgi.framework,
  org.osgi.service.prefs;version="1.1.1"
 Export-Package: org.covaid.core.data,
+ org.covaid.core.def,
  org.covaid.core.user

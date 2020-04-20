@@ -50,11 +50,6 @@
             <url>${condast-js}/org.condast.js.update/target/site/</url>
             <layout>p2</layout>
        </repository>
-       <repository>
-           <id>org-condast-symbiotic</id>
-           <url>${condast-symbiot}/org.condast.symbiotic.update/target/site/</url>
-           <layout>p2</layout>
-      </repository>
     </repositories>
 
   <dependencies>
@@ -65,11 +60,10 @@
     </dependency>
   </dependencies>
   <modules>
-    <module>../org.covaid.authentication</module>
     <module>../org.covaid.core</module>
     <module>../org.covaid.ui</module>
-    <module>../org.covaid.rest</module>
-    <module>../org.covaid.management</module>
+    <module>../org.covaid.commons.support</module>
+    <module>../org.covaid.orientdb</module>
     <module>../org.covaid.dashboard</module>
     <module>../org.covaid.feature</module>
     <module>../org.covaid.update</module>

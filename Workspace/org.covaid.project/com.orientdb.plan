@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<plan name="com.orientdb" version="2.26.0" scoped="false" atomic="true"
+        xmlns="http://www.eclipse.org/virgo/schema/plan"
+		xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+		xsi:schemaLocation="
+		        http://www.eclipse.org/virgo/schema/plan
+		        http://www.eclipse.org/virgo/schema/plan/eclipse-virgo-plan.xsd">
+      <artifact type="bundle" name="com.orientechnologies.orientdb.core" version="[2.2.0, 3.0.0)"/>
+  </plan>

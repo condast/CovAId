@@ -13,11 +13,16 @@ import org.condast.commons.xml.AbstractXMLBuilder;
 import org.condast.commons.xml.BuildEvent;
 import org.condast.commons.xml.IBuildListener;
 import org.condast.commons.xml.AbstractXMLBuilder.Selection;
+import org.covaid.core.def.Hello2;
 import org.covaid.dashboard.authentication.AuthenticationDispatcher;
 import org.covaid.dashboard.authentication.AuthenticationManager;
 import org.covaid.dashboard.core.Dispatcher;
+import org.covaid.ui.map.Hello;
+import org.covaid.ui.map.MapBrowser;
+import org.covaid.ui.map.TestComposite;
 import org.eclipse.rap.rwt.RWT;
 import org.eclipse.rap.rwt.application.AbstractEntryPoint;
+import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.layout.FillLayout;
@@ -97,7 +102,7 @@ public class BasicEntryPoint extends AbstractEntryPoint {
 					Dispatcher.Composites cmp = Dispatcher.Composites.valueOf( StringStyler.styleToEnum( name ));
 					dispatcher.addComposite( cmp, (Composite) event.getData() );
 					switch( cmp ){
-					case ARNAC_COMPOSITE:
+					case COVAID_COMPOSITE:
 						break;
 					case ENVIRONMENT_COMPOSITE:
 						break;
@@ -146,12 +151,12 @@ public class BasicEntryPoint extends AbstractEntryPoint {
 			parent.setLayout( new GridLayout(2, false ));
 
 	        parent.setLayout(new FillLayout());       
-	        XMLFactoryBuilder builder = new XMLFactoryBuilder( parent, this.getClass());
-	        //builder.addListener(listener);
-	        //builder.build();
-	        //builder.removeListener(listener);
-	        //Composite root = builder.getRoot();
-			//root.setData( RWT.CUSTOM_VARIANT, S_COVAID );
+			XMLFactoryBuilder builder = new XMLFactoryBuilder( parent, this.getClass());
+	        builder.addListener(listener);
+	        builder.build();
+	        builder.removeListener(listener);
+	        Composite root = builder.getRoot();
+			root.setData( RWT.CUSTOM_VARIANT, S_COVAID );
 			
 		}
 		catch( Exception ex ){
