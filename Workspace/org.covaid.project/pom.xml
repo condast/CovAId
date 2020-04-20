@@ -64,6 +64,7 @@
     <module>../org.covaid.ui</module>
     <module>../org.covaid.commons.support</module>
     <module>../org.covaid.orientdb</module>
+    <module>../org.covaid.rest</module>
     <module>../org.covaid.dashboard</module>
     <module>../org.covaid.feature</module>
     <module>../org.covaid.update</module>
