@@ -11,7 +11,7 @@ public class Dispatcher {
 
 	public enum Composites{
 		COVAID_COMPOSITE,
-		ENVIRONMENT_COMPOSITE,
+		SIMULATOR_COMPOSITE,
 		DEPTH_COMPOSITE,
 		MAINTENANCE_COMPOSITE,
 		OPENROV_COMPOSITE,
@@ -58,7 +58,7 @@ public class Dispatcher {
 			//VesselSystemView vsc = ( VesselSystemView ) composite;
 			//vsc.setInput(this);
 			break;
-		case ENVIRONMENT_COMPOSITE:
+		case SIMULATOR_COMPOSITE:
 			//EnvironmentComposite evc = (EnvironmentComposite) composite;
 			//evc.setVesselService( dispatcher );
 			break;

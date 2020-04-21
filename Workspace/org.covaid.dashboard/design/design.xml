@@ -14,7 +14,7 @@
 			</layout-data>
 			<layout name="grid-layout" columns="1" />
 			<item name="Wizard">
-				<composite class="org.covaid.ui.wizard.BrowserWizard" name="html-wizard">
+				<composite class="org.covaid.ui.simulator.SimulatorComposite" name="simulator-composite">
 					<layout-data type="grid-data">
 						<horizontal spacing="fill" grab-excess="true" columns="1" />
 						<vertical spacing="fill" />
