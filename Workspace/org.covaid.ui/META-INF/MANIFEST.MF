@@ -4,7 +4,8 @@ Bundle-Name: User Interface
 Bundle-SymbolicName: org.covaid.ui
 Bundle-Version: 1.0.0.qualifier
 Bundle-Vendor: Condast
-Export-Package: org.covaid.ui.map
+Export-Package: org.covaid.ui.map,
+ org.covaid.ui.wizard
 Bundle-RequiredExecutionEnvironment: JavaSE-1.7
 Automatic-Module-Name: org.covaid.ui
 Import-Package: org.condast.commons,
@@ -15,10 +16,13 @@ Import-Package: org.condast.commons,
  org.condast.commons.ui.image,
  org.condast.js.commons.controller,
  org.condast.js.commons.eval,
+ org.condast.js.commons.wizard,
  org.eclipse.rap.rwt;version="3.4.0",
  org.eclipse.rap.rwt.service;version="3.4.0",
+ org.eclipse.swt,
  org.eclipse.swt.browser,
  org.eclipse.swt.graphics,
+ org.eclipse.swt.layout,
  org.eclipse.swt.widgets,
  org.openlayer.map.control,
  org.openlayer.map.controller

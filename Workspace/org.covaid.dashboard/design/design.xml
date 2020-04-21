@@ -13,7 +13,15 @@
 				<vertical align="fill" grab-excess="true" />
 			</layout-data>
 			<layout name="grid-layout" columns="1" />
-			<item name="Route">
+			<item name="Wizard">
+				<composite class="org.covaid.ui.wizard.BrowserWizard" name="html-wizard">
+					<layout-data type="grid-data">
+						<horizontal spacing="fill" grab-excess="true" columns="1" />
+						<vertical spacing="fill" />
+					</layout-data>
+				</composite>
+			</item>
+			<item name="Map">
 				<composite class="org.covaid.ui.map.MapBrowser" name="covaid-composite">
 					<layout-data type="grid-data">
 						<horizontal spacing="fill" grab-excess="true" columns="1" />

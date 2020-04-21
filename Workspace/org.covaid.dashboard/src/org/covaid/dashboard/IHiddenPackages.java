@@ -7,6 +7,7 @@ import org.condast.commons.authentication.ui.menu.*;
 import org.condast.commons.persistence.service.*;
 
 import org.covaid.ui.map.MapBrowser;
+import org.covaid.ui.wizard.BrowserWizard;
 
 import org.eclipse.core.commands.*;
 import org.eclipse.equinox.security.auth.*;

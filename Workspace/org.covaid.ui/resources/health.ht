@@ -1,0 +1,82 @@
+<div class="container-fluid" style="margin-top: 30px">
+	<div class="col">
+		<div class="row">
+			<div class="col-3">
+				<p>Risk:</p>
+			</div>
+			<div class="col-1">
+				<p>${label.risk.min}</p>
+			</div>
+			<div class="col-4">
+				<input type="range" class="custom-range" id="customRange1"
+					min="${value.risk.min}" max="${value.risk.max}">
+			</div>
+			<div class="col-1">
+				<label for="customRange1">${label.risk.max}</label>
+			</div>
+		</div>
+	</div>
+</div>
+<div class="container-fluid" style="margin-top: 30px">
+	<div class="form-check">
+		<label class="form-check-label">
+			<input type="checkbox" class="form-check-input" value="">Coughing
+		</label>
+	</div>
+	<div class="form-check">
+		<label class="form-check-label">
+			<input type="checkbox" class="form-check-input" value="">Fever
+		</label>
+	</div>
+	<div class="form-check">
+		<label class="form-check-label">
+			<input type="checkbox" class="form-check-input" value=""
+				disabled>Lack of Taste
+		</label>
+	</div>
+	<div class="form-check">
+		<label class="form-check-label">
+			<input type="checkbox" class="form-check-input" value=""
+				disabled>Sore Throat
+		</label>
+	</div>
+	<div class="form-check">
+		<label class="form-check-label">
+			<input type="checkbox" class="form-check-input" value=""
+				disabled>Nasal Cold
+		</label>
+	</div>
+	<div class="col">
+		<div class="row">
+			<div class="col-3">
+				<p>Temperature:</p>
+			</div>
+			<div class="col-1">
+				<p>${value.temp.min}</p>
+			</div>
+			<div class="col-4">
+				<input type="range" class="custom-range" id="customRange1"
+					min="${value.temp.min}" max="${value.temp.max}">
+			</div>
+			<div class="col-1">
+				<label for="customRange1">${value.temp.max}</label>
+			</div>
+		</div>
+	</div>
+	<div class="col">
+		<div class="col-1">
+			<div class="dropdown">
+				<button class="btn btn-secondary dropdown-toggle"
+					type="button" id="dropdownMenuButton" data-toggle="dropdown"
+					aria-haspopup="true" aria-expanded="false">Probable Illness</button>
+				<div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+					<a class="dropdown-item" href="#">Hayfever</a>
+					<a class="dropdown-item" href="#">Common Cold</a>
+					<a class="dropdown-item" href="#">Influenza</a>
+					<a class="dropdown-item" href="#">Covid-19</a>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+</body>

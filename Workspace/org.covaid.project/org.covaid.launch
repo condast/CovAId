@@ -13,7 +13,6 @@
 <booleanAttribute key="default_auto_start" value="true"/>
 <intAttribute key="default_start_level" value="4"/>
 <setAttribute key="deselected_workspace_bundles">
-<setEntry value="nl.martijndwars.webpush"/>
 <setEntry value="org.condast.commons.legal"/>
 <setEntry value="org.condast.commons.test"/>
 <setEntry value="org.condast.js.react"/>
@@ -118,6 +117,7 @@
 <setEntry value="osgi.enterprise@default:default"/>
 </setAttribute>
 <setAttribute key="selected_workspace_bundles">
+<setEntry value="nl.martijndwars.webpush@default:default"/>
 <setEntry value="org.condast.commons.authentication.ui@default:default"/>
 <setEntry value="org.condast.commons.authentication@default:default"/>
 <setEntry value="org.condast.commons.bugzilla@default:default"/>
@@ -132,8 +132,8 @@
 <setEntry value="org.covaid.commons.support@default:default"/>
 <setEntry value="org.covaid.core@default:default"/>
 <setEntry value="org.covaid.dashboard@default:default"/>
-<setEntry value="org.covaid.orientdb.rest@default:default"/>
 <setEntry value="org.covaid.orientdb@default:default"/>
+<setEntry value="org.covaid.rest@default:default"/>
 <setEntry value="org.covaid.ui@default:default"/>
 <setEntry value="org.google.geo.mapping.ui@default:default"/>
 <setEntry value="org.openlayer.map@default:default"/>

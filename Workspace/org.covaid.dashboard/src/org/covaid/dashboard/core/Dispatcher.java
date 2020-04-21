@@ -15,7 +15,7 @@ public class Dispatcher {
 		DEPTH_COMPOSITE,
 		MAINTENANCE_COMPOSITE,
 		OPENROV_COMPOSITE,
-		NMEA_COMPOSITE,
+		HTML_WIZARD,
 		SYSTEM_COMPOSITE,
 		LOG_COMPOSITE;
 	}
@@ -50,7 +50,7 @@ public class Dispatcher {
 			//ac.setUserManager( AuthenticationManager.getInstance());
 			//ac.setInput(this);
 			break;
-		case NMEA_COMPOSITE:
+		case HTML_WIZARD:
 			//NmeaComposite nmea = ( NmeaComposite ) composite;
 			//nmea.setInput(this);
 			break;
