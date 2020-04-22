@@ -6,6 +6,7 @@ import java.util.Iterator;
 import java.util.Map;
 
 import org.condast.commons.strings.StringStyler;
+import org.covaid.core.config.env.Contagion;
 
 public class StoredData {
 
@@ -23,16 +24,16 @@ public class StoredData {
 	
 	private String id;
 	private String identifier;
-	private Map<ContagionData, Date> contagiousness;
+	private Map<Contagion, Date> contagiousness;
 	
-	public StoredData(String identifier, Map<ContagionData, Date> contagiousness ) {
+	public StoredData(String identifier, Map<Contagion, Date> contagiousness ) {
 		super();
 		this.identifier = identifier;
 		this.contagiousness = contagiousness;
 	}
 	
 	public StoredData(String identifier ) {
-		this( identifier, new HashMap<ContagionData, Date>());
+		this( identifier, new HashMap<Contagion, Date>());
 	}
 
 	public StoredData(SharedData shared ) {
@@ -51,21 +52,21 @@ public class StoredData {
 		return this.identifier;
 	}
 
-	public ContagionData getContagiousness( String identifier ) {
-		Iterator<Map.Entry<ContagionData, Date>> iterator = contagiousness.entrySet().iterator();
+	public Contagion getContagiousness( String identifier ) {
+		Iterator<Map.Entry<Contagion, Date>> iterator = contagiousness.entrySet().iterator();
 		while( iterator.hasNext()) {
-			Map.Entry<ContagionData, Date> entry = iterator.next();
+			Map.Entry<Contagion, Date> entry = iterator.next();
 			if( entry.getKey().getIdentifier().equals(identifier))
 				return entry.getKey();
 		}
 		return null;
 	}
 
-	public Map<ContagionData, Date> getContagiousness() {
+	public Map<Contagion, Date> getContagiousness() {
 		return contagiousness;
 	}
 
-	public void addContagion( ContagionData data, Date timestamp ) {
+	public void addContagion( Contagion data, Date timestamp ) {
 		if( !this.contagiousness.containsKey(data))
 			this.contagiousness.put(data, timestamp);
 		else

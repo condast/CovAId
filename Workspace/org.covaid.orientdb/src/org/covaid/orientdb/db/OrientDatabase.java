@@ -9,7 +9,7 @@ import java.util.Map;
 import org.condast.commons.data.filter.WildcardFilter;
 import org.condast.commons.strings.StringStyler;
 import org.condast.commons.strings.StringUtils;
-import org.covaid.core.data.ContagionData;
+import org.covaid.core.config.env.Contagion;
 import org.covaid.core.data.StoredData;
 import org.covaid.core.data.StoredNode;
 
@@ -227,13 +227,13 @@ public class OrientDatabase {
 	
 	protected static void fill( Vertex vertex, StoredData data ) {
 		vertex.setProperty( StoredData.Attributes.IDENTIFIER.name(), data.getIdentifier());
-		Iterator<Map.Entry<ContagionData, Date>> iterator = data.getContagiousness().entrySet().iterator();
+		Iterator<Map.Entry<Contagion, Date>> iterator = data.getContagiousness().entrySet().iterator();
 		OrientGraph graph = service.getGraph();
 		while( iterator.hasNext()) {
-			Map.Entry<ContagionData, Date> entry = iterator.next();
+			Map.Entry<Contagion, Date> entry = iterator.next();
 			Vertex vc = graph.addVertex( Types.CONTAGION.toString() );
-			vc.setProperty( ContagionData.Attributes.IDENTIFIER.name(), entry.getKey().getIdentifier());
-			vc.setProperty( ContagionData.Attributes.CONTAGIOUSNESS.name(), String.valueOf( entry.getKey().getContagiousness()));
+			vc.setProperty( Contagion.Attributes.IDENTIFIER.name(), entry.getKey().getIdentifier());
+			vc.setProperty( Contagion.Attributes.CONTAGIOUSNESS.name(), String.valueOf( entry.getKey().getContagiousness()));
 			graph.addEdge(Types.CONTAGION.toString(), vertex, vc, String.valueOf( entry.getValue().getTime()));
 		}
 	}
@@ -246,8 +246,8 @@ public class OrientDatabase {
 		while( iterator.hasNext() ) {
 			Edge edge = iterator.next();
 			Vertex vc = edge.getVertex(Direction.OUT);
-			float contagiousness = vc.getProperty(ContagionData.Attributes.CONTAGIOUSNESS.name());
-			ContagionData data = new ContagionData((String)vc.getProperty(ContagionData.Attributes.IDENTIFIER.name()), contagiousness);
+			float contagiousness = vc.getProperty(Contagion.Attributes.CONTAGIOUSNESS.name());
+			Contagion data = new Contagion((String)vc.getProperty(Contagion.Attributes.IDENTIFIER.name()), contagiousness);
 			result.addContagion( data, new Date( Long.parseLong( edge.getLabel())));
 		}
 		result.setId(id);

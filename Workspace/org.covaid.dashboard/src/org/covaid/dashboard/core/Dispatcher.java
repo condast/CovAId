@@ -1,6 +1,8 @@
 package org.covaid.dashboard.core;
 
 import org.condast.commons.strings.StringStyler;
+import org.covaid.core.config.env.Simulation;
+import org.covaid.ui.simulator.SimulatorComposite;
 import org.eclipse.swt.widgets.Composite;
 
 public class Dispatcher {
@@ -33,22 +35,23 @@ public class Dispatcher {
 			return false;
 		}
 	}
-			
+
+	private Simulation simulator;
+	
 	private static Dispatcher dispatcher = new Dispatcher();
 
 	private Dispatcher() {
+		simulator = new Simulation();
 	}
 	
 	public static Dispatcher getInstance() {
 		return dispatcher;
 	}
 
+	
 	public void addComposite( Composites type, Composite composite ) {
 		switch( type ){
 		case COVAID_COMPOSITE:
-			//ArnacComposite ac = ( ArnacComposite) composite;
-			//ac.setUserManager( AuthenticationManager.getInstance());
-			//ac.setInput(this);
 			break;
 		case HTML_WIZARD:
 			//NmeaComposite nmea = ( NmeaComposite ) composite;
@@ -59,8 +62,8 @@ public class Dispatcher {
 			//vsc.setInput(this);
 			break;
 		case SIMULATOR_COMPOSITE:
-			//EnvironmentComposite evc = (EnvironmentComposite) composite;
-			//evc.setVesselService( dispatcher );
+			SimulatorComposite sc = ( SimulatorComposite) composite;
+			sc.setInput(this.simulator);
 			break;
 		case DEPTH_COMPOSITE:
 			//DepthComposite dc = (DepthComposite) composite;

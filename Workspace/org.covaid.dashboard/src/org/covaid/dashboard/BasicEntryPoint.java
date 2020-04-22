@@ -7,7 +7,6 @@ import org.condast.commons.strings.StringUtils;
 import org.condast.commons.ui.activate.ActivationEvent;
 import org.condast.commons.ui.activate.IActivateListener;
 import org.condast.commons.ui.activate.IActivateWidget;
-import org.condast.commons.ui.logger.LogComposite;
 import org.condast.commons.ui.xml.XMLFactoryBuilder;
 import org.condast.commons.xml.AbstractXMLBuilder;
 import org.condast.commons.xml.BuildEvent;
@@ -96,32 +95,6 @@ public class BasicEntryPoint extends AbstractEntryPoint {
 						return;
 					Dispatcher.Composites cmp = Dispatcher.Composites.valueOf( StringStyler.styleToEnum( name ));
 					dispatcher.addComposite( cmp, (Composite) event.getData() );
-					switch( cmp ){
-					case COVAID_COMPOSITE:
-						break;
-					case SIMULATOR_COMPOSITE:
-						break;
-					case DEPTH_COMPOSITE:
-						break;
-					case OPENROV_COMPOSITE:
-						break;
-					case SYSTEM_COMPOSITE:
-						//vsv.setInput( dispatcher.getManagers());
-						//vsv.setInput( dispatcher.getActiveManager());
-						debug.addActivateListener(alistener);
-						break;
-					case LOG_COMPOSITE:
-						lc = (LogComposite) event.getData();
-						lc.addActivateListener(alistener);
-						//IVesselManager manager = dispatcher.getActiveManager();
-						//if( manager == null )
-						//	return;
-						//VesselOptions store = manager.getOptions();
-						//lc.activate(store.isLogging() );
-						break;
-					default:
-						break;
-					}
 					break;
 				default:
 					break;

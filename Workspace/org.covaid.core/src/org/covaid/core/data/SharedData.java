@@ -9,6 +9,7 @@ import java.util.Map;
 
 import org.condast.commons.data.latlng.LatLng;
 import org.condast.commons.strings.StringStyler;
+import org.covaid.core.config.env.Contagion;
 
 public class SharedData{
 
@@ -26,17 +27,17 @@ public class SharedData{
 	}
 	
 	private String identifier;
-	private Collection<ContagionData> contagion;
+	private Collection<Contagion> contagion;
 	private float distance;
 	
 	private LatLng latlng;
 
-	public SharedData(String identifier, ContagionData disease, float distance, LatLng latlng) {
-		this( identifier, new ArrayList<ContagionData>(), distance, latlng );
+	public SharedData(String identifier, Contagion disease, float distance, LatLng latlng) {
+		this( identifier, new ArrayList<Contagion>(), distance, latlng );
 		this.contagion.add(disease);
 	}
 
-	public SharedData(String identifier, Collection<ContagionData> contagion, float distance, LatLng latlng) {
+	public SharedData(String identifier, Collection<Contagion> contagion, float distance, LatLng latlng) {
 		super();
 		this.identifier = identifier;
 		this.contagion = contagion;
@@ -48,8 +49,8 @@ public class SharedData{
 		return this.identifier;
 	}
 
-	public ContagionData[] getContagion() {
-		return contagion.toArray( new ContagionData[ this.contagion.size()] );
+	public Contagion[] getContagion() {
+		return contagion.toArray( new Contagion[ this.contagion.size()] );
 	}
 
 	
@@ -76,9 +77,9 @@ public class SharedData{
 		return data.getIdentifier().equals(identifier);
 	}
 	
-	public static Map<ContagionData, Date> toTimeStamped( SharedData data ){
-		Map<ContagionData, Date> results = new HashMap<>();
-		for( ContagionData cd: data.contagion )
+	public static Map<Contagion, Date> toTimeStamped( SharedData data ){
+		Map<Contagion, Date> results = new HashMap<>();
+		for( Contagion cd: data.contagion )
 			results.put(cd, Calendar.getInstance().getTime());
 		return results;
 	}

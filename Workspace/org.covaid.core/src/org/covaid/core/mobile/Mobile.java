@@ -3,9 +3,9 @@ package org.covaid.core.mobile;
 import java.util.Calendar;
 
 import org.condast.commons.data.latlng.LatLng;
+import org.covaid.core.config.env.Contagion;
 import org.covaid.core.contagion.ContagionManager;
 import org.covaid.core.contagion.IContagionManager;
-import org.covaid.core.data.ContagionData;
 import org.covaid.core.data.SharedData;
 import org.covaid.core.data.StoredData;
 import org.covaid.core.data.StoredNode;
@@ -83,8 +83,8 @@ public class Mobile {
 		if( current == null )
 			this.node.addChild( new StoredData( data.getIdentifier()), data.getDistance());
 		else {
-			for( ContagionData cd: data.getContagion()) {
-				ContagionData ccd = current.getContagiousness(cd.getIdentifier());
+			for( Contagion cd: data.getContagion()) {
+				Contagion ccd = current.getContagiousness(cd.getIdentifier());
 				if( ccd == null ) {
 					current.addContagion( cd, Calendar.getInstance().getTime());
 				}else {

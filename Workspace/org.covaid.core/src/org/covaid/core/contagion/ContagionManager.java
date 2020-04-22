@@ -2,7 +2,7 @@ package org.covaid.core.contagion;
 
 import java.util.Date;
 import org.condast.commons.date.DateUtils;
-import org.covaid.core.data.ContagionData;
+import org.covaid.core.config.env.Contagion;
 
 public class ContagionManager implements IContagionManager {
 
@@ -11,7 +11,7 @@ public class ContagionManager implements IContagionManager {
 	public static final int DEFAULT_COVID_UNSAFE_TIME = 14;
 	public static final int DEFAULT_COVID_SAFE_TIME = 30;
 	
-	public float calculateContagiousness( ContagionData.SupportedContagion identifier, float detectedContagion, float distance ) {
+	public float calculateContagiousness( Contagion.SupportedContagion identifier, float detectedContagion, float distance ) {
 		float contagion = 0f;
 		switch( identifier ) {
 		case COVID_19:
@@ -24,15 +24,15 @@ public class ContagionManager implements IContagionManager {
 		return contagion; 
 	}
 
-	public float calculateContagiousness( ContagionData data, float detectedContagion, float distance ) {
+	public float calculateContagiousness( Contagion data, float detectedContagion, float distance ) {
 		float contagion = 0f;
-		if( ContagionData.SupportedContagion.isSupported(data.getIdentifier()))
-			contagion = calculateContagiousness(ContagionData.SupportedContagion.valueOf(data.getIdentifier()), detectedContagion, distance);
+		if( Contagion.SupportedContagion.isSupported(data.getIdentifier()))
+			contagion = calculateContagiousness(Contagion.SupportedContagion.valueOf(data.getIdentifier()), detectedContagion, distance);
 		return contagion; 
 	}
 
 	
-	public float calculateContagiousness( ContagionData.SupportedContagion identifier, Date previous, Date current ) {
+	public float calculateContagiousness( Contagion.SupportedContagion identifier, Date previous, Date current ) {
 		float contagion = 0f;
 		long diff = DateUtils.getDifferenceDays(current, previous);
 		switch( identifier ) {
@@ -46,10 +46,10 @@ public class ContagionManager implements IContagionManager {
 	}
 
 	@Override
-	public float calculateContagiousness(ContagionData data, Date previous, Date current) {
+	public float calculateContagiousness(Contagion data, Date previous, Date current) {
 		float contagion = 0f;
-		if( ContagionData.SupportedContagion.isSupported(data.getIdentifier()))
-			contagion = calculateContagiousness(ContagionData.SupportedContagion.valueOf(data.getIdentifier()), previous, current);
+		if( Contagion.SupportedContagion.isSupported(data.getIdentifier()))
+			contagion = calculateContagiousness(Contagion.SupportedContagion.valueOf(data.getIdentifier()), previous, current);
 		return contagion; 
 	}
 

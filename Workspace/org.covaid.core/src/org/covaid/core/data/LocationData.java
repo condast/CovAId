@@ -6,6 +6,7 @@ import java.util.TreeSet;
 
 import org.condast.commons.data.latlng.ILocation;
 import org.condast.commons.data.latlng.LatLng;
+import org.covaid.core.config.env.Contagion;
 
 public class LocationData implements ILocation, org.condast.commons.IUpdateable {
 
@@ -16,7 +17,7 @@ public class LocationData implements ILocation, org.condast.commons.IUpdateable 
 	private double latitude;
 	private double longitude;
 	
-	private Collection<ContagionData> contagion;
+	private Collection<Contagion> contagion;
 		
 	private Date createDate;
 	
@@ -44,11 +45,11 @@ public class LocationData implements ILocation, org.condast.commons.IUpdateable 
 		return new LatLng( this.name, this.latitude, this.longitude );
 	}
 
-	public boolean addContagion( ContagionData contagion) {
+	public boolean addContagion( Contagion contagion) {
 		return this.contagion.add(contagion);
 	}
 
-	public boolean removeContagion( ContagionData contagion) {
+	public boolean removeContagion( Contagion contagion) {
 		return this.contagion.remove(contagion);
 	}
 
