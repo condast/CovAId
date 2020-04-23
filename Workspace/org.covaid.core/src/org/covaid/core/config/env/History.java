@@ -5,16 +5,23 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.Map.Entry;
+
+import org.condast.commons.date.DateUtils;
+
 import java.util.TreeMap;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class History {
 
 	private Map<Date, Location> history;
 
+	private Date current;
+	
 	private Collection<IHistoryListener> listeners;
 	
 	public History() {
-		this.history = new TreeMap<>();
+		this.history = new ConcurrentHashMap<Date, Location> ( new TreeMap<>());
 		this.listeners = new ArrayList<>();
 	}
 
@@ -34,8 +41,29 @@ public class History {
 	public void put( Date date, Location location ) {
 		update( date, location);
 		this.history.put( date, location);
+		current = date;
 	}
 
+	public Map<Date,Location> get() {
+		return this.history;
+	}
+
+	public Date getCurrent() {
+		return current;
+	}
+	
+	public boolean isEmpty() {
+		return this.history.isEmpty();
+	}
+	
+	/**
+	 * Get the most recent history object
+	 * @return
+	 */
+	public Location getRecent(){
+		return this.history.get(current);
+	}
+	
 	public void update( Date date, Location location ) {
 		Iterator<Map.Entry<Date, Location>> iterator = this.history.entrySet().iterator();
 		boolean result = false;
@@ -45,10 +73,6 @@ public class History {
 			if( result )
 				notifyListeners( new HistoryEvent( this, entry.getKey(), entry.getValue()));
 		}
-	}
-
-	public Map<Date,Location> get() {
-		return this.history;
 	}
 
 	public boolean isContagious( long days ) {
@@ -74,6 +98,26 @@ public class History {
 		return false;
 	}
 
+	/**
+	 * Get the history with the maximum contagiousness
+	 * @param contagion
+	 * @return
+	 */
+	public Entry<Date, Location> getMaxContagiousness( Contagion contagion ) {
+		Iterator<Map.Entry<Date, Location>> iterator = this.history.entrySet().iterator();
+		double probability = 0;
+		Entry<Date, Location> result = null;
+		while( iterator.hasNext()) {
+			Map.Entry<Date, Location> entry = iterator.next();
+			Contagion cont = entry.getValue().getContagion( contagion.getIdentifier() );
+			double test = ( cont == null )?0: cont.getContagiousness(); 
+			if( test > probability) {
+				result = entry;
+			}
+		}
+		return result;
+	}
+
 	public void clean( Date date ) {
 		Iterator<Map.Entry<Date, Location>> iterator = this.history.entrySet().iterator();
 		while( iterator.hasNext()) {
@@ -83,4 +127,16 @@ public class History {
 		}
 	}
 
+	/**
+	 * Calculate the maximum contagion of the given test object for the reference
+	 * @param contagion
+	 * @param reference
+	 * @param test
+	 * @return
+	 */
+	public static double getContagion( Contagion contagion, Point location, Date date, Map.Entry<Date, Location> test) {
+		long days = DateUtils.getDifferenceDays( date, test.getKey());
+		double distance = location.getDistance( test.getValue());
+		return contagion.getContagiousness( days, distance );
+	}
 }

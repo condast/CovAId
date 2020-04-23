@@ -2,15 +2,22 @@ package org.covaid.core.config.env;
 
 import java.util.Calendar;
 import java.util.Date;
-
+import org.condast.commons.data.util.Vector;
 import org.condast.commons.date.DateUtils;
+import org.condast.commons.number.NumberUtils;
 import org.condast.commons.strings.StringStyler;
 import org.condast.commons.strings.StringUtils;
 
 public class Contagion implements Comparable<Contagion>{
 
+	public static final int DAY = 24*3600*1000;//msec
+
 	public static final int DEFAULT_CONTAGION = 14;//two weeks
 	public static final int DEFAULT_DISTANCE = 10;//10 meters
+	public static final int DEFAULT_HALFTIME = 2;//two days
+	public static final double DEFAULT_DISPERSION = 2;//2 metres/second
+
+	public static final double THRESHOLD = 0.5;//0.5%
 
 	public enum SupportedContagion{
 		OTHER,
@@ -24,7 +31,7 @@ public class Contagion implements Comparable<Contagion>{
 
 		@Override
 		public String toString() {
-			return StringStyler.prettyString( super.toString());
+			return super.toString();
 		}
 		
 		public static boolean isSupported( String str ) {
@@ -35,6 +42,14 @@ public class Contagion implements Comparable<Contagion>{
 					return true;
 			}
 			return false;
+		}
+		
+		public static String[] getItems() {
+			String[] results = new String[ values().length ];
+			for( int i=0; i<values().length; i++ ) {
+				results[i] = values()[i].toString();
+			}
+			return results;
 		}
 	}
 
@@ -53,24 +68,33 @@ public class Contagion implements Comparable<Contagion>{
 	private int maxDays;
 	private int maxDistance;
 	
-	private float contagiousness;
+	private int halfTime; //days
+	private double dispersion;//m/s
+	
+	private double contagiousness;
 	
 	private Date timestamp;
 	
-	public Contagion( String identifier, float contagiousness) {
+	public Contagion( String identifier, double contagiousness) {
 		this( identifier, contagiousness, DEFAULT_DISTANCE, DEFAULT_CONTAGION );
 	}
 
-	public Contagion( SupportedContagion identifier, float contagiousness) {
+	public Contagion( SupportedContagion identifier, double contagiousness) {
 		this( identifier.toString(), contagiousness, DEFAULT_DISTANCE, DEFAULT_CONTAGION );
 	}
 
-	public Contagion(String identifier, float contagiousness, int distance, int maxDays) {
+	public Contagion(String identifier, double contagiousness, int distance, int maxDays ) {
+		this( identifier, contagiousness, distance, maxDays, DEFAULT_HALFTIME, DEFAULT_DISPERSION );
+	}
+	
+	public Contagion(String identifier, double contagiousness, int distance, int maxDays, int halftime, double dispersion ) {
 		super();
 		this.identifier = identifier;
 		this.contagiousness = contagiousness;
 		this.maxDistance = distance;
 		this.maxDays = maxDays;
+		this.halfTime= halftime;
+		this.dispersion = dispersion;
 		this.timestamp = Calendar.getInstance().getTime();
 	}
 
@@ -78,7 +102,7 @@ public class Contagion implements Comparable<Contagion>{
 		return identifier;
 	}
 
-	public float getContagiousness() {
+	public double getContagiousness() {
 		return contagiousness;
 	}
 	
@@ -90,14 +114,25 @@ public class Contagion implements Comparable<Contagion>{
 		return maxDistance;
 	}
 
+	public int getHalfTime() {
+		return halfTime;
+	}
+
+	public double getDispersion() {
+		return dispersion;
+	}
+
 	public Date getTimestamp() {
 		return timestamp;
 	}
 
-	public float getContagiousnessInTime( long days ) {
+	public double getContagiousnessInTime( long days ) {
+		if( days == 0 )
+			return this.contagiousness;
 		int half = (int)this.maxDays/2;
 		long day = (days <= half)? days: (days >= maxDays)?0: (maxDays - days);
-		float calculated = this.contagiousness/day; 
+		double calculated = NumberUtils.clipRange(0, 100, this.contagiousness/day);
+		
 		if( !SupportedContagion.isSupported(identifier)) {
 			return calculated;
 		}
@@ -124,7 +159,35 @@ public class Contagion implements Comparable<Contagion>{
 		}
 		return calculated;
 	}
-	
+
+	/**
+	 * Get the (maximum) contagiousness of this entry
+	 * @param days
+	 * @param distance
+	 * @return
+	 */
+	public double getContagiousness( long days, double distance ) {
+		double time = getContagiousnessInTime(days);
+		double dist = getContagiousnessDistance(distance);
+		return Math.max(time, dist);
+	}
+
+	/**
+	 * Get the contagion as it spreads in the seconds after contact
+	 * <contagion, radius>
+	 * 
+	 * @param contagion
+	 * @param date
+	 * @param distance
+	 * @return
+	 */
+	public Vector<Double,Double> getContagion( Date date) {
+		long diff = Math.abs( this.timestamp.getTime()- date.getTime());
+		double newContagion = NumberUtils.clipRange(0, 100, this.contagiousness * this.halfTime * DAY/diff);
+		double radius = this.maxDistance + this.dispersion* diff*1000;
+		return new Vector<Double, Double>(newContagion, radius );	
+	}
+
 	/**
 	 * Updates the current contagion, based on the time and distance of the given contagion,
 	 * Only update if the contagion is the same and gets worse. In that case the return value is true,
@@ -144,7 +207,7 @@ public class Contagion implements Comparable<Contagion>{
 		double newContagion = Math.max(newContagionOnDistance, newContagionOnTime);
 		if( newContagion <= this.contagiousness)
 			return false;
-		this.contagiousness = (float) newContagion;
+		this.contagiousness = (double) newContagion;
 		return true;	
 	}
 	

@@ -11,8 +11,8 @@ public class ContagionManager implements IContagionManager {
 	public static final int DEFAULT_COVID_UNSAFE_TIME = 14;
 	public static final int DEFAULT_COVID_SAFE_TIME = 30;
 	
-	public float calculateContagiousness( Contagion.SupportedContagion identifier, float detectedContagion, float distance ) {
-		float contagion = 0f;
+	public double calculateContagiousness( Contagion.SupportedContagion identifier, double detectedContagion, double distance ) {
+		double contagion = 0f;
 		switch( identifier ) {
 		case COVID_19:
 			contagion = detectedContagion * ((distance < DEFAULT_COVID_UNSAFE_DISTANCE)?100: 
@@ -24,16 +24,16 @@ public class ContagionManager implements IContagionManager {
 		return contagion; 
 	}
 
-	public float calculateContagiousness( Contagion data, float detectedContagion, float distance ) {
-		float contagion = 0f;
+	public double calculateContagiousness( Contagion data, double detectedContagion, double distance ) {
+		double contagion = 0f;
 		if( Contagion.SupportedContagion.isSupported(data.getIdentifier()))
 			contagion = calculateContagiousness(Contagion.SupportedContagion.valueOf(data.getIdentifier()), detectedContagion, distance);
 		return contagion; 
 	}
 
 	
-	public float calculateContagiousness( Contagion.SupportedContagion identifier, Date previous, Date current ) {
-		float contagion = 0f;
+	public double calculateContagiousness( Contagion.SupportedContagion identifier, Date previous, Date current ) {
+		double contagion = 0f;
 		long diff = DateUtils.getDifferenceDays(current, previous);
 		switch( identifier ) {
 		case COVID_19:
@@ -46,8 +46,8 @@ public class ContagionManager implements IContagionManager {
 	}
 
 	@Override
-	public float calculateContagiousness(Contagion data, Date previous, Date current) {
-		float contagion = 0f;
+	public double calculateContagiousness(Contagion data, Date previous, Date current) {
+		double contagion = 0f;
 		if( Contagion.SupportedContagion.isSupported(data.getIdentifier()))
 			contagion = calculateContagiousness(Contagion.SupportedContagion.valueOf(data.getIdentifier()), previous, current);
 		return contagion; 

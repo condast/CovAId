@@ -6,6 +6,8 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.covaid.core.config.env.Contagion.SupportedContagion;
+
 public class Location extends Point implements Comparable<Point>{
 	
 	private Map<String, Contagion> contagions;

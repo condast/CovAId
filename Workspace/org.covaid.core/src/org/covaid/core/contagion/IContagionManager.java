@@ -6,8 +6,8 @@ import org.covaid.core.config.env.Contagion;
 
 public interface IContagionManager {
 
-	public float calculateContagiousness( Contagion data, float detectedContagion, float distance );
+	public double calculateContagiousness( Contagion data, double detectedContagion, double distance );
 
-	public float calculateContagiousness(Contagion data, Date previous, Date current);
+	public double calculateContagiousness(Contagion data, Date previous, Date current);
 
 }
