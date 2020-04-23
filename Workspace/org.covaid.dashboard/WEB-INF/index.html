@@ -5,7 +5,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
-    <title>CovAID Main Screen</title>
+    <title>CovAID Home Page</title>
 
     <!-- Bootstrap -->
     <link href="/covaid/web/bootstrap/css/bootstrap.min.css" rel="stylesheet">
@@ -55,28 +55,101 @@
   		</div>  
 	</nav>
 
-<div class="container-fluid" style="margin-top:30px">
-  <div class="row">
-     <div class="col-3">
-    	 <p>I feel:</p>
-     </div>
-     <div class="col-1">
-    	<p>Ill</p>
-     </div>
-    <div class="col-4">
-		<input type="range" class="custom-range" id="customRange1" min="0" max="100">
-	</div>
-     <div class="col-3">
-    	<label for="customRange1">Tip Top</label>
-     </div>
-  </div>
-</div> 
-<div class="container-fluid full-height">
-	<div id="map-container-google-1" class="map-container">
-  		<iframe src="https://maps.google.com/maps?q=manhatan&t=&z=13&ie=UTF8&iwloc=&output=embed" frameborder="0"
-        	style="border:0" allowfullscreen>
-    	</iframe>
-	</div>
-  </div>  
-</body>
+    <main role="main">
+
+      <!-- Main jumbotron for a primary marketing message or call to action -->
+		<div class="jumbotron">
+			<div class="container">
+				<h1 class="display-3">CovAID Introduction!</h1>
+				<p>
+					CovAID is intended to become an app that can assist in a personal
+					lock down of COVID-19, or any other contagious disease for that
+					matter.<br> Highlights of the app are:<br>
+				<ul>
+					<li>Privacy: The app does not need any personal information in order for it to work</li> 
+					<li>Simple:  The app can work with a minimum of information, that is just stored locally on your mobile phone</li> 
+					<li>Generic: In principle the approach can be applied to a wide variety of platforms</li> 
+				</ul>
+				<br>
+				Obviously this also comes at a price. The best way of describing this, is to point out what CovAID is not:
+				<ul>
+					<li>CovAID is <i>not</i> A diagnostics tool. It cannot assess whtehr you have COVID-19 or not:</li> 
+					<li>CovAID cannot prevent you from catching COVID-19. It merely makes a risk assessment of your chances of catching it</li> 
+					<li>CovAID is <i>not</i> an alert for COVID-19 victims. We do not believe in witch hunts!</li> 
+				</ul>
+				<br>
+					The app is based on the theory of <a href="https://www.researchgate.net/publication/200086443_Symbiotic_Networks">Symbiotic	Networks</a>. 
+					According to this theory, agents (e.g. people) can fight a threat in collaboration if two conditions are met:
+				<ul>
+					<li>The threat allows itself to be quantified, and turned into a <i>stress signal</i>.</li> 
+					<li>The agents <i>change their behaviour</i> owing to the stress signals, in such a way that the stress becomes less</li> 
+				</ul>
+				<br> It can be proven if these two conditions are met, that the entire network will try to converge to a situation where the stress signals are as low as possible.<br>
+				   If we translate this to COVID-19, this means that every person gets a personalised risk assessment about the chances of getting COVID-19, and a means to determine an appropriate action to prevent this, 
+				   that all the people who join this effort will make it increasingly difficult for COVID-19 to spread. 
+					</p>
+					<p>
+						<a class="btn btn-primary btn-lg" href="#" role="button">Learn
+							more &raquo;</a>
+					</p>
+			</div>
+		</div>
+
+		<div class="container">
+			<!-- Example row of columns -->
+			<div class="row">
+				<div class="col-md-4">
+					<h2>Heading</h2>
+					<p>Donec id elit non mi porta gravida at eget metus. Fusce
+						dapibus, tellus ac cursus commodo, tortor mauris condimentum nibh,
+						ut fermentum massa justo sit amet risus. Etiam porta sem malesuada
+						magna mollis euismod. Donec sed odio dui.</p>
+					<p>
+						<a class="btn btn-secondary" href="#" role="button">View
+							details &raquo;</a>
+					</p>
+				</div>
+				<div class="col-md-4">
+					<h2>Heading</h2>
+					<p>Donec id elit non mi porta gravida at eget metus. Fusce
+						dapibus, tellus ac cursus commodo, tortor mauris condimentum nibh,
+						ut fermentum massa justo sit amet risus. Etiam porta sem malesuada
+						magna mollis euismod. Donec sed odio dui.</p>
+					<p>
+						<a class="btn btn-secondary" href="#" role="button">View
+							details &raquo;</a>
+					</p>
+				</div>
+				<div class="col-md-4">
+					<h2>Heading</h2>
+					<p>Donec sed odio dui. Cras justo odio, dapibus ac facilisis
+						in, egestas eget quam. Vestibulum id ligula porta felis euismod
+						semper. Fusce dapibus, tellus ac cursus commodo, tortor mauris
+						condimentum nibh, ut fermentum massa justo sit amet risus.</p>
+					<p>
+						<a class="btn btn-secondary" href="#" role="button">View
+							details &raquo;</a>
+					</p>
+				</div>
+			</div>
+
+			<hr>
+
+		</div>
+		<!-- /container -->
+
+    </main>
+
+    <footer class="container">
+      <p>&copy; Company 2017-2018</p>
+    </footer>
+
+    <!-- Bootstrap core JavaScript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+    <script>window.jQuery || document.write('<script src="../../assets/js/vendor/jquery-slim.min.js"><\/script>')</script>
+    <script src="../../assets/js/vendor/popper.min.js"></script>
+    <script src="../../dist/js/bootstrap.min.js"></script>
+  </body>
 </html>
