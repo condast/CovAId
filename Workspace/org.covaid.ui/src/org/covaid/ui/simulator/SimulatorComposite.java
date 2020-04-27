@@ -2,65 +2,61 @@ package org.covaid.ui.simulator;
 
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.layout.GridLayout;
-import org.eclipse.swt.widgets.Canvas;
 
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.Iterator;
+import java.util.HashMap;
 import java.util.Map;
 
-import org.condast.commons.data.util.Vector;
+import org.condast.commons.data.plane.Field;
+import org.condast.commons.data.plane.IField;
 import org.condast.commons.strings.StringStyler;
 import org.condast.commons.ui.session.PushSession;
-import org.covaid.core.config.env.Contagion;
-import org.covaid.core.config.env.Contagion.SupportedContagion;
-import org.covaid.core.config.env.History;
-import org.covaid.core.config.env.ISimulationListener;
-import org.covaid.core.config.env.Location;
-import org.covaid.core.config.env.Person;
-import org.covaid.core.config.env.Simulation;
-import org.covaid.core.config.env.SimulationEvent;
+import org.covaid.core.environment.CovaidEnvironment;
+import org.covaid.core.environment.IEnvironment;
+import org.covaid.core.environment.RawEnvironment;
+import org.covaid.core.model.Contagion;
+import org.covaid.core.model.IEnvironmentListener;
+import org.covaid.core.model.EnvironmentEvent;
+import org.covaid.core.model.Contagion.SupportedContagion;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.events.PaintListener;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Device;
-import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.widgets.Label;
+import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Slider;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Combo;
+import org.eclipse.swt.widgets.Group;
 
 public class SimulatorComposite extends Composite {
 	private static final long serialVersionUID = 1L;
-			
+
+	private static final int DEFAULT_POPULATION = 200;
 	private static final int THOUSAND= 1000;
-	private static final int MILLION= THOUSAND*THOUSAND;
-	
+
 	private enum States{
 		STOP(false),
 		START(true);
-		
+
 		private boolean started;
-		
+
 		private States( boolean started ) {
 			this.started = started;
 		}
-		
+
 		public boolean isStarted() {
 			return this.started;
 		}
-		
+
 		public static States toggle( States state ) {
 			boolean toggle = !state.started;
 			return getState( toggle );
 		}
-		
+
 		public static States getState( boolean value ) {
 			return value?States.START: States.STOP;
 		}
@@ -70,40 +66,39 @@ public class SimulatorComposite extends Composite {
 			return StringStyler.prettyString( super.toString() );
 		}
 	}
-	
-	private Canvas canvas;
+
+	private EnvironmentComposite rawCanvas;
+	private EnvironmentComposite covaidCanvas;
+	private GraphCanvas graphCanvas;
+
 	private Label horizontalMetres;
 	private Label verticalMetres;
 	private Label lblPopulationValue;
-	private Label lblMinRiskValue;
-	private Slider sliderMinRisk;
+	private Label lblSafetyValue;
+	private Slider sliderSafety;
 	private Label lblMaxRiskValue;
-	private Slider sliderMaxRisk;
+	private Slider sliderRisk;
 	private Button btnStartButton;
-	
-	private PushSession<SimulationEvent> session;
-	
-	private Simulation simulation;
+
+	private PushSession<EnvironmentEvent> session;
+
+	private Map<String,IEnvironment> environments;
 
 	private Label lblDay;
 	private Label lblDayValue;
-	private Label lblEpidemic;
 	private Combo comboContagion;
 
-	private int counter;
-	private ISimulationListener listener = (e)->{
+	private IEnvironmentListener covaidListener = (e)->{
 		if( getDisplay().isDisposed())
 			return;
-		counter++;
-		counter%=100;
-		if( counter != 1 )
+		
+		if( !IEnvironment.Events.NEW_DAY.equals( e.getEvent()))
 			return;
 		getDisplay().asyncExec(()->{
 			try {
-				if( this.simulation != null )
-					lblDayValue.setText(String.valueOf( this.simulation.getDayString(false)));
-				canvas.setData(e);
-				canvas.redraw();
+				IEnvironment environment = this.environments.get(CovaidEnvironment.NAME);
+				if( environment != null )
+					lblDayValue.setText(String.valueOf( environment.getDayString(false)));
 				requestLayout();
 			}
 			catch( Exception ex ) {
@@ -112,14 +107,23 @@ public class SimulatorComposite extends Composite {
 		});
 	};
 
-	private PaintListener paintListener = (event)->{
-		try{
-			updateCanvas( event.gc );
-		}
-		catch( Exception ex ){
-			ex.printStackTrace();
-		}
-	};
+	private Label lblMinRisk;
+	private Label lblMaxSafety;
+	private Group epidemicGroup;
+	private Group settingsGroup;
+	private Label lblLength;
+	private Label lblWidth;
+	private Group grpControl;
+	private Label lblContagiousness;
+	private Label lblContagiousnessValue;
+	private Label lblDistance;
+	private Label lblDistanceValue;
+	private Label lblIncubation;
+	private Label lblIncubationValue;
+	private Label lblDispersion;
+	private Label lblDispersionValue;
+	private Label lblHalfTime;
+	private Label lblHalfTimeValue;
 
 	/**
 	 * Create the composite.
@@ -129,93 +133,222 @@ public class SimulatorComposite extends Composite {
 	public SimulatorComposite(Composite parent, int style) {
 		super(parent, style);
 		this.createComposite(parent, style);
-		this.counter = 0;
-		comboContagion.setItems(Contagion.SupportedContagion.getItems());
-		comboContagion.select( SupportedContagion.COVID_19.ordinal());
-		session = new PushSession<SimulationEvent>();
+		this.environments = new HashMap<>();
+		session = new PushSession<EnvironmentEvent>();
 		session.start();
 	}
-		
+
 	protected void createComposite( Composite parent, int style ) {
-		setLayout(new GridLayout(4, false));
-		
-		canvas = new Canvas(this, SWT.NONE);
-		canvas.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 4, 1));
-		canvas.addPaintListener(paintListener);
-		canvas.addListener(SWT.RESIZE, (elistener)->{ resize( canvas.getBounds()); });
-		
-		lblDay = new Label(this, SWT.NONE);
-		lblDay.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
-		lblDay.setText("Day:");
-		
-		lblDayValue = new Label(this, SWT.NONE);
-		lblDayValue.setText("0");
-		
-		Button btnZoomIn = new Button(this, SWT.NONE);
-		btnZoomIn.addSelectionListener(new SelectionAdapter() {
-			private static final long serialVersionUID = 1L;
+		setLayout(new GridLayout(3, false));
 
-			@Override
-			public void widgetSelected(SelectionEvent e) {
-				simulation.zoomIn();
-				resize(canvas.getClientArea());
-				horizontalMetres.setText(String.valueOf( simulation.getLength()));
-				verticalMetres.setText(String.valueOf( simulation.getWidth()));
-			}
-		});
-		btnZoomIn.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
-		btnZoomIn.setText("Zoom in");
-		
-		Button btnZoomOut = new Button(this, SWT.NONE);
-		btnZoomOut.setLayoutData(new GridData(SWT.FILL, SWT.FILL, false, false, 1, 1));
-		btnZoomOut.setText("Zoom Out");
-		btnZoomOut.addSelectionListener(new SelectionAdapter() {
-			private static final long serialVersionUID = 1L;
+		Composite composite = new Composite(this, SWT.BORDER);
+		composite.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 4, 1));
+		composite.setLayout(new GridLayout(3, false));
 
-			@Override
-			public void widgetSelected(SelectionEvent e) {
-				simulation.zoomOut();
-				resize(canvas.getBounds());
-				horizontalMetres.setText(String.valueOf( simulation.getLength()));
-				verticalMetres.setText(String.valueOf( simulation.getWidth()));
-			}
-		});
-		
-		lblEpidemic = new Label(this, SWT.NONE);
-		lblEpidemic.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
-		lblEpidemic.setText("Epidemic:");
+		Group rawGroup = new Group(composite, SWT.BORDER);
+		rawGroup.setLayout(new FillLayout());
+		rawGroup.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1));
+		rawGroup.setText("Raw");
+		rawCanvas = new EnvironmentComposite(rawGroup, SWT.BORDER);
 
-		comboContagion = new Combo(this, SWT.NONE);
-		comboContagion.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
-		comboContagion.addSelectionListener( new SelectionAdapter() {
+		Group covaidGroup = new Group(composite, SWT.BORDER);
+		covaidGroup.setLayout(new GridLayout(4, false));
+		covaidGroup.setText("CovAID");
+		covaidGroup.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1));
+		covaidCanvas = new EnvironmentComposite(covaidGroup, SWT.BORDER);
+		covaidCanvas.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 4, 1));
+
+		Label lblSafety = new Label(covaidGroup, SWT.NONE);
+		lblSafety.setText("Safety");
+
+		lblSafetyValue = new Label(covaidGroup, SWT.NONE);
+		GridData gd_lblSafetyValue = new GridData(SWT.FILL, SWT.BOTTOM, false, false, 1, 1);
+		lblSafetyValue.setLayoutData(gd_lblSafetyValue);
+		lblSafetyValue.setText("0%");
+
+		sliderSafety = new Slider(covaidGroup, SWT.NONE);
+		sliderSafety.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false, 1, 1));
+		sliderSafety.setMaximum(101);
+		sliderSafety.addSelectionListener( new SelectionAdapter() {
 			private static final long serialVersionUID = 1L;
 
 			@Override
 			public void widgetSelected(SelectionEvent e) {
 				Slider slider = (Slider) e.widget;
-				lblPopulationValue.setText( String.valueOf( slider.getSelection() ));
+				sliderRisk.setMaximum( 101 - slider.getSelection());	
+				if( sliderRisk.getSelection() < slider.getSelection())
+					sliderRisk.setSelection(slider.getSelection());
+				lblMaxRiskValue.setText( 101 - slider.getSelection() + "%" );
 				super.widgetSelected(e);
 			}	
 		});
 
-		horizontalMetres = new Label(this, SWT.NONE);
-		horizontalMetres.setLayoutData(new GridData(SWT.RIGHT, SWT.FILL, false, false, 1, 1));
+		lblMaxSafety = new Label(covaidGroup, SWT.NONE);
+		lblMaxSafety.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, false, false, 1, 1));
+		lblMaxSafety.setText("100%");
+
+		Label lblRisk = new Label(covaidGroup, SWT.NONE);
+		lblRisk.setText("Risk");
+
+		lblMinRisk = new Label(covaidGroup, SWT.NONE);
+		lblMinRisk.setLayoutData(new GridData(SWT.FILL, SWT.FILL, false, false, 1, 1));
+		lblMinRisk.setText("0");
+
+		sliderRisk = new Slider(covaidGroup, SWT.NONE);
+		sliderRisk.setLayoutData(new GridData(SWT.FILL, SWT.FILL, false, false, 1, 1));
+		sliderRisk.setMaximum(101);
+		sliderRisk.addSelectionListener( new SelectionAdapter() {
+			private static final long serialVersionUID = 1L;
+
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				Slider slider = (Slider) e.widget;
+				sliderSafety.setMaximum(slider.getSelection());	
+				if( sliderSafety.getSelection() > slider.getSelection())
+					sliderSafety.setSelection(slider.getSelection());
+				lblMaxSafety.setText( slider.getSelection() + "%");
+				super.widgetSelected(e);
+			}	
+		});
+
+		lblMaxRiskValue = new Label(covaidGroup, SWT.NONE);
+		lblMaxRiskValue.setText("100%");
+
+		Group graphGroup = new Group(composite, SWT.BORDER);
+		graphGroup.setLayout(new GridLayout(1, false));
+		GridData gd_graphGroup = new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1);
+		gd_graphGroup.widthHint = 308;
+		graphGroup.setLayoutData(gd_graphGroup);
+		graphGroup.setText("Infection");
+		graphCanvas = new GraphCanvas(graphGroup, SWT.NONE);
+		graphCanvas.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1));
+
+		epidemicGroup = new Group(this, SWT.NONE);
+		epidemicGroup.setText("Epidemic");
+		epidemicGroup.setLayout(new GridLayout(3, false));
+		epidemicGroup.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false, 1, 1));
+
+		comboContagion = new Combo(epidemicGroup, SWT.NONE);
+		comboContagion.setLayoutData(new GridData(SWT.FILL, SWT.FILL, false, false, 1, 1));
+		comboContagion.addSelectionListener( new SelectionAdapter() {
+			private static final long serialVersionUID = 1L;
+
+			@Override
+			public void widgetDefaultSelected(SelectionEvent e) {
+				Combo combo = (Combo) e.widget;
+				Contagion contagion = Contagion.SupportedContagion.getContagion( combo.getText());
+				lblContagiousnessValue.setText( String.format("%.2f", contagion.getContagiousness()) + "%");
+				lblDistanceValue.setText( contagion.getDistance() + " m" );
+				lblIncubationValue.setText( contagion.getIncubation() + " days" );
+				lblDispersionValue.setText( String.format("%.2f", contagion.getDispersion()) + " m"); 
+				lblHalfTimeValue.setText( contagion.getHalfTime() + " days"); 
+				super.widgetSelected(e);
+			}	
+
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				Combo combo = (Combo) e.widget;
+				Contagion contagion = Contagion.SupportedContagion.getContagion( combo.getText());
+				lblContagiousnessValue.setText( String.format("%.2f", contagion.getContagiousness()) + "%");
+				lblDistanceValue.setText( contagion.getDistance() + " m" );
+				lblIncubationValue.setText( contagion.getIncubation() + " days" );
+				lblDispersionValue.setText( String.format("%.2f", contagion.getDispersion()) + " m"); 
+				lblHalfTimeValue.setText( contagion.getHalfTime() + " days"); 
+				super.widgetSelected(e);
+			}	
+		});
+		comboContagion.setItems(Contagion.SupportedContagion.getItems());
+		comboContagion.select( SupportedContagion.COVID_19.ordinal());
+		
+		lblContagiousness = new Label(epidemicGroup, SWT.NONE);
+		lblContagiousness.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
+		lblContagiousness.setText("Contagiousness:");
+		
+		lblContagiousnessValue = new Label(epidemicGroup, SWT.NONE);
+		lblContagiousnessValue.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
+		lblContagiousnessValue.setText("New Label");
+		new Label(epidemicGroup, SWT.NONE);
+		
+		lblDistance = new Label(epidemicGroup, SWT.NONE);
+		lblDistance.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
+		lblDistance.setText("Distance:");
+		
+		lblDistanceValue = new Label(epidemicGroup, SWT.NONE);
+		lblDistanceValue.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
+		lblDistanceValue.setText("New Label");
+		new Label(epidemicGroup, SWT.NONE);
+		
+		lblIncubation = new Label(epidemicGroup, SWT.NONE);
+		lblIncubation.setText("Incubation period:");
+		
+		lblIncubationValue = new Label(epidemicGroup, SWT.NONE);
+		lblIncubationValue.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
+		lblIncubationValue.setText("New Label");
+		new Label(epidemicGroup, SWT.NONE);
+		
+		lblDispersion = new Label(epidemicGroup, SWT.NONE);
+		lblDispersion.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
+		lblDispersion.setText("Dispersion:");
+		
+		lblDispersionValue = new Label(epidemicGroup, SWT.NONE);
+		lblDispersionValue.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
+		lblDispersionValue.setText("New Label");
+		new Label(epidemicGroup, SWT.NONE);
+		
+		lblHalfTime = new Label(epidemicGroup, SWT.NONE);
+		lblHalfTime.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
+		lblHalfTime.setText("Half Time:");
+		
+		lblHalfTimeValue = new Label(epidemicGroup, SWT.NONE);
+		lblHalfTimeValue.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
+		lblHalfTimeValue.setText("New Label");
+
+		settingsGroup = new Group(this, SWT.NONE);
+		settingsGroup.setText("Environment");
+		settingsGroup.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false, 1, 1));
+		settingsGroup.setLayout(new GridLayout(5, false));
+
+		lblLength = new Label(settingsGroup, SWT.NONE);
+		lblLength.setText("Length:");
+
+		horizontalMetres = new Label(settingsGroup, SWT.NONE);
 		horizontalMetres.setText("0 km");
 
-		verticalMetres = new Label(this, SWT.NONE);
-		verticalMetres.setLayoutData(new GridData(SWT.FILL, SWT.FILL, false, false, 1, 1));
+		lblWidth = new Label(settingsGroup, SWT.NONE);
+		lblWidth.setText("width");
+
+		verticalMetres = new Label(settingsGroup, SWT.NONE);
 		verticalMetres.setText("0 km");
 
-		Label lblPopulation = new Label(this, SWT.NONE);
-		lblPopulation.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
+		Button btnZoomIn = new Button(settingsGroup, SWT.NONE);
+		btnZoomIn.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
+		btnZoomIn.addSelectionListener(new SelectionAdapter() {
+			private static final long serialVersionUID = 1L;
+
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				for( IEnvironment environment: environments.values() ) {
+					environment.zoomIn();
+				}
+				IEnvironment environment = environments.get(CovaidEnvironment.NAME);
+				resize( covaidCanvas.getBounds());
+				resize(rawCanvas.getBounds());
+				IField field = environment.getField();
+				horizontalMetres.setText( getAreaText( field.getLength() ));
+				verticalMetres.setText( getAreaText( field.getWidth() ));
+			}
+		});
+		btnZoomIn.setText("Zoom in");
+
+		Label lblPopulation = new Label(settingsGroup, SWT.NONE);
 		lblPopulation.setText("Population");
 
-		Slider sliderPopulation = new Slider(this, SWT.NONE);
+		Slider sliderPopulation = new Slider(settingsGroup, SWT.NONE);
+		sliderPopulation.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false, false, 2, 1));
 		sliderPopulation.setMinimum(1);
-		sliderPopulation.setMaximum(20 * MILLION);
-		sliderPopulation.setSelection(1);
-		sliderPopulation.setIncrement(THOUSAND);
-		sliderPopulation.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
+		sliderPopulation.setMaximum(100 * THOUSAND);
+		sliderPopulation.setSelection(DEFAULT_POPULATION);
+		sliderPopulation.setIncrement(1);
 		sliderPopulation.addSelectionListener( new SelectionAdapter() {
 			private static final long serialVersionUID = 1L;
 
@@ -226,74 +359,56 @@ public class SimulatorComposite extends Composite {
 				super.widgetSelected(e);
 			}	
 		});
-		
-		lblPopulationValue = new Label(this, SWT.NONE);
-		lblPopulationValue.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, false, false, 1, 1));
-		lblPopulationValue.setText("0");
-		new Label(this, SWT.NONE);
-		
-		Label lblMinRisk = new Label(this, SWT.NONE);
-		lblMinRisk.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
-		lblMinRisk.setText("Min. Risk");
-		
-		sliderMinRisk = new Slider(this, SWT.NONE);
-		sliderMinRisk.setMaximum(101);
-		sliderMinRisk.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
-		sliderMinRisk.addSelectionListener( new SelectionAdapter() {
+
+		lblPopulationValue = new Label(settingsGroup, SWT.NONE);
+		lblPopulationValue.setText(String.valueOf( sliderPopulation.getSelection()));
+
+		Button btnZoomOut = new Button(settingsGroup, SWT.NONE);
+		btnZoomOut.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
+		btnZoomOut.setText("Zoom Out");
+		btnZoomOut.addSelectionListener(new SelectionAdapter() {
 			private static final long serialVersionUID = 1L;
 
 			@Override
 			public void widgetSelected(SelectionEvent e) {
-				Slider slider = (Slider) e.widget;
-				sliderMaxRisk.setMinimum(slider.getSelection());	
-				if( sliderMaxRisk.getSelection() < slider.getSelection())
-					sliderMaxRisk.setSelection(slider.getSelection());
-				lblMinRiskValue.setText( String.valueOf( slider.getSelection()));
-				super.widgetSelected(e);
-			}	
+				for( IEnvironment environment: environments.values() ) {
+					environment.zoomOut();
+					resize( covaidCanvas.getBounds());
+					resize(rawCanvas.getBounds());
+				}
+				IEnvironment environment = environments.get(CovaidEnvironment.NAME);
+				IField field = environment.getField();
+				horizontalMetres.setText( getAreaText( field.getLength() ));
+				verticalMetres.setText( getAreaText( field.getWidth() ));
+			}
 		});
-		
-		lblMinRiskValue = new Label(this, SWT.NONE);
-		lblMinRiskValue.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, false, false, 1, 1));
-		lblMinRiskValue.setText("0");
-		new Label(this, SWT.NONE);
-		
-		Label lblMaxRisk = new Label(this, SWT.NONE);
-		lblMaxRisk.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
-		lblMaxRisk.setText("Max. Risk");
-		
-		sliderMaxRisk = new Slider(this, SWT.NONE);
-		sliderMaxRisk.setMaximum(101);
-		sliderMaxRisk.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
-		sliderMaxRisk.addSelectionListener( new SelectionAdapter() {
-			private static final long serialVersionUID = 1L;
 
-			@Override
-			public void widgetSelected(SelectionEvent e) {
-				Slider slider = (Slider) e.widget;
-				sliderMinRisk.setMaximum(slider.getSelection());	
-				if( sliderMinRisk.getSelection() > slider.getSelection())
-					sliderMinRisk.setSelection(slider.getSelection());
-				lblMaxRiskValue.setText( String.valueOf( slider.getSelection()));
-				super.widgetSelected(e);
-			}	
-		});
-		
-		lblMaxRiskValue = new Label(this, SWT.NONE);
-		lblMaxRiskValue.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, false, false, 1, 1));
-		lblMaxRiskValue.setText("100");
-		new Label(this, SWT.NONE);
-		
-		Button btnCovaid = new Button(this, SWT.CHECK);
-		btnCovaid.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
-		btnCovaid.setText("CovAID");
-		new Label(this, SWT.NONE);
-		
-		Button btnClear = new Button(this, SWT.NONE);
-		btnClear.setLayoutData(new GridData(SWT.RIGHT, SWT.FILL, false, false, 1, 1));
+		grpControl = new Group(this, SWT.NONE);
+		grpControl.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false, 1, 1));
+		grpControl.setText("Control");
+		grpControl.setLayout(new GridLayout(2, false));
+
+		lblDay = new Label(grpControl, SWT.NONE);
+		lblDay.setText("Day:");
+
+		lblDayValue = new Label(grpControl, SWT.NONE);
+		lblDayValue.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
+		lblDayValue.setText("0");
+
+		Button btnClear = new Button(grpControl, SWT.NONE);
 		btnClear.setText("Clear");
+		btnClear.addSelectionListener( new SelectionAdapter() {
+			private static final long serialVersionUID = 1L;
+
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				graphCanvas.clear();
+				super.widgetSelected(e);
+			}
+		});
 		
-		btnStartButton = new Button(this, SWT.NONE);
+		btnStartButton = new Button(grpControl, SWT.NONE);
+		btnStartButton.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
 		btnStartButton.setData(States.STOP);
 		btnStartButton.setText(States.getState(!States.STOP.isStarted()).toString());
 		btnStartButton.addSelectionListener(new SelectionAdapter() {
@@ -310,12 +425,16 @@ public class SimulatorComposite extends Composite {
 					switch( state ) {
 					case START:
 						comboContagion.setEnabled(false);
-						simulation.init( 1);//sliderPopulation.getSelection());
-						simulation.start();
+						for( IEnvironment environment: environments.values() ) {
+							environment.init( sliderPopulation.getSelection());
+							environment.start();
+						}
 						break;
 					case STOP:
 						comboContagion.setEnabled(true);
-						simulation.stop();
+						for( IEnvironment environment: environments.values() ) {
+							environment.stop();
+						}
 						break;
 					default:
 						break;
@@ -326,22 +445,41 @@ public class SimulatorComposite extends Composite {
 				}
 			}
 		});
-		btnStartButton.setLayoutData(new GridData(SWT.LEFT, SWT.FILL, false, false, 1, 1));
 	}
 
-	public void setInput(Simulation simulation) {
-		if( this.simulation != null ) {
-			this.simulation.removeListener(listener);
+
+	public void setInput( Map<String, IEnvironment> environments) {
+		for(IEnvironment environment: this.environments.values()) {
+			environment.removeListener(covaidListener);
+			this.graphCanvas.removeInput(environment);
 		}
-		this.simulation = simulation;
-		if( this.simulation != null ) {
-			this.simulation.addListener(listener);
-			Point point = canvas.computeSize(this.simulation.getLength(), this.simulation.getWidth());
+		this.environments = environments;
+		for(IEnvironment environment: this.environments.values()) {
+			environment.addListener( covaidListener);
+			this.graphCanvas.addInput(environment);
+		}
+		IEnvironment rawEnvironment = environments.get(RawEnvironment.NAME);
+		this.rawCanvas.setInput( rawEnvironment);
+		IEnvironment covaidEnvironment = environments.get(CovaidEnvironment.NAME);
+		this.covaidCanvas.setInput( covaidEnvironment);
+		if( covaidEnvironment != null ) {
+			covaidEnvironment.addListener(covaidListener);
+			IField field = covaidEnvironment.getField();
+			Point point = rawCanvas.computeSize((int)field.getLength(), (int)field.getWidth());
 			resize( new Rectangle( 0, 0, point.x, point.y));
-			lblDayValue.setText(String.valueOf( this.simulation.getDays()));
-			comboContagion.select( SupportedContagion.valueOf(simulation.getContagion().getIdentifier()).ordinal());
+			horizontalMetres.setText( getAreaText( field.getLength() ));
+			verticalMetres.setText( getAreaText( field.getWidth() ));
+			lblPopulationValue.setText(String.valueOf(covaidEnvironment.getPopulation()));
+			lblDayValue.setText(String.valueOf( covaidEnvironment.getDays()));
+			comboContagion.select( SupportedContagion.valueOf( covaidEnvironment.getContagion()).ordinal());
+			Contagion contagion = Contagion.SupportedContagion.getContagion( comboContagion.getText());
+			lblContagiousnessValue.setText( String.format("%.2f", contagion.getContagiousness()) + "%");
+			lblDistanceValue.setText( contagion.getDistance() + " m" );
+			lblIncubationValue.setText( contagion.getIncubation() + " days" );
+			lblDispersionValue.setText( String.format("%.2f", contagion.getDispersion()) + " m"); 
+			lblHalfTimeValue.setText( contagion.getHalfTime() + " days"); 
 		}
-		canvas.requestLayout();
+		rawCanvas.requestLayout();
 	}
 
 	public Color getColour( double contagion ) {
@@ -350,67 +488,36 @@ public class SimulatorComposite extends Composite {
 		Color colour = new Color (device, (int)(scale), 0, (int)(255-scale));
 		return colour;
 	}
-	
-	protected void updateCanvas( GC gc ) {
-		try {
-			SimulationEvent event = (SimulationEvent) canvas.getData();
-			if( event == null )
-				return;
-			Person person = event.getPerson();
-			Contagion contagion = this.simulation.getContagion();
-			Date date = simulation.getDate();
-			
-			double safety = person.getSafetyBubble(contagion, Calendar.getInstance().getTime());
-
-			Map<Date, Location> history = person.getHistory().get();
-			Iterator<Map.Entry<Date, Location>> iterator = new ArrayList<Map.Entry<Date, Location>>( history.entrySet()).iterator();
-			while( iterator.hasNext() ) {
-				Map.Entry<Date, Location> entry = iterator.next();
-				double cont = History.getContagion(contagion, person.getLocation(), date, entry);
-				Vector<Double,Double> vector = contagion.getContagion(date);
-				gc.setBackground( getColour( vector.getKey().doubleValue() ));
-				gc.fillOval(entry.getValue().getXpos(), entry.getValue().getYpos(), 
-						scaleX( vector.getValue().doubleValue()), scaleY( vector.getValue().doubleValue()));
-			}
-
-			gc.setBackground(getDisplay().getSystemColor( SWT.COLOR_DARK_BLUE));
-			gc.fillOval(person.getLocation().getXpos(), person.getLocation().getYpos(), scaleX( safety), scaleY( safety));
-			gc.dispose();
-		}
-		catch( Exception ex ) {
-			ex.printStackTrace();
-		}
-	}
-
-	protected int scaleX( double size ) {
-		if( simulation == null )
-			return 0;
-		return (int)canvas.getBounds().width/simulation.getLength();
-	}
-
-	protected int scaleY( double size ) {
-		if( simulation == null )
-			return 0;
-		return (int)canvas.getBounds().height/simulation.getWidth();
-	}
 
 	protected void resize( Rectangle rectangle ) {
-		if(( simulation == null ) || ( rectangle.height == 0 ) || (rectangle.width == 0 ))
+		IEnvironment covaidEnvironment = environments.get(RawEnvironment.NAME);
+		if(( covaidEnvironment == null ) || ( rectangle.height == 0 ) || (rectangle.width == 0 ))
 			return;
+		IField field = covaidEnvironment.getField();
 		float scale = (float)rectangle.height/rectangle.width;
-		simulation.setWidth( (int) (simulation.getLength()*scale));		
-		horizontalMetres.setText(String.valueOf( simulation.getLength()));
-		verticalMetres.setText(String.valueOf( simulation.getWidth()));
+		field = new Field( field.getCoordinates(), field.getLength(),  (int) (field.getLength()*scale ));
+		for(IEnvironment environment: this.environments.values() ) {
+			environment.setField(field);
+		}
+		horizontalMetres.setText(String.valueOf( field.getLength()));
+		verticalMetres.setText(String.valueOf( field.getWidth()));
 	}
-	
+
+	private String getAreaText( long length ) {
+		if( length > 1000 )
+			return String.format("%.2f", (double)(length/1000)) + " km";
+		else
+			return length + " m";
+	}
 	@Override
 	protected void checkSubclass() {
 		// Disable the check that prevents subclassing of SWT components
 	}
-	
+
 	public void dispose() {
-		canvas.removePaintListener(paintListener);
 		this.session.stop();
-		this.simulation.dispose();
+		for(IEnvironment environment: this.environments.values() ) {
+			environment.dispose();
+		}
 	}
 }

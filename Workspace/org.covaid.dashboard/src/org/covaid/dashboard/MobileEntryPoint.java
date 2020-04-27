@@ -1,8 +1,7 @@
 package org.covaid.dashboard;
 
 import java.util.Locale;
-
-import org.covaid.ui.wizard.BrowserWizard;
+import org.covaid.ui.mobile.MobileComposite;
 import org.eclipse.rap.rwt.RWT;
 import org.eclipse.rap.rwt.application.AbstractEntryPoint;
 import org.eclipse.swt.SWT;
@@ -27,7 +26,7 @@ public class MobileEntryPoint extends AbstractEntryPoint {
 			parent.setLayout( new GridLayout(2, false ));
 
 	        parent.setLayout(new FillLayout());       
-	        Composite root = new BrowserWizard( parent, SWT.None );
+	        Composite root = new MobileComposite( parent, SWT.None );
 			root.setData( RWT.CUSTOM_VARIANT, S_COVAID );
 			
 		}

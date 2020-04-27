@@ -9,9 +9,9 @@ import java.util.Map;
 import org.condast.commons.data.filter.WildcardFilter;
 import org.condast.commons.strings.StringStyler;
 import org.condast.commons.strings.StringUtils;
-import org.covaid.core.config.env.Contagion;
 import org.covaid.core.data.StoredData;
 import org.covaid.core.data.StoredNode;
+import org.covaid.core.model.Contagion;
 
 import com.tinkerpop.blueprints.Direction;
 import com.tinkerpop.blueprints.Edge;

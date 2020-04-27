@@ -3,15 +3,16 @@ package org.covaid.core.mobile;
 import java.util.Calendar;
 import java.util.Date;
 
-import org.covaid.core.config.env.Contagion;
-import org.covaid.core.config.env.History;
-import org.covaid.core.config.env.Location;
-import org.covaid.core.config.env.Point;
 import org.covaid.core.contagion.ContagionManager;
 import org.covaid.core.contagion.IContagionManager;
 import org.covaid.core.data.SharedData;
 import org.covaid.core.data.StoredData;
 import org.covaid.core.data.StoredNode;
+import org.covaid.core.model.Contagion;
+import org.covaid.core.model.History;
+import org.covaid.core.model.IHistoryListener;
+import org.covaid.core.model.Location;
+import org.covaid.core.model.Point;
 
 public class Mobile {
 	
@@ -33,12 +34,19 @@ public class Mobile {
 		}	
 	}
 	
+	//An anonymous id used for communication with the serrver
+	private String identifier;
+	
 	private double risk, safety;
 	private StoredNode node;
 	private Point location;
 
 	private History history;
-	
+
+	private IHistoryListener listener = (e)->{
+		//history.alert(e.getDate(), e.getLocation(), e.getContagion());
+	};
+
 	/**
 	 * The Safety is the extent in which the bubble should protect you, e.g. for vulnerable people
 	 * The Risk is the amount of risk you are willing to take
@@ -49,11 +57,17 @@ public class Mobile {
 	 */
 	public Mobile( String identifier, double safety, double risk, Point location) {
 		super();
+		this.identifier = identifier;
 		this.safety = safety;
 		this.risk = risk;
 		this.node = new StoredNode(identifier );
 		this.location = location;
 		this.history = new History();
+		this.history.addListener(listener);
+	}
+
+	public String getIdentifier() {
+		return identifier;
 	}
 
 	public double getRisk() {
@@ -80,12 +94,20 @@ public class Mobile {
 		this.location = location;
 	}
 
-	public void putHistory( Date date, Location location ) {
-		this.history.put( date, location);
+	public void alert( Date date, Location location, Contagion contagion ) {
+		this.history.alert( date, location, contagion);
 	}
 
 	public History getHistory() {
 		return this.history;
+	}
+
+	/**
+	 * Returns true if the risk assessment shows that the owner is healthy
+	 * @return
+	 */
+	public boolean isHealthy() {
+		return this.history.isEmpty();
 	}
 
 	public StoredNode getNode() {

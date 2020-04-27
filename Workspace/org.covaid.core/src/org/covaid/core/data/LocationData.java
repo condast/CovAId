@@ -6,7 +6,7 @@ import java.util.TreeSet;
 
 import org.condast.commons.data.latlng.ILocation;
 import org.condast.commons.data.latlng.LatLng;
-import org.covaid.core.config.env.Contagion;
+import org.covaid.core.model.Contagion;
 
 public class LocationData implements ILocation, org.condast.commons.IUpdateable {
 

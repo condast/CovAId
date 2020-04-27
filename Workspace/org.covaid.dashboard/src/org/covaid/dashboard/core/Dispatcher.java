@@ -1,7 +1,12 @@
 package org.covaid.dashboard.core;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import org.condast.commons.strings.StringStyler;
-import org.covaid.core.config.env.Simulation;
+import org.covaid.core.environment.CovaidEnvironment;
+import org.covaid.core.environment.IEnvironment;
+import org.covaid.core.environment.RawEnvironment;
 import org.covaid.ui.simulator.SimulatorComposite;
 import org.eclipse.swt.widgets.Composite;
 
@@ -14,9 +19,7 @@ public class Dispatcher {
 	public enum Composites{
 		COVAID_COMPOSITE,
 		SIMULATOR_COMPOSITE,
-		DEPTH_COMPOSITE,
 		MAINTENANCE_COMPOSITE,
-		OPENROV_COMPOSITE,
 		HTML_WIZARD,
 		SYSTEM_COMPOSITE,
 		LOG_COMPOSITE;
@@ -36,12 +39,14 @@ public class Dispatcher {
 		}
 	}
 
-	private Simulation simulator;
+	private Map<String, IEnvironment> environments;
 	
 	private static Dispatcher dispatcher = new Dispatcher();
 
 	private Dispatcher() {
-		simulator = new Simulation();
+		this.environments = new HashMap<>();
+		environments.put(CovaidEnvironment.NAME, new CovaidEnvironment());
+		environments.put( RawEnvironment.NAME, new RawEnvironment() );
 	}
 	
 	public static Dispatcher getInstance() {
@@ -63,14 +68,7 @@ public class Dispatcher {
 			break;
 		case SIMULATOR_COMPOSITE:
 			SimulatorComposite sc = ( SimulatorComposite) composite;
-			sc.setInput(this.simulator);
-			break;
-		case DEPTH_COMPOSITE:
-			//DepthComposite dc = (DepthComposite) composite;
-			//dc.setInput( MapLocation.Location.WORLD, false);
-			break;
-		case OPENROV_COMPOSITE:
-			//OpenROVComposite rovc = (OpenROVComposite) composite;
+			sc.setInput(environments);
 			break;
 		default:
 			break;

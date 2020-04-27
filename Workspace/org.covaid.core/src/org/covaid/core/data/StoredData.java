@@ -6,7 +6,7 @@ import java.util.Iterator;
 import java.util.Map;
 
 import org.condast.commons.strings.StringStyler;
-import org.covaid.core.config.env.Contagion;
+import org.covaid.core.model.Contagion;
 
 public class StoredData {
 

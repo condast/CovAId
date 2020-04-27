@@ -5,6 +5,7 @@ Bundle-SymbolicName: org.covaid.ui
 Bundle-Version: 1.0.0.qualifier
 Bundle-Vendor: Condast
 Export-Package: org.covaid.ui.map,
+ org.covaid.ui.mobile,
  org.covaid.ui.simulator,
  org.covaid.ui.wizard
 Bundle-RequiredExecutionEnvironment: JavaSE-1.7
@@ -21,7 +22,8 @@ Import-Package: org.condast.commons,
  org.condast.js.commons.controller,
  org.condast.js.commons.eval,
  org.condast.js.commons.wizard,
- org.covaid.core.config.env,
+ org.covaid.core.environment,
+ org.covaid.core.model,
  org.eclipse.rap.rwt;version="3.4.0",
  org.eclipse.rap.rwt.service;version="3.4.0",
  org.eclipse.swt,

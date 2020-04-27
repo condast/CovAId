@@ -1,4 +1,4 @@
-package org.covaid.core.config.env;
+package org.covaid.core.model;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -38,11 +38,29 @@ public class History {
 			listener.notifyContagionChanged(event);
 	}
 
-	public void put( Date date, Location location ) {
-		update( date, location);
-		this.history.put( date, location);
-		current = date;
+	/**
+	 * Alert of a new contagion. 
+	 * @param date
+	 * @param location
+	 */
+	public void alert( Date date, Point location, Contagion contagion ) {
+		Location loc = new Location( location );
+		loc.addContagion(contagion);
+		putHistory( date, loc);
+		notifyListeners( new HistoryEvent( this, date, location, contagion ));
 	}
+
+	/**
+	 * Alert of a new contagion. 
+	 * @param date
+	 * @param location
+	 */
+	public void putHistory( Date date, Location location ) {
+		current = date;
+		update( date, location );
+		this.history.put( date, location);
+	}
+
 
 	public Map<Date,Location> get() {
 		return this.history;
@@ -64,17 +82,29 @@ public class History {
 		return this.history.get(current);
 	}
 	
-	public void update( Date date, Location location ) {
+	/**
+	 * A snap shot is a representation of the current state of this location, with respect to
+	 * the risk of contagion. In case of a Hub, the location is quite clear;
+	 *  for a Person it is the current location 
+	 * 
+	 * @return
+	 */
+	public Location createSnapShot( Date date, Point point ) {
+		Location current = new Location( point );
 		Iterator<Map.Entry<Date, Location>> iterator = this.history.entrySet().iterator();
-		boolean result = false;
-		while( iterator.hasNext() ) {
+		while( iterator.hasNext()) {
 			Map.Entry<Date, Location> entry = iterator.next();
-			result = entry.getValue().updateContagion(date, location);
-			if( result )
-				notifyListeners( new HistoryEvent( this, entry.getKey(), entry.getValue()));
+			long days = DateUtils.getDifferenceDays( date, entry.getKey());			
+			for( Contagion test: entry.getValue().getContagion()) {
+				double risk = test.getContagiousnessInTime(days);
+				double reference = current.getContagion(test);
+				if( reference < risk )
+					current.addContagion( new Contagion(test.getIdentifier(), risk ));
+			}
 		}
+		return current;
 	}
-
+	
 	public boolean isContagious( long days ) {
 		Iterator<Map.Entry<Date, Location>> iterator = this.history.entrySet().iterator();
 		while( iterator.hasNext()) {
@@ -103,15 +133,33 @@ public class History {
 	 * @param contagion
 	 * @return
 	 */
+	public Contagion getMonitor() {
+		Iterator<Map.Entry<Date, Location>> iterator = this.history.entrySet().iterator();
+		double probability = 0;
+		Contagion monitor = null;
+		while( iterator.hasNext()) {
+			Map.Entry<Date, Location> entry = iterator.next();
+			for( Contagion cont: entry.getValue().getContagion() ) {
+				if( cont.getContagiousness() > probability)
+					monitor = cont;
+			}
+		}
+		return monitor;
+	}
+
+	/**
+	 * Get the history with the maximum contagiousness
+	 * @param contagion
+	 * @return
+	 */
 	public Entry<Date, Location> getMaxContagiousness( Contagion contagion ) {
 		Iterator<Map.Entry<Date, Location>> iterator = this.history.entrySet().iterator();
 		double probability = 0;
 		Entry<Date, Location> result = null;
 		while( iterator.hasNext()) {
 			Map.Entry<Date, Location> entry = iterator.next();
-			Contagion cont = entry.getValue().getContagion( contagion.getIdentifier() );
-			double test = ( cont == null )?0: cont.getContagiousness(); 
-			if( test > probability) {
+			double cont = entry.getValue().getContagion( contagion );
+			if( cont > probability) {
 				result = entry;
 			}
 		}
@@ -126,6 +174,26 @@ public class History {
 				this.history.remove(entry.getKey());
 		}
 	}
+
+	/**
+	 * Update the history. Returns true if the contagion has gotten worse
+	 * @param date
+	 * @param location
+	 */
+	public boolean update( Date date, Point location ) {
+		Iterator<Map.Entry<Date, Location>> iterator = this.history.entrySet().iterator();
+		boolean result = false;
+		while( iterator.hasNext() ) {
+			Map.Entry<Date, Location> entry = iterator.next();
+			double distance = entry.getValue().getDistance(location);
+			for( Contagion contagion: entry.getValue().getContagion() )
+				result |= entry.getValue().updateContagion(contagion);
+			if( result )
+				notifyListeners( new HistoryEvent( this, entry.getKey(), entry.getValue() ));
+		}
+		return result;
+	}
+
 
 	/**
 	 * Calculate the maximum contagion of the given test object for the reference

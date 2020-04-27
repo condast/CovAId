@@ -2,7 +2,7 @@ package org.covaid.core.contagion;
 
 import java.util.Date;
 
-import org.covaid.core.config.env.Contagion;
+import org.covaid.core.model.Contagion;
 
 public interface IContagionManager {
 

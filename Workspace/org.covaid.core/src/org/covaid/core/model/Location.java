@@ -1,4 +1,4 @@
-package org.covaid.core.config.env;
+package org.covaid.core.model;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -6,11 +6,9 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.covaid.core.config.env.Contagion.SupportedContagion;
-
 public class Location extends Point implements Comparable<Point>{
 	
-	private Map<String, Contagion> contagions;
+	private Map<Contagion, Double> contagions;
 
 	public Location( Point point) {
 		this( point.getXpos(), point.getYpos());
@@ -20,29 +18,37 @@ public class Location extends Point implements Comparable<Point>{
 		this( createIdentifier(xpos, ypos), xpos, ypos);
 	}
 	
+	/**
+	 * A location needs a unique identifier in order for it to distinguish itself from
+	 * other locations. A postcode could work, or a string representation of LatLng coordinates 
+	 * @param identifier
+	 * @param xpos
+	 * @param ypos
+	 */
 	public Location( String identifier, int xpos, int ypos) {
 		super( identifier, xpos, ypos);
 		contagions = new HashMap<>();
 	}
 
 	public void addContagion( Contagion contagion ) {
-		contagions.put(contagion.getIdentifier(), contagion);
+		contagions.put(contagion, contagion.getContagiousness());
 	}
 
 	public boolean removeContagion( Contagion contagion ) {
-		return ( contagions.remove(contagion.getIdentifier()) != null );
+		return ( contagions.remove(contagion) != null );
 	}
 
-	public Contagion getContagion( String identifier ) {
-		return this.contagions.get(identifier);
+	public double getContagion( Contagion contagion ) {
+		Double result = this.contagions.get(contagion);
+		return ( result == null )?0: result;
 	}
 
 	public Contagion[] getContagion() {
-		return this.contagions.values().toArray( new Contagion[ this.contagions.size()]);
+		return this.contagions.keySet().toArray( new Contagion[ this.contagions.size()]);
 	}
 
 	public boolean isContagious( Date date ) {
-		for( Contagion contagion: this.contagions.values() ) {
+		for( Contagion contagion: this.contagions.keySet() ) {
 			if( contagion.isContagious( date ))
 				return true;
 		}
@@ -50,7 +56,7 @@ public class Location extends Point implements Comparable<Point>{
 	}
 	
 	public boolean isContagious( long days ) {
-		for( Contagion contagion: this.contagions.values() ) {
+		for( Contagion contagion: this.contagions.keySet() ) {
 			if( contagion.isContagious(days))
 				return true;
 		}
@@ -61,48 +67,8 @@ public class Location extends Point implements Comparable<Point>{
 		boolean result = false;
 		if( contagion == null )
 			return result;
-		Contagion current = this.contagions.get(contagion.getIdentifier());
-		if( current == null) {
-			this.addContagion(contagion);
-			result = true;
-		}else {
-			if( contagion.isLarger(current)) {
-				this.addContagion(contagion);
-				result = true;
-			}		
-		}
-		return result;
-	}
-
-	/**
-	 * updates the contagion for the given date and location
-	 * @param date
-	 * @param location
-	 * @return
-	 */
-	public boolean updateContagion( Contagion contagion, Date date, double distance ) {
-		if( contagion == null )
-			return false;
-		boolean result = false;
-		for( Contagion cg: this.contagions.values() ) {
-			result |= contagion.update(cg , date, distance);
-		}
-		return result;
-	}
-
-	/**
-	 * updates the contagion for the given date and location
-	 * @param date
-	 * @param location
-	 * @return
-	 */
-	public boolean updateContagion( Date date, Location location ) {
-		boolean result = false;
-		double distance = getDistance(location);
-		for( Contagion cg: this.contagions.values() ) {
-			result |= cg.update(location.getContagion(cg.getIdentifier()) , date, distance);
-		}
-		return result;
+		this.contagions.put(contagion, contagion.getContagiousness());
+		return true;
 	}
 
 	/**
@@ -116,14 +82,18 @@ public class Location extends Point implements Comparable<Point>{
 		if( location.compareTo(this) != 0 )
 			return new Contagion[0];//invalid comparison
 		
-		for( Contagion contagion: this.contagions.values() ) {
-			Contagion compare = location.getContagion( contagion.getIdentifier());
-			if( compare.isLarger(contagion))
+		for( Contagion contagion: this.contagions.keySet() ) {
+			double compare = location.getContagion( contagion);
+			if( compare  > contagion.getContagiousness())
 				results.add(contagion);
 		}
 		return results.toArray( new Contagion[ results.size()]);
 	}
 
+	public Point toPoint() {
+		return new Point( this.getXpos(), this.getYpos());
+	}
+	
 	@Override
 	public int hashCode() {
 		return toString().hashCode();

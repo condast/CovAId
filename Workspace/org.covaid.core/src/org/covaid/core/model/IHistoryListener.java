@@ -1,4 +1,4 @@
-package org.covaid.core.config.env;
+package org.covaid.core.model;
 
 @FunctionalInterface
 public interface IHistoryListener {

@@ -1,4 +1,4 @@
-package org.covaid.core.config.env;
+package org.covaid.core.model;
 
 import java.util.Calendar;
 import java.util.Date;
@@ -51,6 +51,13 @@ public class Contagion implements Comparable<Contagion>{
 			}
 			return results;
 		}
+
+		public static Contagion getContagion( String str ) {
+			if( !isSupported(str))
+				return SupportedContagion.OTHER.getContagion();
+			return SupportedContagion.valueOf(str).getContagion();
+		}
+
 	}
 
 	public enum Attributes{
@@ -73,6 +80,8 @@ public class Contagion implements Comparable<Contagion>{
 	
 	private double contagiousness;
 	
+	private boolean monitored;
+	
 	private Date timestamp;
 	
 	public Contagion( String identifier, double contagiousness) {
@@ -84,13 +93,14 @@ public class Contagion implements Comparable<Contagion>{
 	}
 
 	public Contagion(String identifier, double contagiousness, int distance, int maxDays ) {
-		this( identifier, contagiousness, distance, maxDays, DEFAULT_HALFTIME, DEFAULT_DISPERSION );
+		this( identifier, contagiousness, distance, maxDays, DEFAULT_HALFTIME, DEFAULT_DISPERSION, false );
 	}
 	
-	public Contagion(String identifier, double contagiousness, int distance, int maxDays, int halftime, double dispersion ) {
+	public Contagion(String identifier, double contagiousness, int distance, int maxDays, int halftime, double dispersion, boolean monitored ) {
 		super();
 		this.identifier = identifier;
 		this.contagiousness = contagiousness;
+		this.monitored = monitored;
 		this.maxDistance = distance;
 		this.maxDays = maxDays;
 		this.halfTime= halftime;
@@ -106,7 +116,15 @@ public class Contagion implements Comparable<Contagion>{
 		return contagiousness;
 	}
 	
-	public int getMaxDays() {
+	public boolean isMonitored() {
+		return monitored;
+	}
+
+	public void setMonitored(boolean monitored) {
+		this.monitored = monitored;
+	}
+
+	public int getIncubation() {
 		return maxDays;
 	}
 
@@ -190,7 +208,7 @@ public class Contagion implements Comparable<Contagion>{
 
 	/**
 	 * Updates the current contagion, based on the time and distance of the given contagion,
-	 * Only update if the contagion is the same and gets worse. In that case the return value is true,
+	 * Only update if the contagion gets worse. In that case the return value is true,
 	 * otherwise false
 	 * 
 	 * @param contagion
@@ -230,6 +248,22 @@ public class Contagion implements Comparable<Contagion>{
 
 	public void update( Date date ) {
 		this.timestamp = date;		
+	}
+
+	
+	@Override
+	public int hashCode() {
+		return this.identifier.hashCode();
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if( super.equals(obj))
+			return true;
+		if(!( obj instanceof Contagion ))
+			return false;
+		Contagion test = (Contagion) obj;
+		return this.identifier.equals(test.getIdentifier());
 	}
 
 	@Override

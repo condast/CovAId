@@ -1,4 +1,4 @@
-package org.covaid.core.config.env;
+package org.covaid.core.model;
 
 public class Point implements Comparable<Point>{
 
