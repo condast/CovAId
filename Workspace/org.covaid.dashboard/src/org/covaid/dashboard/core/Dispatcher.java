@@ -4,8 +4,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.condast.commons.strings.StringStyler;
+import org.covaid.core.def.IEnvironment;
 import org.covaid.core.environment.CovaidEnvironment;
-import org.covaid.core.environment.IEnvironment;
 import org.covaid.core.environment.RawEnvironment;
 import org.covaid.ui.simulator.SimulatorComposite;
 import org.eclipse.swt.widgets.Composite;

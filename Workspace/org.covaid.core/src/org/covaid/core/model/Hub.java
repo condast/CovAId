@@ -5,13 +5,19 @@ import java.util.Collection;
 import java.util.Date;
 
 import org.condast.commons.Utils;
+import org.covaid.core.def.IContagion;
+import org.covaid.core.def.IHistory;
+import org.covaid.core.def.IHistoryListener;
+import org.covaid.core.def.IHub;
+import org.covaid.core.def.ILocation;
+import org.covaid.core.def.IPerson;
 
-public class Hub extends Point {
+public class Hub extends Point implements IHub {
 
-	private Collection<History> histories;
+	private Collection<IHistory> histories;
 	
 	private IHistoryListener listener = (e)->{
-		for( History history: this.histories) {
+		for( IHistory history: this.histories) {
 			if( history.equals(e.getSource()))
 				continue;
 			history.alert(e.getDate(), e.getLocation(), e.getContagion());
@@ -27,7 +33,7 @@ public class Hub extends Point {
 	 * convenience method to 
 	 * @param person
 	 */
-	public Hub( Person person ) {
+	public Hub( IPerson person ) {
 		this( person.getLocation().getIdentifier(), person.getLocation().getXpos(), person.getLocation().getYpos());
 	}
 	
@@ -36,15 +42,16 @@ public class Hub extends Point {
 	 * @param person
 	 * @return
 	 */
-	public boolean encounter( Date date, Person person ) {
+	@Override
+	public boolean encounter( Date date, IPerson person ) {
 		if( person.isHealthy() || !person.getLocation().getIdentifier().equals( super.getIdentifier()))
 			return false;
-		Location reference = createSnapshot( person.getCurrent());
-		Location test = person.createSnapshot();
+		ILocation reference = createSnapshot( person.getCurrent());
+		ILocation test = person.createSnapshot();
 		
 		//Check if the current situation is worst that the person's
-		Location worst = createWorseCase(test, reference);
-		Contagion[] worse = reference.isWorse(test);
+		ILocation worst = createWorseCase(test, reference);
+		IContagion[] worse = reference.isWorse(test);
 		if( Utils.assertNull(worse)) {
 			person.alert( date, worst);
 			return false;
@@ -62,11 +69,12 @@ public class Hub extends Point {
 	 * 
 	 * @return
 	 */
-	public Location createSnapshot( Date date ) {
+	@Override
+	public ILocation createSnapshot( Date date ) {
 		Location current = new Location( this );
-		Location worst = null;
-		for( History history: this.histories ) {
-			Location snapshot = history.createSnapShot(date, this);
+		ILocation worst = null;
+		for( IHistory history: this.histories ) {
+			ILocation snapshot = history.createSnapShot(date, this);
 			worst = createWorseCase(current, snapshot);
 		}
 		return worst;
@@ -79,9 +87,10 @@ public class Hub extends Point {
 	 * @param loc2
 	 * @return
 	 */
-	public Location createWorseCase( Location reference, Location loc2 ) {
+	@Override
+	public Location createWorseCase( ILocation reference, ILocation loc2 ) {
 		Location worst = new Location( reference );
-		for( Contagion contagion: reference.getContagion() ) {
+		for( IContagion contagion: reference.getContagion() ) {
 			double test = loc2.getContagion(contagion);
 			if( contagion.getContagiousness() < test)
 				worst.addContagion(contagion);
@@ -89,9 +98,10 @@ public class Hub extends Point {
 		return worst;
 	}
 	
+	@Override
 	public void updateHub( Date date ) {
-		Collection<History> temp = new ArrayList<History>( this.histories);
-		for( History history: temp ) {
+		Collection<IHistory> temp = new ArrayList<IHistory>( this.histories);
+		for( IHistory history: temp ) {
 			history.update(date, this);
 			if( history.isEmpty()) {
 				history.removeListener(listener);

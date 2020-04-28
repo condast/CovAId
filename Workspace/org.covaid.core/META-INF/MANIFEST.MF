@@ -6,7 +6,8 @@ Bundle-Version: 1.0.0.qualifier
 Bundle-Vendor: Condast
 Automatic-Module-Name: org.covaid.core
 Bundle-RequiredExecutionEnvironment: JavaSE-1.7
-Import-Package: org.condast.commons,
+Import-Package: javax.persistence;version="2.2.0",
+ org.condast.commons,
  org.condast.commons.authentication.user,
  org.condast.commons.data.latlng,
  org.condast.commons.data.plane,
@@ -17,7 +18,8 @@ Import-Package: org.condast.commons,
  org.condast.commons.strings,
  org.eclipse.swt.graphics,
  org.osgi.service.prefs;version="1.1.1"
-Export-Package: org.covaid.core.data,
+Export-Package: org.covaid.core.contagion,
+ org.covaid.core.data,
  org.covaid.core.def,
  org.covaid.core.environment,
  org.covaid.core.model,

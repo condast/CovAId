@@ -2,6 +2,7 @@ package org.covaid.core.contagion;
 
 import java.util.Date;
 import org.condast.commons.date.DateUtils;
+import org.covaid.core.def.IContagion;
 import org.covaid.core.model.Contagion;
 
 public class ContagionManager implements IContagionManager {
@@ -24,10 +25,10 @@ public class ContagionManager implements IContagionManager {
 		return contagion; 
 	}
 
-	public double calculateContagiousness( Contagion data, double detectedContagion, double distance ) {
+	public double calculateContagiousness( IContagion data, double detectedContagion, double distance ) {
 		double contagion = 0f;
-		if( Contagion.SupportedContagion.isSupported(data.getIdentifier()))
-			contagion = calculateContagiousness(Contagion.SupportedContagion.valueOf(data.getIdentifier()), detectedContagion, distance);
+		if( IContagion.SupportedContagion.isSupported(data.getIdentifier()))
+			contagion = calculateContagiousness(IContagion.SupportedContagion.valueOf(data.getIdentifier()), detectedContagion, distance);
 		return contagion; 
 	}
 
@@ -46,10 +47,10 @@ public class ContagionManager implements IContagionManager {
 	}
 
 	@Override
-	public double calculateContagiousness(Contagion data, Date previous, Date current) {
+	public double calculateContagiousness(IContagion data, Date previous, Date current) {
 		double contagion = 0f;
-		if( Contagion.SupportedContagion.isSupported(data.getIdentifier()))
-			contagion = calculateContagiousness(Contagion.SupportedContagion.valueOf(data.getIdentifier()), previous, current);
+		if( IContagion.SupportedContagion.isSupported(data.getIdentifier()))
+			contagion = calculateContagiousness(IContagion.SupportedContagion.valueOf(data.getIdentifier()), previous, current);
 		return contagion; 
 	}
 

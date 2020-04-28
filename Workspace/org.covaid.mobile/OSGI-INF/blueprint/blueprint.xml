@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<blueprint xmlns="http://www.osgi.org/xmlns/blueprint/v1.0.0">
+	<reference interface="javax.persistence.EntityManagerFactory"
+	    filter="(osgi.unit.name=org.covaid.mobile)">
+		<reference-listener bind-method="bindEMF" unbind-method="unbindEMF">
+			<bean class="org.covaid.rest.service.EntityManagerService" />
+		</reference-listener>
+	</reference>
+</blueprint>

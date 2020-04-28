@@ -6,11 +6,15 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
-public class Location extends Point implements Comparable<Point>{
-	
-	private Map<Contagion, Double> contagions;
+import org.covaid.core.def.IContagion;
+import org.covaid.core.def.ILocation;
+import org.covaid.core.def.IPoint;
 
-	public Location( Point point) {
+public class Location extends Point implements ILocation{
+	
+	private Map<IContagion, Double> contagions;
+
+	public Location( IPoint point) {
 		this( point.getXpos(), point.getYpos());
 	}
 
@@ -30,40 +34,47 @@ public class Location extends Point implements Comparable<Point>{
 		contagions = new HashMap<>();
 	}
 
-	public void addContagion( Contagion contagion ) {
-		contagions.put(contagion, contagion.getContagiousness());
+	@Override
+	public void addContagion( IContagion contagion ) {
+		contagions.put((Contagion)contagion, contagion.getContagiousness());
 	}
 
-	public boolean removeContagion( Contagion contagion ) {
+	@Override
+	public boolean removeContagion( IContagion contagion ) {
 		return ( contagions.remove(contagion) != null );
 	}
 
-	public double getContagion( Contagion contagion ) {
+	@Override
+	public double getContagion( IContagion contagion ) {
 		Double result = this.contagions.get(contagion);
 		return ( result == null )?0: result;
 	}
 
+	@Override
 	public Contagion[] getContagion() {
 		return this.contagions.keySet().toArray( new Contagion[ this.contagions.size()]);
 	}
 
+	@Override
 	public boolean isContagious( Date date ) {
-		for( Contagion contagion: this.contagions.keySet() ) {
+		for( IContagion contagion: this.contagions.keySet() ) {
 			if( contagion.isContagious( date ))
 				return true;
 		}
 		return false;
 	}
 	
+	@Override
 	public boolean isContagious( long days ) {
-		for( Contagion contagion: this.contagions.keySet() ) {
+		for( IContagion contagion: this.contagions.keySet() ) {
 			if( contagion.isContagious(days))
 				return true;
 		}
 		return false;
 	}
 	
-	public boolean updateContagion( Contagion contagion ) {
+	@Override
+	public boolean updateContagion( IContagion contagion ) {
 		boolean result = false;
 		if( contagion == null )
 			return result;
@@ -77,12 +88,13 @@ public class Location extends Point implements Comparable<Point>{
 	 * @param location
 	 * @return
 	 */
-	public Contagion[] isWorse( Location location ) {
-		Collection<Contagion> results = new ArrayList<>();
+	@Override
+	public IContagion[] isWorse( ILocation location ) {
+		Collection<IContagion> results = new ArrayList<>();
 		if( location.compareTo(this) != 0 )
-			return new Contagion[0];//invalid comparison
+			return new IContagion[0];//invalid comparison
 		
-		for( Contagion contagion: this.contagions.keySet() ) {
+		for( IContagion contagion: this.contagions.keySet() ) {
 			double compare = location.getContagion( contagion);
 			if( compare  > contagion.getContagiousness())
 				results.add(contagion);
@@ -90,7 +102,8 @@ public class Location extends Point implements Comparable<Point>{
 		return results.toArray( new Contagion[ results.size()]);
 	}
 
-	public Point toPoint() {
+	@Override
+	public IPoint toPoint() {
 		return new Point( this.getXpos(), this.getYpos());
 	}
 	

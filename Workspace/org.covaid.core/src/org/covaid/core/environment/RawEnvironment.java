@@ -5,11 +5,14 @@ import java.util.Date;
 import java.util.Map;
 
 import org.condast.commons.data.latlng.LatLng;
+import org.covaid.core.def.AbstractEnvironment;
+import org.covaid.core.def.IContagion;
+import org.covaid.core.def.IPerson;
+import org.covaid.core.def.IPoint;
 import org.covaid.core.model.Contagion;
 import org.covaid.core.model.Hub;
 import org.covaid.core.model.Person;
 import org.covaid.core.model.Point;
-import org.covaid.core.model.Contagion.SupportedContagion;
 
 public class RawEnvironment extends AbstractEnvironment{
 
@@ -44,8 +47,8 @@ public class RawEnvironment extends AbstractEnvironment{
 	}
 	
 	@Override
-	protected void onCreatePerson(int index, Person person) {
-		Contagion contagion = Contagion.SupportedContagion.valueOf(getContagion()).getContagion();
+	protected void onCreatePerson(int index, IPerson person) {
+		Contagion contagion = IContagion.SupportedContagion.valueOf(getContagion()).getContagion();
 		if( index == 0 )
 			person.setContagion(getDate(), contagion);
 	}
@@ -56,10 +59,10 @@ public class RawEnvironment extends AbstractEnvironment{
 	 */
 	protected void onMovePerson( Date date, Person person) {
 		//analyseHub(date, person);//Create a new hub if the person has a risk of contagion
-		Contagion contagion = SupportedContagion.getContagion(getContagion());
+		Contagion contagion = IContagion.SupportedContagion.getContagion(getContagion());
 		Collection<Person> persons = super.getPersons();
 		if( person.getContagiousness(contagion) > 10 ){
-			for( Person other: persons) {
+			for( IPerson other: persons) {
 				double distance = person.getLocation().getDistance(other.getLocation());
 				if( contagion.getDistance() < distance)
 					continue;
@@ -81,8 +84,8 @@ public class RawEnvironment extends AbstractEnvironment{
 	}
 
 	
-	private Hub analyseHub( Date date, Person person ) {
-		Point location = person.getLocation();
+	private Hub analyseHub( Date date, IPerson person ) {
+		IPoint location = person.getLocation();
 		if( person.isHealthy())
 			return null;
 		Map<String, Hub> hubs = super.getHubs();

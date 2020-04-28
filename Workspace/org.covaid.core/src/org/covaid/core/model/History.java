@@ -5,30 +5,38 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.Map;
-import java.util.Map.Entry;
 
+import org.condast.commons.data.util.Vector;
 import org.condast.commons.date.DateUtils;
+import org.covaid.core.def.HistoryEvent;
+import org.covaid.core.def.IContagion;
+import org.covaid.core.def.IHistory;
+import org.covaid.core.def.IHistoryListener;
+import org.covaid.core.def.ILocation;
+import org.covaid.core.def.IPoint;
 
 import java.util.TreeMap;
 import java.util.concurrent.ConcurrentHashMap;
 
-public class History {
+public class History implements IHistory {
 
-	private Map<Date, Location> history;
+	private Map<Date, ILocation> history;
 
 	private Date current;
 	
 	private Collection<IHistoryListener> listeners;
 	
 	public History() {
-		this.history = new ConcurrentHashMap<Date, Location> ( new TreeMap<>());
+		this.history = new ConcurrentHashMap<Date, ILocation> ( new TreeMap<>());
 		this.listeners = new ArrayList<>();
 	}
 
+	@Override
 	public void addListener( IHistoryListener listener ) {
 		this.listeners.add(listener);
 	}
 
+	@Override
 	public void removeListener( IHistoryListener listener ) {
 		this.listeners.remove(listener);
 	}
@@ -43,7 +51,8 @@ public class History {
 	 * @param date
 	 * @param location
 	 */
-	public void alert( Date date, Point location, Contagion contagion ) {
+	@Override
+	public void alert( Date date, IPoint location, IContagion contagion ) {
 		Location loc = new Location( location );
 		loc.addContagion(contagion);
 		putHistory( date, loc);
@@ -55,21 +64,25 @@ public class History {
 	 * @param date
 	 * @param location
 	 */
-	public void putHistory( Date date, Location location ) {
+	@Override
+	public void putHistory( Date date, ILocation location ) {
 		current = date;
 		update( date, location );
 		this.history.put( date, location);
 	}
 
 
-	public Map<Date,Location> get() {
+	@Override
+	public Map<Date, ILocation> get() {
 		return this.history;
 	}
 
+	@Override
 	public Date getCurrent() {
 		return current;
 	}
 	
+	@Override
 	public boolean isEmpty() {
 		return this.history.isEmpty();
 	}
@@ -78,7 +91,8 @@ public class History {
 	 * Get the most recent history object
 	 * @return
 	 */
-	public Location getRecent(){
+	@Override
+	public ILocation getRecent(){
 		return this.history.get(current);
 	}
 	
@@ -89,13 +103,14 @@ public class History {
 	 * 
 	 * @return
 	 */
-	public Location createSnapShot( Date date, Point point ) {
+	@Override
+	public Location createSnapShot( Date date, IPoint point ) {
 		Location current = new Location( point );
-		Iterator<Map.Entry<Date, Location>> iterator = this.history.entrySet().iterator();
+		Iterator<Map.Entry<Date, ILocation>> iterator = this.history.entrySet().iterator();
 		while( iterator.hasNext()) {
-			Map.Entry<Date, Location> entry = iterator.next();
+			Map.Entry<Date, ILocation> entry = iterator.next();
 			long days = DateUtils.getDifferenceDays( date, entry.getKey());			
-			for( Contagion test: entry.getValue().getContagion()) {
+			for( IContagion test: entry.getValue().getContagion()) {
 				double risk = test.getContagiousnessInTime(days);
 				double reference = current.getContagion(test);
 				if( reference < risk )
@@ -105,10 +120,11 @@ public class History {
 		return current;
 	}
 	
+	@Override
 	public boolean isContagious( long days ) {
-		Iterator<Map.Entry<Date, Location>> iterator = this.history.entrySet().iterator();
+		Iterator<Map.Entry<Date, ILocation>> iterator = this.history.entrySet().iterator();
 		while( iterator.hasNext()) {
-			Map.Entry<Date, Location> entry = iterator.next();
+			Map.Entry<Date, ILocation> entry = iterator.next();
 			if( !entry.getValue().isContagious( days ))
 				this.history.remove(entry.getKey());
 			else
@@ -117,10 +133,11 @@ public class History {
 		return false;
 	}
 
+	@Override
 	public boolean isContagious( Date date ) {
-		Iterator<Map.Entry<Date, Location>> iterator = this.history.entrySet().iterator();
+		Iterator<Map.Entry<Date, ILocation>> iterator = this.history.entrySet().iterator();
 		while( iterator.hasNext()) {
-			Map.Entry<Date, Location> entry = iterator.next();
+			Map.Entry<Date, ILocation> entry = iterator.next();
 			if( entry.getValue().isContagious( date ))
 				return true;
 			this.history.remove(entry.getKey());
@@ -133,13 +150,14 @@ public class History {
 	 * @param contagion
 	 * @return
 	 */
-	public Contagion getMonitor() {
-		Iterator<Map.Entry<Date, Location>> iterator = this.history.entrySet().iterator();
+	@Override
+	public IContagion getMonitor() {
+		Iterator<Map.Entry<Date, ILocation>> iterator = this.history.entrySet().iterator();
 		double probability = 0;
-		Contagion monitor = null;
+		IContagion monitor = null;
 		while( iterator.hasNext()) {
-			Map.Entry<Date, Location> entry = iterator.next();
-			for( Contagion cont: entry.getValue().getContagion() ) {
+			Map.Entry<Date, ILocation> entry = iterator.next();
+			for( IContagion cont: entry.getValue().getContagion() ) {
 				if( cont.getContagiousness() > probability)
 					monitor = cont;
 			}
@@ -152,24 +170,26 @@ public class History {
 	 * @param contagion
 	 * @return
 	 */
-	public Entry<Date, Location> getMaxContagiousness( Contagion contagion ) {
-		Iterator<Map.Entry<Date, Location>> iterator = this.history.entrySet().iterator();
+	@Override
+	public Vector<Date, ILocation> getMaxContagiousness( IContagion contagion ) {
+		Iterator<Map.Entry<Date, ILocation>> iterator = this.history.entrySet().iterator();
 		double probability = 0;
-		Entry<Date, Location> result = null;
+		Vector<Date, ILocation> result = null;
 		while( iterator.hasNext()) {
-			Map.Entry<Date, Location> entry = iterator.next();
+			Map.Entry<Date, ILocation> entry = iterator.next();
 			double cont = entry.getValue().getContagion( contagion );
 			if( cont > probability) {
-				result = entry;
+				result = new Vector<Date, ILocation>( entry.getKey(), entry.getValue() );
 			}
 		}
 		return result;
 	}
 
+	@Override
 	public void clean( Date date ) {
-		Iterator<Map.Entry<Date, Location>> iterator = this.history.entrySet().iterator();
+		Iterator<Map.Entry<Date, ILocation>> iterator = this.history.entrySet().iterator();
 		while( iterator.hasNext()) {
-			Map.Entry<Date, Location> entry = iterator.next();
+			Map.Entry<Date, ILocation> entry = iterator.next();
 			if( !entry.getValue().isContagious( date ))
 				this.history.remove(entry.getKey());
 		}
@@ -180,13 +200,13 @@ public class History {
 	 * @param date
 	 * @param location
 	 */
-	public boolean update( Date date, Point location ) {
-		Iterator<Map.Entry<Date, Location>> iterator = this.history.entrySet().iterator();
+	public boolean update( Date date, IPoint location ) {
+		Iterator<Map.Entry<Date, ILocation>> iterator = this.history.entrySet().iterator();
 		boolean result = false;
 		while( iterator.hasNext() ) {
-			Map.Entry<Date, Location> entry = iterator.next();
+			Map.Entry<Date, ILocation> entry = iterator.next();
 			double distance = entry.getValue().getDistance(location);
-			for( Contagion contagion: entry.getValue().getContagion() )
+			for( IContagion contagion: entry.getValue().getContagion() )
 				result |= entry.getValue().updateContagion(contagion);
 			if( result )
 				notifyListeners( new HistoryEvent( this, entry.getKey(), entry.getValue() ));
@@ -202,7 +222,7 @@ public class History {
 	 * @param test
 	 * @return
 	 */
-	public static double getContagion( Contagion contagion, Point location, Date date, Map.Entry<Date, Location> test) {
+	public static double getContagion( IContagion contagion, IPoint location, Date date, Map.Entry<Date, Location> test) {
 		long days = DateUtils.getDifferenceDays( date, test.getKey());
 		double distance = location.getDistance( test.getValue());
 		return contagion.getContagiousness( days, distance );

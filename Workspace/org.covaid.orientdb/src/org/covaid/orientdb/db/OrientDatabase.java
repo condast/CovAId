@@ -11,6 +11,7 @@ import org.condast.commons.strings.StringStyler;
 import org.condast.commons.strings.StringUtils;
 import org.covaid.core.data.StoredData;
 import org.covaid.core.data.StoredNode;
+import org.covaid.core.def.IContagion;
 import org.covaid.core.model.Contagion;
 
 import com.tinkerpop.blueprints.Direction;
@@ -232,8 +233,8 @@ public class OrientDatabase {
 		while( iterator.hasNext()) {
 			Map.Entry<Contagion, Date> entry = iterator.next();
 			Vertex vc = graph.addVertex( Types.CONTAGION.toString() );
-			vc.setProperty( Contagion.Attributes.IDENTIFIER.name(), entry.getKey().getIdentifier());
-			vc.setProperty( Contagion.Attributes.CONTAGIOUSNESS.name(), String.valueOf( entry.getKey().getContagiousness()));
+			vc.setProperty( IContagion.Attributes.IDENTIFIER.name(), entry.getKey().getIdentifier());
+			vc.setProperty( IContagion.Attributes.CONTAGIOUSNESS.name(), String.valueOf( entry.getKey().getContagiousness()));
 			graph.addEdge(Types.CONTAGION.toString(), vertex, vc, String.valueOf( entry.getValue().getTime()));
 		}
 	}
@@ -246,8 +247,8 @@ public class OrientDatabase {
 		while( iterator.hasNext() ) {
 			Edge edge = iterator.next();
 			Vertex vc = edge.getVertex(Direction.OUT);
-			float contagiousness = vc.getProperty(Contagion.Attributes.CONTAGIOUSNESS.name());
-			Contagion data = new Contagion((String)vc.getProperty(Contagion.Attributes.IDENTIFIER.name()), contagiousness);
+			float contagiousness = vc.getProperty(IContagion.Attributes.CONTAGIOUSNESS.name());
+			Contagion data = new Contagion((String)vc.getProperty(IContagion.Attributes.IDENTIFIER.name()), contagiousness);
 			result.addContagion( data, new Date( Long.parseLong( edge.getLabel())));
 		}
 		result.setId(id);

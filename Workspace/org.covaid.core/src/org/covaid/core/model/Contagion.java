@@ -2,76 +2,16 @@ package org.covaid.core.model;
 
 import java.util.Calendar;
 import java.util.Date;
+
 import org.condast.commons.data.util.Vector;
 import org.condast.commons.date.DateUtils;
 import org.condast.commons.number.NumberUtils;
-import org.condast.commons.strings.StringStyler;
-import org.condast.commons.strings.StringUtils;
+import org.covaid.core.def.IContagion;
 
-public class Contagion implements Comparable<Contagion>{
-
-	public static final int DAY = 24*3600*1000;//msec
-
-	public static final int DEFAULT_CONTAGION = 14;//two weeks
-	public static final int DEFAULT_DISTANCE = 10;//10 meters
-	public static final int DEFAULT_HALFTIME = 2;//two days
-	public static final double DEFAULT_DISPERSION = 2;//2 metres/second
-
-	public static final double THRESHOLD = 0.5;//0.5%
-
-	public enum SupportedContagion{
-		OTHER,
-		COVID_19,
-		SEASONAL,
-		EXPLOSION;
-		
-		public Contagion getContagion() {
-			return new Contagion(this, 100f);
-		}
-
-		@Override
-		public String toString() {
-			return super.toString();
-		}
-		
-		public static boolean isSupported( String str ) {
-			if( StringUtils.isEmpty(str))
-				return false;
-			for( SupportedContagion sc: values() ) {
-				if( sc.name().equals(str))
-					return true;
-			}
-			return false;
-		}
-		
-		public static String[] getItems() {
-			String[] results = new String[ values().length ];
-			for( int i=0; i<values().length; i++ ) {
-				results[i] = values()[i].toString();
-			}
-			return results;
-		}
-
-		public static Contagion getContagion( String str ) {
-			if( !isSupported(str))
-				return SupportedContagion.OTHER.getContagion();
-			return SupportedContagion.valueOf(str).getContagion();
-		}
-
-	}
-
-	public enum Attributes{
-		IDENTIFIER,
-		CONTAGIOUSNESS,
-		TIMESTAMP;
-
-		@Override
-		public String toString() {
-			return StringStyler.prettyString( super.toString());
-		}
-	}
+public class Contagion implements IContagion{
 
 	private String identifier;
+
 	private int maxDays;
 	private int maxDistance;
 	
@@ -108,42 +48,52 @@ public class Contagion implements Comparable<Contagion>{
 		this.timestamp = Calendar.getInstance().getTime();
 	}
 
+	@Override
 	public String getIdentifier() {
 		return identifier;
 	}
 
+	@Override
 	public double getContagiousness() {
 		return contagiousness;
 	}
 	
+	@Override
 	public boolean isMonitored() {
 		return monitored;
 	}
 
+	@Override
 	public void setMonitored(boolean monitored) {
 		this.monitored = monitored;
 	}
 
+	@Override
 	public int getIncubation() {
 		return maxDays;
 	}
 
+	@Override
 	public int getDistance() {
 		return maxDistance;
 	}
 
+	@Override
 	public int getHalfTime() {
 		return halfTime;
 	}
 
+	@Override
 	public double getDispersion() {
 		return dispersion;
 	}
 
+	@Override
 	public Date getTimestamp() {
 		return timestamp;
 	}
 
+	@Override
 	public double getContagiousnessInTime( long days ) {
 		if( days == 0 )
 			return this.contagiousness;
@@ -163,6 +113,7 @@ public class Contagion implements Comparable<Contagion>{
 		return calculated;
 	}
 
+	@Override
 	public double getContagiousnessDistance( double distance ) {
 		int half = (int)this.maxDistance/2;
 		double calculated = (distance <= half)? distance: (distance >= maxDistance)?0: (maxDistance-distance);
@@ -184,6 +135,7 @@ public class Contagion implements Comparable<Contagion>{
 	 * @param distance
 	 * @return
 	 */
+	@Override
 	public double getContagiousness( long days, double distance ) {
 		double time = getContagiousnessInTime(days);
 		double dist = getContagiousnessDistance(distance);
@@ -199,6 +151,7 @@ public class Contagion implements Comparable<Contagion>{
 	 * @param distance
 	 * @return
 	 */
+	@Override
 	public Vector<Double,Double> getContagion( Date date) {
 		long diff = Math.abs( this.timestamp.getTime()- date.getTime());
 		double newContagion = NumberUtils.clipRange(0, 100, this.contagiousness * this.halfTime * DAY/diff);
@@ -216,7 +169,7 @@ public class Contagion implements Comparable<Contagion>{
 	 * @param distance
 	 * @return
 	 */
-	public boolean update( Contagion contagion, Date date, double distance) {
+	public boolean update( IContagion contagion, Date date, double distance) {
 		if( !this.identifier.equals(contagion.getIdentifier()))
 			return false;
 		double newContagionOnDistance = contagion.getContagiousnessDistance( distance);
@@ -234,14 +187,17 @@ public class Contagion implements Comparable<Contagion>{
 	 * @param contagion
 	 * @return
 	 */
-	public boolean isLarger( Contagion contagion ) {
+	@Override
+	public boolean isLarger( IContagion contagion ) {
 		return contagion.getContagiousness() < this.contagiousness;
 	}
 
+	@Override
 	public boolean isContagious( long days ) {
 		return days < this.maxDays;
 	}
 
+	@Override
 	public boolean isContagious( Date date) {
 		return this.isContagious( DateUtils.getDifferenceDays( date, getTimestamp()));
 	}
@@ -262,12 +218,12 @@ public class Contagion implements Comparable<Contagion>{
 			return true;
 		if(!( obj instanceof Contagion ))
 			return false;
-		Contagion test = (Contagion) obj;
+		IContagion test = (IContagion) obj;
 		return this.identifier.equals(test.getIdentifier());
 	}
 
 	@Override
-	public int compareTo(Contagion o) {
+	public int compareTo( IContagion o) {
 		return this.identifier.compareTo(o.getIdentifier());
 	}
 }

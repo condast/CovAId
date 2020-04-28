@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<persistence version="2.0"
+    xmlns="http://java.sun.com/xml/ns/persistence" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://java.sun.com/xml/ns/persistence http://java.sun.com/xml/ns/persistence/persistence_2_0.xsd">
+    <persistence-unit name="org.covaid.mobile">
+        <provider>com.orientechnologies.orient.object.jpa.OJPAPersistenceProvider</provider>
+
+        <!-- JPA entities must be registered here -->
+        <class>org.covaid.mobile.model.FirstPojo</class>
+
+        <properties>
+			<property name="bundle-name" value="org.covaid.mobile" />
+			<property name="unit-name" value="CovAID REST Service" />
+            <property name="javax.persistence.jdbc.url" value="remote:localhost/test.odb" />
+            <property name="javax.persistence.jdbc.user" value="covaid-admin" />
+            <property name="javax.persistence.jdbc.password" value="Symb10t1cNetw0rksRule@2020" />
+            <!-- Register whole package.
+                             See com.orientechnologies.orient.core.entity.OEntityManager.registerEntityClasses(String) for more details -->
+            <property name="com.orientdb.entityClasses" value="com.example.domains" />
+        </properties>
+    </persistence-unit>
+</persistence>

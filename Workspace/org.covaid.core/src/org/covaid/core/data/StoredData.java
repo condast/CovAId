@@ -6,6 +6,7 @@ import java.util.Iterator;
 import java.util.Map;
 
 import org.condast.commons.strings.StringStyler;
+import org.covaid.core.def.IContagion;
 import org.covaid.core.model.Contagion;
 
 public class StoredData {
@@ -52,7 +53,7 @@ public class StoredData {
 		return this.identifier;
 	}
 
-	public Contagion getContagiousness( String identifier ) {
+	public IContagion getContagiousness( String identifier ) {
 		Iterator<Map.Entry<Contagion, Date>> iterator = contagiousness.entrySet().iterator();
 		while( iterator.hasNext()) {
 			Map.Entry<Contagion, Date> entry = iterator.next();

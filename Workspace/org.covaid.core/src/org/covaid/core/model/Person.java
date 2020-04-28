@@ -5,24 +5,21 @@ import java.util.Map;
 
 import org.condast.commons.date.DateUtils;
 import org.condast.commons.number.NumberUtils;
-import org.covaid.core.mobile.Mobile;
+import org.covaid.core.def.IContagion;
+import org.covaid.core.def.IHistory;
+import org.covaid.core.def.ILocation;
+import org.covaid.core.def.IMobile;
+import org.covaid.core.def.IPerson;
+import org.covaid.core.def.IPoint;
 
-public class Person implements Comparable<Person>{
+public class Person implements IPerson{
 
-	public static final int DEFAULT_ILL_THRESHOLD = 75;//%
-	
-	public enum States{
-		HEALTHY,
-		FEEL_ILL,
-		APPOINTMENT,
-		CONFIRMATION;
-	}
 	private States state;
-	private Contagion monitor;
+	private IContagion monitor;
 	
-	private Point location;
+	private IPoint location;
 	
-	private Mobile mobile;
+	private IMobile mobile;
 
 	public Person( String identifier, int xpos, int ypos, double safety, double risk) {
 		location = new Point(xpos, ypos);
@@ -36,22 +33,27 @@ public class Person implements Comparable<Person>{
 		setContagion( date, contagion );
 	}
 
+	@Override
 	public String getIdentifier() {
 		return mobile.getIdentifier();
 	}
 
+	@Override
 	public void setPosition(int xpos, int ypos) {
 		location.setPosition(xpos, ypos);
 	}
 
-	public Point getLocation() {
+	@Override
+	public IPoint getLocation() {
 		return location;
 	}
 
+	@Override
 	public States getState() {
 		return state;
 	}
 
+	@Override
 	public void setState(States state) {
 		this.state = state;
 		switch( this.state ) {
@@ -69,19 +71,23 @@ public class Person implements Comparable<Person>{
 		}
 	}
 
-	public Contagion getMonitor() {
+	@Override
+	public IContagion getMonitor() {
 		return monitor;
 	}
 
+	@Override
 	public Date getCurrent() {
 		return this.getHistory().getCurrent();
 	}
 	
+	@Override
 	public boolean isHealthy() {
 		return this.mobile.isHealthy();
 	}
 
-	public void setContagion( Date date, Contagion contagion) {
+	@Override
+	public void setContagion( Date date, IContagion contagion) {
 		Location loc = new Location( location );
 		loc.addContagion(contagion);
 		this.monitor = contagion;
@@ -91,41 +97,48 @@ public class Person implements Comparable<Person>{
 		this.mobile.alert( date, loc, contagion );
 	}
 	
+	@Override
 	public void setIll( Date date ) {
 		setState(States.FEEL_ILL);		
-		Location loc = createSnapshot();
+		ILocation loc = createSnapshot();
 		loc.addContagion(monitor);
 		this.mobile.getHistory().alert(date, loc, monitor);
 	}
 	
+	@Override
 	public void setIll( Date date, String identifier ) {
 		setState(States.FEEL_ILL);
 		monitor = new Contagion( identifier, 100 );
 	}
 	
-	public History getHistory() {
+	@Override
+	public IHistory getHistory() {
 		return this.mobile.getHistory();
 	}
 
-	public void alert( Date date, Location point ) {
+	@Override
+	public void alert( Date date, ILocation point ) {
 		this.location = point;
-		this.mobile.alert( date, (Location) point, monitor);
+		this.mobile.alert( date, point, monitor);
 	}
 
 	/**
 	 * Create a snapshot of the current risk of contagiousness
 	 * @return
 	 */
-	public Location createSnapshot() {
+	@Override
+	public ILocation createSnapshot() {
 		return getHistory().createSnapShot(getCurrent(), location);
 	}
 
-	public double getContagiousness( Contagion contagion ) {
-		Location location = createSnapshot();
+	@Override
+	public double getContagiousness( IContagion contagion ) {
+		ILocation location = createSnapshot();
 		return location.getContagion(contagion);
 	}
 
-	public double getContagiousness( Contagion contagion, Date date, Map.Entry<Date, Location> entry ) {
+	@Override
+	public double getContagiousness( IContagion contagion, Date date, Map.Entry<Date, ILocation> entry ) {
 		if( entry == null )
 			return 0;
 		double distance = location.getDistance( entry.getValue());
@@ -138,8 +151,9 @@ public class Person implements Comparable<Person>{
 	 * This is the measure in which you want to protect others
 	 * @return
 	 */
-	public double getSafetyBubble( Contagion contagion, Date date ) {
-		Map.Entry<Date, Location> contagiousness = mobile.getHistory().getMaxContagiousness(contagion);
+	@Override
+	public double getSafetyBubble( IContagion contagion, Date date ) {
+		Map.Entry<Date, ILocation> contagiousness = mobile.getHistory().getMaxContagiousness(contagion);
 		double maxContagion = 100;
 		if( contagiousness != null )
 			maxContagion = getContagiousness(contagion, date, contagiousness);
@@ -150,7 +164,8 @@ public class Person implements Comparable<Person>{
 	 * This is the measure in which are willing to take a risk
 	 * @return
 	 */
-	public double getRiskBubble( Contagion contagion ) {
+	@Override
+	public double getRiskBubble( IContagion contagion ) {
 		double radius = contagion.getDistance() * (100 - mobile.getRisk())/100;
 		return NumberUtils.clipRange(0, 100, radius );
 	}
@@ -163,8 +178,9 @@ public class Person implements Comparable<Person>{
 	 * Update the person in normal circumstances
 	 * @param date
 	 */
+	@Override
 	public void updatePerson( Date date ) {
-		History history = mobile.getHistory();
+		IHistory history = mobile.getHistory();
 		if( !history.isEmpty() ) {
 			history.clean(date);
 		}
@@ -181,12 +197,12 @@ public class Person implements Comparable<Person>{
 			return true;
 		if(!( obj instanceof Person))
 			return false;
-		Person test = (Person) obj;
+		IPerson test = (IPerson) obj;
 		return location.equals(test.getLocation());
 	}
 
 	@Override
-	public int compareTo(Person o) {
+	public int compareTo(IPerson o) {
 		return this.location.compareTo(o.getLocation());
 	}
 

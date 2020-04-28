@@ -15,13 +15,12 @@ import org.condast.commons.data.plane.Field;
 import org.condast.commons.data.plane.IField;
 import org.condast.commons.data.util.Vector;
 import org.condast.commons.ui.session.PushSession;
-import org.covaid.core.environment.IEnvironment;
-import org.covaid.core.model.Contagion;
-import org.covaid.core.model.Contagion.SupportedContagion;
-import org.covaid.core.model.IEnvironmentListener;
-import org.covaid.core.model.Location;
-import org.covaid.core.model.Person;
-import org.covaid.core.model.Point;
+import org.covaid.core.def.IContagion;
+import org.covaid.core.def.IEnvironment;
+import org.covaid.core.def.IEnvironmentListener;
+import org.covaid.core.def.ILocation;
+import org.covaid.core.def.IPerson;
+import org.covaid.core.def.IPoint;
 import org.covaid.core.model.EnvironmentEvent;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.PaintListener;
@@ -114,7 +113,7 @@ public class EnvironmentComposite extends Composite {
 			EnvironmentEvent event = (EnvironmentEvent) canvas.getData();
 			if( event == null )
 				return;
-			for( Person person: this.environment.getPersons())
+			for( IPerson person: this.environment.getPersons())
 				updatePerson(gc, person);
 			gc.dispose();
 		}
@@ -123,20 +122,20 @@ public class EnvironmentComposite extends Composite {
 		}
 	}
 
-	protected void updatePerson( GC gc, Person person ) {
+	protected void updatePerson( GC gc, IPerson person ) {
 		try {
 			EnvironmentEvent event = (EnvironmentEvent) canvas.getData();
 			if( event == null )
 				return;
-			Contagion contagion = SupportedContagion.getContagion( this.environment.getContagion());
+			IContagion contagion = IContagion.SupportedContagion.getContagion( this.environment.getContagion());
 			Date date = environment.getDate();
 
 			double safety = person.getSafetyBubble(contagion, Calendar.getInstance().getTime());
 
-			Map<Date, Location> history = person.getHistory().get();
-			Iterator<Map.Entry<Date, Location>> iterator = new ArrayList<Map.Entry<Date, Location>>( history.entrySet()).iterator();
+			Map<Date, ILocation> history = person.getHistory().get();
+			Iterator<Map.Entry<Date, ILocation>> iterator = new ArrayList<Map.Entry<Date, ILocation>>( history.entrySet()).iterator();
 			while( iterator.hasNext() ) {
-				Map.Entry<Date, Location> entry = iterator.next();
+				Map.Entry<Date, ILocation> entry = iterator.next();
 				Vector<Double,Double> vector = contagion.getContagion(date);
 				gc.setBackground( getColour( vector.getKey().doubleValue() ));
 				//drawPerson( gc, entry.getValue(), vector.getValue().doubleValue());
@@ -157,7 +156,7 @@ public class EnvironmentComposite extends Composite {
 		return colour;
 	}
 
-	protected void drawPerson( GC gc, Point location, double safety ) {
+	protected void drawPerson( GC gc, IPoint location, double safety ) {
 		Rectangle bounds = canvas.getBounds();
 		gc.fillOval(bounds.x + scaleX(location.getXpos()), 
 				bounds.y + scaleY(location.getYpos()), scaleX( safety), 10 );		

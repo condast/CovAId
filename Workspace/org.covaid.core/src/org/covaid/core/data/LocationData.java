@@ -6,6 +6,7 @@ import java.util.TreeSet;
 
 import org.condast.commons.data.latlng.ILocation;
 import org.condast.commons.data.latlng.LatLng;
+import org.covaid.core.def.IContagion;
 import org.covaid.core.model.Contagion;
 
 public class LocationData implements ILocation, org.condast.commons.IUpdateable {
@@ -49,7 +50,7 @@ public class LocationData implements ILocation, org.condast.commons.IUpdateable 
 		return this.contagion.add(contagion);
 	}
 
-	public boolean removeContagion( Contagion contagion) {
+	public boolean removeContagion( IContagion contagion) {
 		return this.contagion.remove(contagion);
 	}
 

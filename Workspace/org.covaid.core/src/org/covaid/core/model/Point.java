@@ -1,6 +1,8 @@
 package org.covaid.core.model;
 
-public class Point implements Comparable<Point>{
+import org.covaid.core.def.IPoint;
+
+public class Point implements IPoint{
 
 	private String identifier;
 	private int xpos, ypos;
@@ -15,10 +17,12 @@ public class Point implements Comparable<Point>{
 		this.identifier = identifier;
 	}
 
+	@Override
 	public String getIdentifier() {
 		return identifier;
 	}
 
+	@Override
 	public int getXpos() {
 		return xpos;
 	}
@@ -27,6 +31,7 @@ public class Point implements Comparable<Point>{
 		this.xpos = xpos;
 	}
 
+	@Override
 	public int getYpos() {
 		return ypos;
 	}
@@ -35,12 +40,13 @@ public class Point implements Comparable<Point>{
 		this.ypos = ypos;
 	}
 
-	protected void setPosition(int xpos, int ypos) {
+	public void setPosition(int xpos, int ypos) {
 		this.xpos = xpos;
 		this.ypos = ypos;
 	}
 	
-	public double getDistance( Point point ) {
+	@Override
+	public double getDistance( IPoint point ) {
 		return Math.sqrt( Math.pow( xpos - point.getXpos(), 2) + Math.pow( ypos - point.getYpos(),2 )); 
 	}
 	
@@ -55,7 +61,7 @@ public class Point implements Comparable<Point>{
 			return true;
 		if(!( obj instanceof Point))
 			return false;
-		Point test = (Point) obj;
+		IPoint test = (IPoint) obj;
 		return (( test.getXpos() - xpos == 0 ) && ( test.getYpos() - ypos == 0 ));
 	}
 
@@ -65,7 +71,7 @@ public class Point implements Comparable<Point>{
 	}
 
 	@Override
-	public int compareTo(Point o) {
+	public int compareTo( IPoint o) {
 		int compare = xpos - o.getXpos();
 		if( compare != 0 )
 			return compare;

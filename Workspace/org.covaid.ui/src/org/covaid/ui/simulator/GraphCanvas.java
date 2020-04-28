@@ -13,12 +13,11 @@ import java.util.Map;
 import java.util.logging.Logger;
 
 import org.condast.commons.ui.session.PushSession;
-import org.covaid.core.environment.IEnvironment;
-import org.covaid.core.environment.IEnvironment.Events;
-import org.covaid.core.model.IEnvironmentListener;
-import org.covaid.core.model.Person;
-import org.covaid.core.model.Contagion;
-import org.covaid.core.model.Contagion.SupportedContagion;
+import org.covaid.core.def.IContagion;
+import org.covaid.core.def.IEnvironment;
+import org.covaid.core.def.IEnvironmentListener;
+import org.covaid.core.def.IPerson;
+import org.covaid.core.def.IEnvironment.Events;
 import org.covaid.core.model.EnvironmentEvent;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.PaintListener;
@@ -46,8 +45,8 @@ public class GraphCanvas extends Canvas {
 		if( data.activity < 300 )
 			return;
 		int infected = 0;
-		Contagion contagion = SupportedContagion.getContagion(env.getContagion());
-		for( Person person: env.getPersons() ) {
+		IContagion contagion = IContagion.SupportedContagion.getContagion(env.getContagion());
+		for( IPerson person: env.getPersons() ) {
 			if( person.getContagiousness( contagion ) > 10 )
 				infected++;
 		}

@@ -1,0 +1,6 @@
+gino; fail; ANGRY, FAIL1; 60
+gino; fail; SCARED, FAIL2; 60;
+gino; fail; SAD, FAIL3; 60;
+gino; success; HAPPY, SUCCESS1; 60;
+gino; success; DOUBT, SUCCESS2; 60;
+gino; success; NERVOUS, SUCCESS3; 60;

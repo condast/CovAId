@@ -2,12 +2,12 @@ package org.covaid.core.contagion;
 
 import java.util.Date;
 
-import org.covaid.core.model.Contagion;
+import org.covaid.core.def.IContagion;
 
 public interface IContagionManager {
 
-	public double calculateContagiousness( Contagion data, double detectedContagion, double distance );
+	public double calculateContagiousness( IContagion data, double detectedContagion, double distance );
 
-	public double calculateContagiousness(Contagion data, Date previous, Date current);
+	public double calculateContagiousness(IContagion data, Date previous, Date current);
 
 }

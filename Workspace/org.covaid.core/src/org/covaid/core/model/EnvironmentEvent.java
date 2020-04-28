@@ -2,17 +2,18 @@ package org.covaid.core.model;
 
 import java.util.EventObject;
 
-import org.covaid.core.environment.IEnvironment;
+import org.covaid.core.def.IEnvironment;
+import org.covaid.core.def.IPerson;
 
 public class EnvironmentEvent extends EventObject {
 	private static final long serialVersionUID = 1L;
 	
-	private Person person;
+	private IPerson person;
 	private int days;
 	
 	private IEnvironment.Events event;
 	
-	public EnvironmentEvent(Object source, Person person, int days ) {
+	public EnvironmentEvent(Object source, IPerson person, int days ) {
 		this(source, days);
 		this.person = person;
 		event = IEnvironment.Events.UPDATE_PERSON;
@@ -36,7 +37,7 @@ public class EnvironmentEvent extends EventObject {
 		return days;
 	}
 
-	public Person getPerson() {
+	public IPerson getPerson() {
 		return person;
 	}
 }
