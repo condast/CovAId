@@ -1,4 +1,4 @@
-package org.covaid.core.def;
+package org.covaid.core.environment;
 
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -7,17 +7,18 @@ import java.util.Date;
 import java.util.Map;
 import java.util.Timer;
 import java.util.TimerTask;
-import java.util.TreeMap;
-import java.util.concurrent.ConcurrentSkipListSet;
 
 import org.condast.commons.data.latlng.LatLng;
 import org.condast.commons.data.plane.Field;
 import org.condast.commons.data.plane.IField;
-import org.covaid.core.model.Hub;
-import org.covaid.core.model.Person;
-import org.covaid.core.model.EnvironmentEvent;
+import org.covaid.core.def.EnvironmentEvent;
+import org.covaid.core.def.IContagion;
+import org.covaid.core.def.IEnvironmentListener;
+import org.covaid.core.def.IEnvironment;
+import org.covaid.core.def.IHub;
+import org.covaid.core.def.IPerson;
 
-public abstract class AbstractEnvironment implements IEnvironment {
+public class Environment implements IEnvironment {
 
 	protected static final double LONGITUDE = 4.00f;
 	protected static final double LATITUDE  = 52.000f;
@@ -33,13 +34,16 @@ public abstract class AbstractEnvironment implements IEnvironment {
 	private boolean started;
 	private boolean pause;
 	
-	private Collection<Person> persons;
-	private Map<String, Hub> hubs;
+	private Collection<AbstractDomain> domains;
 
-	protected abstract void onCreatePerson( int index, IPerson person );
+	private Collection<IEnvironmentListener> listeners;
 
-	protected abstract void onMovePerson( Date date, Person person );
+	private Timer timer;
+
+	private Date start;
 	
+	private IEnvironment env;
+
 	private TimerTask timerTask = new TimerTask() {
 
 		@Override
@@ -47,27 +51,22 @@ public abstract class AbstractEnvironment implements IEnvironment {
 			if(!started || pause )
 				return;
 			try {
-				Collection<Person> temp = new ArrayList<Person>(persons);
 				Date date = getDate();
-				for( Person person: temp ) {
-					onMovePerson( date, person);
-					notifyListeners( new EnvironmentEvent( environment, person, days ));
-				}
+				for( AbstractDomain domain: domains ) {
+					domain.movePerson( date );
+				}		
+				notifyListeners( new EnvironmentEvent(env, Events.ACTIVITY, days));
 				index++;
 				index %= activity;
-				
-				notifyListeners( new EnvironmentEvent( environment, Events.ACTIVITY, days ));
+					
 				if( index != 0 )
 					return;
 
 				days++;
-				for( IHub hub: hubs.values())
-					hub.updateHub(date);
-				for( IPerson person: temp ) {
-					person.updatePerson(date);
+				for( AbstractDomain domain: domains ) {
+					domain.update(date );
 				}
-				notifyListeners( new EnvironmentEvent( environment, days ));
-
+				notifyListeners( new EnvironmentEvent(env, Events.NEW_DAY, days));
 			}
 			catch( Exception ex ) {
 				ex.printStackTrace();
@@ -75,41 +74,30 @@ public abstract class AbstractEnvironment implements IEnvironment {
 		}
 	};
 	
-	private Timer timer;
-
-	private Collection<IEnvironmentListener> listeners;
-
-	private Date start;
 	
-	private String name;
-
-	private IEnvironment environment;
-
-	public AbstractEnvironment( String name ) {
-		this( name, DEFAULT_LENGTH, DEFAULT_WIDTH, DEFAULT_POPULATION );
+	public Environment() {
+		this( new LatLng( LATITUDE, LONGITUDE), DEFAULT_LENGTH, DEFAULT_WIDTH, DEFAULT_POPULATION, DEFAULT_SPEED );
 	}
 	
-	public AbstractEnvironment( String name, int length, int width, int population ) {
+	public Environment( String name, int length, int width, int population ) {
 		this( new LatLng( name, LATITUDE, LONGITUDE), length, width, population, DEFAULT_SPEED);
 	}
 
-	public AbstractEnvironment( LatLng location, int length, int width, int population, int speed ) {
-		this.environment = this;
-		this.name = location.getId();
+	public Environment( LatLng location, int length, int width, int population, int speed ) {
+		this.env = this;
 		this.started = false;
-		persons = new ConcurrentSkipListSet<>();
-		hubs = new TreeMap<>();
-		this.listeners = new ArrayList<>();
+		this.domains = new ArrayList<>();
 		timer = new Timer();
 	    timer.scheduleAtFixedRate(timerTask, 0, speed);
 		field = new Field( location, length, width);
 		this.population = population;
 	    this.contagion = IContagion.SupportedContagion.COVID_19.name();
+		this.listeners = new ArrayList<>();
 	}
 
 	@Override
 	public String getName() {
-		return name;
+		return this.field.getName();
 	}
 	
 	@Override
@@ -129,11 +117,8 @@ public abstract class AbstractEnvironment implements IEnvironment {
 		this.activity = activity;
 		this.pause = false;
 		this.population = population;
-		int index = 0;
-		while( persons.size() < population ) {
-			Person person = createPerson();
-			onCreatePerson(index++, person);
-			persons.add(person);
+		for( AbstractDomain domain: domains ) {
+			domain.init( this.population);
 		}
 	}
 
@@ -147,18 +132,39 @@ public abstract class AbstractEnvironment implements IEnvironment {
 		this.listeners.remove(listener);
 	}
 
-	protected void notifyListeners( EnvironmentEvent event ) {
+	void notifyListeners( EnvironmentEvent event ) {
 		for( IEnvironmentListener listener: this.listeners )
-			listener.notifyPersonChanged(event);
+			listener.notifyChanged(event);
 	}
 
 	@Override
-	public Collection<Person> getPersons() {
-		return persons;
+	public void addDomain( AbstractDomain domain ) {
+		this.domains.add(domain);
+		domain.setEnvironment(this);
 	}
 
-	protected Map<String, Hub> getHubs() {
-		return hubs;
+	@Override
+	public void removeDomain( AbstractDomain domain ) {
+		domain.setEnvironment(null);
+		this.domains.remove(domain);
+	}
+
+	@Override
+	public AbstractDomain[] getDomains() {
+		return domains.toArray( new AbstractDomain[ this.domains.size() ]);
+	}
+
+	@Override
+	public int getPopulation() {
+		return population;
+	}
+
+	public Collection<IPerson> getPersons( AbstractDomain domain ) {
+		return domain.getPersons();
+	}
+
+	protected Map<String, IHub> getHubs( AbstractDomain domain ) {
+		return domain.getHubs();
 	}
 
 	@Override
@@ -181,11 +187,6 @@ public abstract class AbstractEnvironment implements IEnvironment {
 	@Override
 	public void setContagion(String contagion) {
 		this.contagion = contagion;
-	}
-
-	@Override
-	public int getPopulation() {
-		return population;
 	}
 
 	@Override
@@ -242,8 +243,8 @@ public abstract class AbstractEnvironment implements IEnvironment {
 	
 	@Override
 	public void clear() {
-		this.persons.clear();
-		this.hubs.clear();
+		for( AbstractDomain domain: this.domains)
+			domain.clear();
 	}
 
 	@Override
@@ -255,23 +256,5 @@ public abstract class AbstractEnvironment implements IEnvironment {
 		timer.cancel();
 		timer.purge();
 		timer = null;
-	}
-
-	/**
-	 * Population is amount of people per square kilometre(!)
-	 * @param population
-	 */
-	protected Person createPerson() {
-		Person person = null;
-		do {
-			int x = (int)( field.getWidth() * Math.random());
-			int y = (int)( field.getLength() * Math.random());
-			double risk = 100*Math.random();
-			double safety = 100*Math.random();
-			String identifier = "id("+ x + "," + y + "):{" + risk + ", " + safety + "}";  
-			person = new Person(identifier, x, y, safety, risk );
-		}
-		while(persons.contains(person));
-		return person;
 	}
 }

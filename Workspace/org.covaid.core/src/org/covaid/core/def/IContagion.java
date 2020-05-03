@@ -122,4 +122,6 @@ public interface IContagion extends Comparable<IContagion>{
 
 	int compareTo(IContagion o);
 
+	double getThreshold();
+
 }

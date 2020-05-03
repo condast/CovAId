@@ -6,7 +6,7 @@ import javax.ws.rs.ApplicationPath;
 import org.condast.commons.messaging.http.AbstractServletWrapper;
 import org.condast.commons.messaging.rest.CorsFilter;
 import org.covaid.mobile.resources.PushResource;
-import org.covaid.mobile.resources.SnapshotResource;
+import org.covaid.mobile.resources.MobileResource;
 import org.glassfish.jersey.server.ResourceConfig;
 import org.glassfish.jersey.servlet.ServletContainer;
 
@@ -31,7 +31,7 @@ public class RestServlet extends AbstractServletWrapper {
 		//Loading classes is the safest way...
 		//in equinox the scanning of packages may not work
 		private RestApplication() {
-			register( SnapshotResource.class );
+			register( MobileResource.class );
 			register( PushResource.class );
 		}
 	}

@@ -1,15 +1,13 @@
 package org.covaid.core.def;
 
-import java.util.Collection;
 import java.util.Date;
 
 import org.condast.commons.data.plane.IField;
-import org.covaid.core.model.Person;
+import org.covaid.core.environment.AbstractDomain;
 
 public interface IEnvironment {
 
 	public enum Events{
-		UPDATE_PERSON,
 		ACTIVITY,
 		HOUR,
 		NEW_DAY;
@@ -29,17 +27,11 @@ public interface IEnvironment {
 	 */
 	void init(int activity, int population);
 
-	void addListener(IEnvironmentListener listener);
-
-	void removeListener(IEnvironmentListener listener);
-
 	String getDayString(boolean trunc);
 
 	String getContagion();
 
 	void setContagion(String contagion);
-
-	int getPopulation();
 
 	IField getField();
 
@@ -67,5 +59,15 @@ public interface IEnvironment {
 
 	String getName();
 
-	Collection<Person> getPersons();
+	int getPopulation();
+
+	void addDomain(AbstractDomain domain);
+
+	void removeDomain(AbstractDomain domain);
+
+	AbstractDomain[] getDomains();
+
+	void addListener(IEnvironmentListener listener);
+
+	void removeListener(IEnvironmentListener listener);
 }

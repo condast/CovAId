@@ -70,4 +70,8 @@ public interface IPerson extends Comparable<IPerson>{
 
 	int compareTo(IPerson o);
 
+	ILocation get(Date date);
+
+	void move(IPoint point);
+
 }

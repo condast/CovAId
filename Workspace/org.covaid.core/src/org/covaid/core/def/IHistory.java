@@ -66,6 +66,8 @@ public interface IHistory {
 
 	void clean(Date date);
 
-	boolean update(Date date, IPoint point);
+	boolean update(Date date, ILocation location);
+
+	ILocation get(Date date);
 
 }

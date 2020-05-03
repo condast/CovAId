@@ -1,7 +1,7 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: User Interface
-Bundle-SymbolicName: org.covaid.ui
+Bundle-SymbolicName: org.covaid.ui;singleton:=true
 Bundle-Version: 1.0.0.qualifier
 Bundle-Vendor: Condast
 Export-Package: org.covaid.ui.map,
@@ -10,12 +10,14 @@ Export-Package: org.covaid.ui.map,
  org.covaid.ui.wizard
 Bundle-RequiredExecutionEnvironment: JavaSE-1.7
 Automatic-Module-Name: org.covaid.ui
-Import-Package: org.condast.commons,
+Import-Package: com.google.gson;version="2.7.0",
+ org.condast.commons,
  org.condast.commons.authentication.user,
  org.condast.commons.data.latlng,
  org.condast.commons.data.plane,
  org.condast.commons.data.util,
  org.condast.commons.date,
+ org.condast.commons.messaging.http,
  org.condast.commons.strings,
  org.condast.commons.ui.image,
  org.condast.commons.ui.session,

@@ -6,15 +6,15 @@ import org.covaid.dashboard.Activator;
 import org.osgi.service.component.annotations.Component;
 
 @Component(
-		name = "org.satr.arnac.bugzilla.provider"
+		name = "org.covaid.dashboard.bugzilla.provider"
 )
 public class BugProductProvider extends AbstractBugProductFactory{
 
-	private static final String S_ARNAC_PRODUCT = "Arnac";
-	private static final String S_ARNAC_COMPONENT = "VirgoComponent";
+	private static final String S_COVAID_PRODUCT = "CovAID";
+	private static final String S_COVAID_COMPONENT = "CovAIDComponent";
 
 	public BugProductProvider() {
-		super( true, S_ARNAC_PRODUCT, S_ARNAC_COMPONENT);
+		super( true, S_COVAID_PRODUCT, S_COVAID_COMPONENT );
 	}
 	
 	@Override

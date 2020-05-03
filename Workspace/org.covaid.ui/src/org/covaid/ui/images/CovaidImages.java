@@ -26,10 +26,6 @@ public class CovaidImages extends AbstractImages{
 	public static final String BUNDLE_ID = "org.covaid.ui";
 	
 	public static final String S_DOUBLE_ARROW = "DOUBLE_ARROW";
-	public static final String S_BATHYMETRY = "depth.jpg";
-	private static final String S_LOCATED_IMAGE = "ledgreen";
-	private static final String S_CONNECTED_IMAGE = "ledorange";
-	private static final String S_DISCONNECTED_IMAGE = "ledlightblue";
 
 	public static final String S_ZOOM_IN = "zoom-in";
 	public static final String S_ZOOM_OUT = "zoom-out";
@@ -37,26 +33,8 @@ public class CovaidImages extends AbstractImages{
 	public static final String S_PNG = ".png";
 
 	public enum Images{
-		AQUABOT,
-		ADD,
-		BACKGROUND,
-		CHECK,
-		LOCATED,
-		CONNECTED,
-		DISCONNECTED,
-		LOCATE,
-		UP,
-		DOWN,
-		LEFT,
-		RIGHT,
-		MENU,
-		SETTINGS,
-		ZOOM_IN,
-		ZOOM_OUT,
-		DEPTH,
-		HOURGLASS,
-		FAIL,
-		ROCKET;
+		COVID_SEARCH,
+		COVID_19;
 
 		public static String getResource( Images image ){
 			return getResource( image, ImageSize.NORMAL );
@@ -64,43 +42,14 @@ public class CovaidImages extends AbstractImages{
 		
 		public static String getResource( Images image, ImageSize size ){
 			StringBuffer buffer = new StringBuffer();
-			String prep;
 			switch( image ){		
-			case AQUABOT:
+			case COVID_SEARCH:
 				buffer.append( image.name().toLowerCase());
 				buffer.append( S_PNG);
 				break;
-			case BACKGROUND:
+			case COVID_19:
 				buffer.append( image.name().toLowerCase());
 				buffer.append( S_PNG);
-				break;
-			case LOCATED:
-				buffer.append( ImageSize.getLocation(S_LOCATED_IMAGE, size));
-				break;
-			case CONNECTED:
-				buffer.append( ImageSize.getLocation(S_CONNECTED_IMAGE, size));
-				break;
-			case DISCONNECTED:
-				buffer.append( ImageSize.getLocation(S_DISCONNECTED_IMAGE, size));
-				break;
-			case UP:
-				prep = S_DOUBLE_ARROW + "_" + image.name();
-				buffer.append( ImageSize.getLocation(prep, size));
-				break;
-			case LEFT:
-				prep = S_DOUBLE_ARROW + "-" + image.name();
-				buffer.append( ImageSize.getLocation(prep, size));
-				break;
-			case DOWN:
-				prep = S_DOUBLE_ARROW + "-" + image.name();
-				buffer.append( ImageSize.getLocation(prep, size));
-				break;
-			case RIGHT:
-				prep = S_DOUBLE_ARROW + "-" + image.name();
-				buffer.append( ImageSize.getLocation(prep, size));
-				break;
-			case DEPTH:
-				buffer.append( S_BATHYMETRY );
 				break;
 			default:
 				buffer.append( ImageSize.getLocation(image.name(), size));
@@ -200,7 +149,7 @@ public class CovaidImages extends AbstractImages{
 	 * @return
 	 */
 	public static Image getScreenSaver( Composite parent ){
-		ImageData imageData = new ImageData( CovaidImages.class.getResourceAsStream( S_RESOURCES + Images.getResource( Images.BACKGROUND ) ));
+		ImageData imageData = new ImageData( CovaidImages.class.getResourceAsStream( S_RESOURCES + Images.getResource( Images.COVID_SEARCH ) ));
 		ImageData scaledData = imageData.scaledTo( parent.getBounds().width, parent.getBounds().height );
 		return new Image(Display.getCurrent(), scaledData );
 	}

@@ -3,7 +3,7 @@
 	<reference interface="javax.persistence.EntityManagerFactory"
 	    filter="(osgi.unit.name=org.covaid.mobile)">
 		<reference-listener bind-method="bindEMF" unbind-method="unbindEMF">
-			<bean class="org.covaid.rest.service.EntityManagerService" />
+			<bean class="org.covaid.mobile.service.EntityManagerService" />
 		</reference-listener>
 	</reference>
 </blueprint>

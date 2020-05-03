@@ -37,6 +37,8 @@ public class Contagion implements IContagion{
 	
 	private boolean monitored;
 	
+	private double threshold;
+	
 	@Basic(optional = false)
 	@Column( nullable=false)
 	@Temporal(TemporalType.TIMESTAMP)
@@ -51,13 +53,14 @@ public class Contagion implements IContagion{
 	}
 
 	public Contagion(String identifier, double contagiousness, int distance, int maxDays ) {
-		this( identifier, contagiousness, distance, maxDays, DEFAULT_HALFTIME, DEFAULT_DISPERSION, false );
+		this( identifier, contagiousness, THRESHOLD, distance, maxDays, DEFAULT_HALFTIME, DEFAULT_DISPERSION, false );
 	}
 	
-	public Contagion(String identifier, double contagiousness, int distance, int maxDays, int halftime, double dispersion, boolean monitored ) {
+	public Contagion(String identifier, double contagiousness, double threshold, int distance, int maxDays, int halftime, double dispersion, boolean monitored ) {
 		super();
 		this.identifier = identifier;
 		this.contagiousness = contagiousness;
+		this.threshold = threshold;
 		this.monitored = monitored;
 		this.maxDistance = distance;
 		this.maxDays = maxDays;
@@ -76,6 +79,11 @@ public class Contagion implements IContagion{
 		return contagiousness;
 	}
 	
+	@Override
+	public double getThreshold() {
+		return this.threshold;
+	}
+
 	@Override
 	public boolean isMonitored() {
 		return monitored;

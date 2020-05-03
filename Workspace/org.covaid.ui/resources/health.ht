@@ -2,17 +2,32 @@
 	<div class="col">
 		<div class="row">
 			<div class="col-3">
+				<p>Safety:</p>
+			</div>
+			<div class="col-1">
+				<p>${value.safety.min}</p>
+			</div>
+			<div class="col-4">
+				<input type="range" class="custom-range" id="customRange1"
+					min="${value.safety.min}" max="${value.safety.max}">
+			</div>
+			<div class="col-1">
+				<label for="customRange1">${value.safety.max}</label>
+			</div>
+		</div>
+		<div class="row">
+			<div class="col-3">
 				<p>Risk:</p>
 			</div>
 			<div class="col-1">
-				<p>${label.risk.min}</p>
+				<p>${value.risk.min}</p>
 			</div>
 			<div class="col-4">
 				<input type="range" class="custom-range" id="customRange1"
 					min="${value.risk.min}" max="${value.risk.max}">
 			</div>
 			<div class="col-1">
-				<label for="customRange1">${label.risk.max}</label>
+				<label for="customRange1">${value.risk.max}</label>
 			</div>
 		</div>
 	</div>
@@ -68,7 +83,7 @@
 			<div class="dropdown">
 				<button class="btn btn-secondary dropdown-toggle"
 					type="button" id="dropdownMenuButton" data-toggle="dropdown"
-					aria-haspopup="true" aria-expanded="false">Advice</button>
+					aria-haspopup="true" aria-expanded="false">Get Advice</button>
 				<div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
 					<a class="dropdown-item" href="#">Hay Fever</a>
 					<a class="dropdown-item" href="#">Common Cold</a>

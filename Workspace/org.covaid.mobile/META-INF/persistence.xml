@@ -1,12 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<persistence version="2.0"
-    xmlns="http://java.sun.com/xml/ns/persistence" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-    xsi:schemaLocation="http://java.sun.com/xml/ns/persistence http://java.sun.com/xml/ns/persistence/persistence_2_0.xsd">
+<persistence version="2.0" xmlns="http://java.sun.com/xml/ns/persistence" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://java.sun.com/xml/ns/persistence http://java.sun.com/xml/ns/persistence/persistence_2_0.xsd">
     <persistence-unit name="org.covaid.mobile">
         <provider>com.orientechnologies.orient.object.jpa.OJPAPersistenceProvider</provider>
 
         <!-- JPA entities must be registered here -->
-        <class>org.covaid.rest.model.FirstPojo</class>
+        <class>org.covaid.mobile.model.Point</class>
+        <class>org.covaid.mobile.model.Contagion</class>
+        <class>org.covaid.mobile.model.Location</class>
+        <class>org.covaid.mobile.model.History</class>
+        <class>org.covaid.mobile.model.Mobile</class>
+        <class>org.covaid.mobile.model.Person</class>
 
         <properties>
 			<property name="bundle-name" value="org.covaid.mobile" />
@@ -14,9 +17,6 @@
             <property name="javax.persistence.jdbc.url" value="remote:localhost/test.odb" />
             <property name="javax.persistence.jdbc.user" value="covaid-admin" />
             <property name="javax.persistence.jdbc.password" value="Symb10t1cNetw0rksRule@2020" />
-            <!-- Register whole package.
-                             See com.orientechnologies.orient.core.entity.OEntityManager.registerEntityClasses(String) for more details -->
-            <property name="com.orientdb.entityClasses" value="com.example.domains" />
         </properties>
     </persistence-unit>
 </persistence>

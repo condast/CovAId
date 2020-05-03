@@ -22,6 +22,8 @@ public class Contagion implements IContagion{
 	
 	private boolean monitored;
 	
+	private double threshold;//percent
+	
 	private Date timestamp;
 	
 	public Contagion( String identifier, double contagiousness) {
@@ -33,14 +35,15 @@ public class Contagion implements IContagion{
 	}
 
 	public Contagion(String identifier, double contagiousness, int distance, int maxDays ) {
-		this( identifier, contagiousness, distance, maxDays, DEFAULT_HALFTIME, DEFAULT_DISPERSION, false );
+		this( identifier, contagiousness, THRESHOLD, distance, maxDays, DEFAULT_HALFTIME, DEFAULT_DISPERSION, false );
 	}
 	
-	public Contagion(String identifier, double contagiousness, int distance, int maxDays, int halftime, double dispersion, boolean monitored ) {
+	public Contagion(String identifier, double contagiousness, double threshold, int distance, int maxDays, int halftime, double dispersion, boolean monitored ) {
 		super();
 		this.identifier = identifier;
 		this.contagiousness = contagiousness;
 		this.monitored = monitored;
+		this.threshold = threshold;
 		this.maxDistance = distance;
 		this.maxDays = maxDays;
 		this.halfTime= halftime;
@@ -58,6 +61,11 @@ public class Contagion implements IContagion{
 		return contagiousness;
 	}
 	
+	@Override
+	public double getThreshold() {
+		return threshold;
+	}
+
 	@Override
 	public boolean isMonitored() {
 		return monitored;
@@ -95,10 +103,8 @@ public class Contagion implements IContagion{
 
 	@Override
 	public double getContagiousnessInTime( long days ) {
-		if( days == 0 )
-			return this.contagiousness;
 		int half = (int)this.maxDays/2;
-		long day = (days <= half)? days: (days >= maxDays)?0: (maxDays - days);
+		long day = (days <= half)? 1: days - half;
 		double calculated = NumberUtils.clipRange(0, 100, this.contagiousness/day);
 		
 		if( !SupportedContagion.isSupported(identifier)) {
@@ -158,29 +164,6 @@ public class Contagion implements IContagion{
 		double radius = this.maxDistance + this.dispersion* diff*1000;
 		return new Vector<Double, Double>(newContagion, radius );	
 	}
-
-	/**
-	 * Updates the current contagion, based on the time and distance of the given contagion,
-	 * Only update if the contagion gets worse. In that case the return value is true,
-	 * otherwise false
-	 * 
-	 * @param contagion
-	 * @param date
-	 * @param distance
-	 * @return
-	 */
-	public boolean update( IContagion contagion, Date date, double distance) {
-		if( !this.identifier.equals(contagion.getIdentifier()))
-			return false;
-		double newContagionOnDistance = contagion.getContagiousnessDistance( distance);
-		long days = DateUtils.getDifferenceDays(this.timestamp, date);
-		double newContagionOnTime = contagion.getContagiousnessInTime( days );
-		double newContagion = Math.max(newContagionOnDistance, newContagionOnTime);
-		if( newContagion <= this.contagiousness)
-			return false;
-		this.contagiousness = (double) newContagion;
-		return true;	
-	}
 	
 	/**
 	 * Returns true if the this contagiousness is larger than the given one
@@ -205,7 +188,6 @@ public class Contagion implements IContagion{
 	public void update( Date date ) {
 		this.timestamp = date;		
 	}
-
 	
 	@Override
 	public int hashCode() {
@@ -225,5 +207,10 @@ public class Contagion implements IContagion{
 	@Override
 	public int compareTo( IContagion o) {
 		return this.identifier.compareTo(o.getIdentifier());
+	}
+
+	@Override
+	public String toString() {
+		return this.identifier + ": " + this.contagiousness;
 	}
 }

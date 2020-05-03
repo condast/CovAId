@@ -21,8 +21,12 @@ public class Person implements IPerson{
 	
 	private IMobile mobile;
 
+	public Person( Point point, double safety, double risk) {
+		this( point.getIdentifier(), point.getXpos(), point.getYpos(), safety, risk );
+	}
+	
 	public Person( String identifier, int xpos, int ypos, double safety, double risk) {
-		location = new Point(xpos, ypos);
+		location = new Point( identifier, xpos, ypos);
 		mobile = new Mobile(identifier, safety, risk, location);
 		this.state = States.HEALTHY;
 		this.monitor = null;
@@ -117,6 +121,11 @@ public class Person implements IPerson{
 	}
 
 	@Override
+	public ILocation get(Date date) {
+		return this.getHistory().get(date);
+	}
+
+	@Override
 	public void alert( Date date, ILocation point ) {
 		this.location = point;
 		this.mobile.alert( date, point, monitor);
@@ -170,7 +179,8 @@ public class Person implements IPerson{
 		return NumberUtils.clipRange(0, 100, radius );
 	}
 
-	public void move( Point point ) {
+	@Override
+	public void move( IPoint point ) {
 		this.location = point;
 	}
 

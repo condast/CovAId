@@ -10,6 +10,8 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.OneToOne;
 
+import org.condast.commons.data.plane.Field;
+import org.condast.commons.data.plane.IField;
 import org.covaid.core.contagion.ContagionManager;
 import org.covaid.core.contagion.IContagionManager;
 import org.covaid.core.data.SharedData;
@@ -21,10 +23,12 @@ import org.covaid.core.def.IHistoryListener;
 import org.covaid.core.def.ILocation;
 import org.covaid.core.def.IMobile;
 import org.covaid.core.def.IPoint;
+import org.covaid.core.field.FieldChangeEvent;
+import org.covaid.core.field.IFieldListener;
 import org.covaid.core.model.Contagion;
 
 @Entity(name="MOBILE")
-public class Mobile implements IMobile {
+public class Mobile implements IMobile, IFieldListener {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -42,6 +46,9 @@ public class Mobile implements IMobile {
 	private StoredNode node;
 	
 	private History history;
+	
+	//LatLng is transformed internally to (x,y) coordinates in the simulation
+	private transient IField field; 
 
 	private IHistoryListener listener = (e)->{
 		//history.alert(e.getDate(), e.getLocation(), e.getContagion());
@@ -53,6 +60,31 @@ public class Mobile implements IMobile {
 		this.identifier = "null";
 	}
 
+	/**
+	 * The Safety is the extent in which the bubble should protect you, e.g. for vulnerable people
+	 * The Risk is the amount of risk you are willing to take
+	 * @param id
+	 * @param safety (0-100)
+	 * @param risk (0-100)
+	 * @param location
+	 */
+	public Mobile( String identifier, IField field) {
+		this( identifier, 50, 50, new Point((int)field.getLength()/2, (int)field.getWidth()/2 ));
+		this.field = field;
+	}
+
+	/**
+	 * The Safety is the extent in which the bubble should protect you, e.g. for vulnerable people
+	 * The Risk is the amount of risk you are willing to take
+	 * @param id
+	 * @param safety (0-100)
+	 * @param risk (0-100)
+	 * @param location
+	 */
+	public Mobile( String identifier, Point location) {
+		this( identifier, 50, 50, location );
+	}
+	
 	/**
 	 * The Safety is the extent in which the bubble should protect you, e.g. for vulnerable people
 	 * The Risk is the amount of risk you are willing to take
@@ -75,6 +107,10 @@ public class Mobile implements IMobile {
 	@Override
 	public String getIdentifier() {
 		return identifier;
+	}
+
+	public IField getField() {
+		return field;
 	}
 
 	@Override
@@ -149,5 +185,15 @@ public class Mobile implements IMobile {
 			}
 		}
 		return true;
+	}
+
+	@Override
+	public void notifyFieldChange(FieldChangeEvent event) {
+		double scaleX = (double)location.getXpos()/this.field.getLength();
+		double scaleY = (double)location.getYpos()/this.field.getWidth();
+		IField field = event.getField();
+		this.location.setXpos((int) (scaleX * field.getLength()));
+		this.location.setYpos((int) (scaleY * field.getWidth()));
+		field = new Field( field.getCoordinates(), field.getLength(), field.getWidth());
 	}	
 }

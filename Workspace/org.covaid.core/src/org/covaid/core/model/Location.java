@@ -18,6 +18,10 @@ public class Location extends Point implements ILocation{
 		this( point.getXpos(), point.getYpos());
 	}
 
+	public Location( String identifier, IPoint point) {
+		this( identifier, point.getXpos(), point.getYpos());
+	}
+
 	public Location( int xpos, int ypos) {
 		this( createIdentifier(xpos, ypos), xpos, ypos);
 	}
@@ -50,8 +54,21 @@ public class Location extends Point implements ILocation{
 		return ( result == null )?0: result;
 	}
 
+	protected Map<IContagion, Double> getContagions() {
+		return contagions;
+	}
+
 	@Override
-	public Contagion[] getContagion() {
+	public IContagion getContagion( String identifier ) {
+		for( IContagion contagion: this.contagions.keySet() ){
+			if( contagion.getIdentifier().equals(identifier))
+				return contagion;
+		}
+		return null;
+	}
+
+	@Override
+	public IContagion[] getContagion() {
 		return this.contagions.keySet().toArray( new Contagion[ this.contagions.size()]);
 	}
 
@@ -73,13 +90,21 @@ public class Location extends Point implements ILocation{
 		return false;
 	}
 	
+	/**
+	 * Return true if the given location is more contagious than this one. This
+	 * means that there is at least one more contagious infection
+	 * Returns an empty list of the locations are not the same
+	 * @param location
+	 * @return
+	 */
 	@Override
-	public boolean updateContagion( IContagion contagion ) {
-		boolean result = false;
-		if( contagion == null )
-			return result;
-		this.contagions.put(contagion, contagion.getContagiousness());
-		return true;
+	public boolean isWorse( ILocation location ) {
+		for( IContagion contagion: this.contagions.keySet() ) {
+			double compare = location.getContagion( contagion);
+			if( compare  > contagion.getContagiousness())
+				return true;
+		}
+		return false;
 	}
 
 	/**
@@ -89,7 +114,7 @@ public class Location extends Point implements ILocation{
 	 * @return
 	 */
 	@Override
-	public IContagion[] isWorse( ILocation location ) {
+	public IContagion[] getWorse( ILocation location ) {
 		Collection<IContagion> results = new ArrayList<>();
 		if( location.compareTo(this) != 0 )
 			return new IContagion[0];//invalid comparison
@@ -100,6 +125,28 @@ public class Location extends Point implements ILocation{
 				results.add(contagion);
 		}
 		return results.toArray( new Contagion[ results.size()]);
+	}
+
+	/**
+	 * Returns the worst possible situation when combining the contagiousness of both locations
+	 * Returns null if the locations are not the same
+	 * @param location
+	 * @return
+	 */
+	@Override
+	public ILocation createWorst( ILocation location ) {
+		if( location.compareTo(this) != 0 )
+			return null;//invalid comparison
+		
+		ILocation worst = new Location( location.getIdentifier(), location.toPoint());
+		for( IContagion contagion: this.contagions.keySet() ) {
+			double compare = location.getContagion( contagion);
+			if( compare  > contagion.getContagiousness())
+				worst.addContagion(contagion);
+			else
+				worst.addContagion(location.getContagion( contagion.getIdentifier()));
+		}
+		return worst;
 	}
 
 	@Override
@@ -121,4 +168,38 @@ public class Location extends Point implements ILocation{
 		Location test = (Location) obj;
 		return (( test.getXpos() - getXpos() == 0 ) && ( test.getYpos() - getYpos() == 0 ));
 	}
+	
+	/**
+	 * Create a new location from the reference by adding the highest contagions
+	 * from loc2
+	 * @param reference
+	 * @param loc2
+	 * @return
+	 */
+	public static ILocation createWorseCase( ILocation reference, ILocation loc2 ) {
+		Location worst = new Location( reference );
+		for( IContagion contagion: reference.getContagion() ) {
+			double test = loc2.getContagion(contagion);
+			if( contagion.getContagiousness() < test)
+				worst.addContagion(contagion);
+		}
+		return worst;
+	}
+
+	/**
+	 * Create a new location from the reference by adding the highest contagions
+	 * from loc2
+	 * @param reference
+	 * @param loc2
+	 * @return
+	 */
+	public static long getMaxContagionTime( ILocation reference ) {
+		long result = 0;
+		for( IContagion contagion: reference.getContagion() ) {
+			if( contagion.getIncubation() > result)
+				result = contagion.getIncubation();
+		}
+		return 2*result;
+	}
+
 }

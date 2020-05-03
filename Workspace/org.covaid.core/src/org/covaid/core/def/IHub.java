@@ -2,8 +2,6 @@ package org.covaid.core.def;
 
 import java.util.Date;
 
-import org.covaid.core.model.Location;
-
 public interface IHub {
 
 	/**
@@ -11,7 +9,14 @@ public interface IHub {
 	 * @param person
 	 * @return
 	 */
-	boolean encounter(Date date, IPerson person);
+	boolean encounter(IPerson person, Date date);
+
+	/**
+	 * Respond to an encounter with a person. Returns true if the snapshot has become worse
+	 * @param person
+	 * @return
+	 */
+	boolean alert(IPerson person, Date date);
 
 	/**
 	 * A snap shot is a representation of the current state of this location, with respect to
@@ -20,17 +25,15 @@ public interface IHub {
 	 * 
 	 * @return
 	 */
-	ILocation createSnapshot(Date date);
+	ILocation createSnapShot(Date date );
 
 	/**
-	 * Create a new location from the reference by adding the highest contagions
-	 * from loc2
-	 * @param reference
-	 * @param loc2
+	 * Update the hub and return a new snapshot
+	 * @param date
 	 * @return
 	 */
-	Location createWorseCase(ILocation reference, ILocation loc2);
+	ILocation update(Date date);
 
-	void updateHub(Date date);
+	ILocation getLocation();
 
 }

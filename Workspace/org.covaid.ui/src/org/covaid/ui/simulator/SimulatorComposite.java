@@ -13,9 +13,10 @@ import org.condast.commons.ui.session.PushSession;
 import org.covaid.core.def.IContagion;
 import org.covaid.core.def.IEnvironment;
 import org.covaid.core.def.IEnvironmentListener;
-import org.covaid.core.environment.CovaidEnvironment;
-import org.covaid.core.environment.RawEnvironment;
-import org.covaid.core.model.EnvironmentEvent;
+import org.covaid.core.environment.CovaidDomain;
+import org.covaid.core.environment.AbstractDomain;
+import org.covaid.core.environment.DomainEvent;
+import org.covaid.core.environment.RawDomain;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
@@ -66,8 +67,7 @@ public class SimulatorComposite extends Composite {
 		}
 	}
 
-	private EnvironmentComposite rawCanvas;
-	private EnvironmentComposite covaidCanvas;
+	private Map<String, DomainComposite> canvases;
 	private GraphCanvas graphCanvas;
 
 	private Label horizontalMetres;
@@ -79,9 +79,9 @@ public class SimulatorComposite extends Composite {
 	private Slider sliderRisk;
 	private Button btnStartButton;
 
-	private PushSession<EnvironmentEvent> session;
+	private PushSession<DomainEvent> session;
 
-	private Map<String,IEnvironment> environments;
+	private IEnvironment environment;
 
 	private Label lblDay;
 	private Label lblDayValue;
@@ -91,11 +91,8 @@ public class SimulatorComposite extends Composite {
 		if( getDisplay().isDisposed())
 			return;
 		
-		if( !IEnvironment.Events.NEW_DAY.equals( e.getEvent()))
-			return;
 		getDisplay().asyncExec(()->{
 			try {
-				IEnvironment environment = this.environments.get(CovaidEnvironment.NAME);
 				if( environment != null )
 					lblDayValue.setText(String.valueOf( environment.getDayString(false)));
 				requestLayout();
@@ -131,9 +128,9 @@ public class SimulatorComposite extends Composite {
 	 */
 	public SimulatorComposite(Composite parent, int style) {
 		super(parent, style);
+		this.canvases = new HashMap<>();
 		this.createComposite(parent, style);
-		this.environments = new HashMap<>();
-		session = new PushSession<EnvironmentEvent>();
+		session = new PushSession<DomainEvent>();
 		session.start();
 	}
 
@@ -147,15 +144,17 @@ public class SimulatorComposite extends Composite {
 		Group rawGroup = new Group(composite, SWT.BORDER);
 		rawGroup.setLayout(new FillLayout());
 		rawGroup.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1));
-		rawGroup.setText("Raw");
-		rawCanvas = new EnvironmentComposite(rawGroup, SWT.BORDER);
+		rawGroup.setText(RawDomain.NAME);
+		DomainComposite canvas = new DomainComposite(rawGroup, SWT.BORDER);
+		canvases.put(RawDomain.NAME, canvas);
 
 		Group covaidGroup = new Group(composite, SWT.BORDER);
 		covaidGroup.setLayout(new GridLayout(4, false));
-		covaidGroup.setText("CovAID");
+		covaidGroup.setText(CovaidDomain.NAME);
 		covaidGroup.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1));
-		covaidCanvas = new EnvironmentComposite(covaidGroup, SWT.BORDER);
-		covaidCanvas.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 4, 1));
+		canvas = new DomainComposite(covaidGroup, SWT.BORDER);
+		canvas.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 4, 1));
+		canvases.put(CovaidDomain.NAME, canvas);
 
 		Label lblSafety = new Label(covaidGroup, SWT.NONE);
 		lblSafety.setText("Safety");
@@ -326,12 +325,9 @@ public class SimulatorComposite extends Composite {
 
 			@Override
 			public void widgetSelected(SelectionEvent e) {
-				for( IEnvironment environment: environments.values() ) {
-					environment.zoomIn();
-				}
-				IEnvironment environment = environments.get(CovaidEnvironment.NAME);
-				resize( covaidCanvas.getBounds());
-				resize(rawCanvas.getBounds());
+				environment.zoomIn();
+				for( DomainComposite canvas: canvases.values())
+					resize( canvas.getBounds());
 				IField field = environment.getField();
 				horizontalMetres.setText( getAreaText( field.getLength() ));
 				verticalMetres.setText( getAreaText( field.getWidth() ));
@@ -370,12 +366,9 @@ public class SimulatorComposite extends Composite {
 
 			@Override
 			public void widgetSelected(SelectionEvent e) {
-				for( IEnvironment environment: environments.values() ) {
-					environment.zoomOut();
-					resize( covaidCanvas.getBounds());
-					resize(rawCanvas.getBounds());
-				}
-				IEnvironment environment = environments.get(CovaidEnvironment.NAME);
+				environment.zoomOut();
+				for( DomainComposite canvas: canvases.values())
+					resize( canvas.getBounds());
 				IField field = environment.getField();
 				horizontalMetres.setText( getAreaText( field.getLength() ));
 				verticalMetres.setText( getAreaText( field.getWidth() ));
@@ -424,16 +417,12 @@ public class SimulatorComposite extends Composite {
 					switch( state ) {
 					case START:
 						comboContagion.setEnabled(false);
-						for( IEnvironment environment: environments.values() ) {
-							environment.init( sliderPopulation.getSelection());
-							environment.start();
-						}
+						environment.init( sliderPopulation.getSelection());
+						environment.start();
 						break;
 					case STOP:
 						comboContagion.setEnabled(true);
-						for( IEnvironment environment: environments.values() ) {
-							environment.stop();
-						}
+						environment.stop();
 						break;
 					default:
 						break;
@@ -447,30 +436,27 @@ public class SimulatorComposite extends Composite {
 	}
 
 
-	public void setInput( Map<String, IEnvironment> environments) {
-		for(IEnvironment environment: this.environments.values()) {
-			environment.removeListener(covaidListener);
+	public void setInput( IEnvironment environment) {
+		if( this.environment != null ) {
+				environment.removeListener(covaidListener);
 			this.graphCanvas.removeInput(environment);
 		}
-		this.environments = environments;
-		for(IEnvironment environment: this.environments.values()) {
-			environment.addListener( covaidListener);
+		this.environment = environment;
+		if( this.environment != null ){
+			this.environment.addListener(covaidListener);
+			IField field = environment.getField();
+			for( AbstractDomain domain: environment.getDomains()) {
+				DomainComposite canvas = canvases.get( domain.getName());
+				canvas.setInput(domain);
+				Point point = canvas.computeSize((int)field.getLength(), (int)field.getWidth());
+				canvas.resize( new Rectangle( 0, 0, point.x, point.y));
+			}
 			this.graphCanvas.addInput(environment);
-		}
-		IEnvironment rawEnvironment = environments.get(RawEnvironment.NAME);
-		this.rawCanvas.setInput( rawEnvironment);
-		IEnvironment covaidEnvironment = environments.get(CovaidEnvironment.NAME);
-		this.covaidCanvas.setInput( covaidEnvironment);
-		if( covaidEnvironment != null ) {
-			covaidEnvironment.addListener(covaidListener);
-			IField field = covaidEnvironment.getField();
-			Point point = rawCanvas.computeSize((int)field.getLength(), (int)field.getWidth());
-			resize( new Rectangle( 0, 0, point.x, point.y));
 			horizontalMetres.setText( getAreaText( field.getLength() ));
 			verticalMetres.setText( getAreaText( field.getWidth() ));
-			lblPopulationValue.setText(String.valueOf(covaidEnvironment.getPopulation()));
-			lblDayValue.setText(String.valueOf( covaidEnvironment.getDays()));
-			comboContagion.select( IContagion.SupportedContagion.valueOf( covaidEnvironment.getContagion()).ordinal());
+			lblPopulationValue.setText(String.valueOf(environment.getPopulation()));
+			lblDayValue.setText(String.valueOf( environment.getDays()));
+			comboContagion.select( IContagion.SupportedContagion.valueOf( environment.getContagion()).ordinal());
 			IContagion contagion = IContagion.SupportedContagion.getContagion( comboContagion.getText());
 			lblContagiousnessValue.setText( String.format("%.2f", contagion.getContagiousness()) + "%");
 			lblDistanceValue.setText( contagion.getDistance() + " m" );
@@ -478,7 +464,7 @@ public class SimulatorComposite extends Composite {
 			lblDispersionValue.setText( String.format("%.2f", contagion.getDispersion()) + " m"); 
 			lblHalfTimeValue.setText( contagion.getHalfTime() + " days"); 
 		}
-		rawCanvas.requestLayout();
+		requestLayout();
 	}
 
 	public Color getColour( double contagion ) {
@@ -489,15 +475,12 @@ public class SimulatorComposite extends Composite {
 	}
 
 	protected void resize( Rectangle rectangle ) {
-		IEnvironment covaidEnvironment = environments.get(RawEnvironment.NAME);
-		if(( covaidEnvironment == null ) || ( rectangle.height == 0 ) || (rectangle.width == 0 ))
+		if(( environment == null ) || ( rectangle.height == 0 ) || (rectangle.width == 0 ))
 			return;
-		IField field = covaidEnvironment.getField();
+		IField field = environment.getField();
 		float scale = (float)rectangle.height/rectangle.width;
 		field = new Field( field.getCoordinates(), field.getLength(),  (int) (field.getLength()*scale ));
-		for(IEnvironment environment: this.environments.values() ) {
-			environment.setField(field);
-		}
+		environment.setField(field);
 		horizontalMetres.setText(String.valueOf( field.getLength()));
 		verticalMetres.setText(String.valueOf( field.getWidth()));
 	}
@@ -515,8 +498,6 @@ public class SimulatorComposite extends Composite {
 
 	public void dispose() {
 		this.session.stop();
-		for(IEnvironment environment: this.environments.values() ) {
-			environment.dispose();
-		}
+		environment.dispose();
 	}
 }

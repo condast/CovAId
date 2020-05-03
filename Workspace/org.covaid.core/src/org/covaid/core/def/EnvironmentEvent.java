@@ -1,9 +1,8 @@
-package org.covaid.core.model;
+package org.covaid.core.def;
 
 import java.util.EventObject;
 
-import org.covaid.core.def.IEnvironment;
-import org.covaid.core.def.IPerson;
+import org.covaid.core.environment.Environment;
 
 public class EnvironmentEvent extends EventObject {
 	private static final long serialVersionUID = 1L;
@@ -13,22 +12,26 @@ public class EnvironmentEvent extends EventObject {
 	
 	private IEnvironment.Events event;
 	
-	public EnvironmentEvent(Object source, IPerson person, int days ) {
+	public EnvironmentEvent( IEnvironment source, IPerson person, int days ) {
 		this(source, days);
 		this.person = person;
-		event = IEnvironment.Events.UPDATE_PERSON;
+		event = IEnvironment.Events.ACTIVITY;
 	}
 
-	public EnvironmentEvent(Object source, int days ) {
+	public EnvironmentEvent( IEnvironment source, int days ) {
 		this( source, IEnvironment.Events.NEW_DAY, days );
 	}
 
-	public EnvironmentEvent(Object source, IEnvironment.Events event, int days ) {
+	public EnvironmentEvent( IEnvironment source, IEnvironment.Events event, int days ) {
 		super(source);
 		this.days = days;
 		this.event = event;
 	}
 
+	public IEnvironment getEnvironment() {
+		return (Environment) super.getSource();
+	}
+	
 	public IEnvironment.Events getEvent() {
 		return event;
 	}

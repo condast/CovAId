@@ -78,6 +78,12 @@ public class History implements IHistory {
 	}
 
 	@Override
+	public ILocation get( Date date ) {
+		return this.history.get(date);
+	}
+
+	
+	@Override
 	public Date getCurrent() {
 		return current;
 	}
@@ -109,7 +115,7 @@ public class History implements IHistory {
 		Iterator<Map.Entry<Date, ILocation>> iterator = this.history.entrySet().iterator();
 		while( iterator.hasNext()) {
 			Map.Entry<Date, ILocation> entry = iterator.next();
-			long days = DateUtils.getDifferenceDays( date, entry.getKey());			
+			long days = DateUtils.getDifferenceDays( entry.getKey(), date );			
 			for( IContagion test: entry.getValue().getContagion()) {
 				double risk = test.getContagiousnessInTime(days);
 				double reference = current.getContagion(test);
@@ -200,17 +206,18 @@ public class History implements IHistory {
 	 * @param date
 	 * @param location
 	 */
-	public boolean update( Date date, IPoint location ) {
-		Iterator<Map.Entry<Date, ILocation>> iterator = this.history.entrySet().iterator();
+	@Override
+	public boolean update( Date date, ILocation location ) {
+		ILocation previous = this.history.get(date);
 		boolean result = false;
-		while( iterator.hasNext() ) {
-			Map.Entry<Date, ILocation> entry = iterator.next();
-			double distance = entry.getValue().getDistance(location);
-			for( IContagion contagion: entry.getValue().getContagion() )
-				result |= entry.getValue().updateContagion(contagion);
-			if( result )
-				notifyListeners( new HistoryEvent( this, entry.getKey(), entry.getValue() ));
+		if( previous == null ) {
+			previous = location;
+			result = true;
+		}else if( location.isWorse(previous)){
+			previous = previous.createWorst(location);
+			result = true;
 		}
+		this.history.put(date, previous);		
 		return result;
 	}
 

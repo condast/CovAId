@@ -4,70 +4,71 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.Map;
 
-import org.condast.commons.data.latlng.LatLng;
-import org.covaid.core.def.AbstractEnvironment;
 import org.covaid.core.def.IContagion;
+import org.covaid.core.def.IEnvironment;
+import org.covaid.core.def.IHub;
 import org.covaid.core.def.IPerson;
 import org.covaid.core.def.IPoint;
 import org.covaid.core.model.Contagion;
 import org.covaid.core.model.Hub;
-import org.covaid.core.model.Person;
 import org.covaid.core.model.Point;
 
-public class RawEnvironment extends AbstractEnvironment{
+public class RawDomain extends AbstractDomain{
 
 	public static final String NAME = "RAW";
 	public static final int DEFAULT_RADIUS = 10;//metres, the maximum movement that a person can make during one step in activity
 
 	private int radius;
+	private int index;
 		
-	public RawEnvironment() {
-		super( NAME );
-	}
-	
-	public RawEnvironment( int length, int width, int population ) {
-		this( new LatLng( NAME, LATITUDE, LONGITUDE), length, width, population, DEFAULT_SPEED);
+	public RawDomain() {
+		this( NAME );
 	}
 
-	public RawEnvironment( LatLng location, int length, int width, int population, int speed ) {
-		super( location, length, width, population, speed );
+	public RawDomain( String name ) {
+		super( name );
+		this.index = 0;
 	}
 
-	public void init( int population ) {
-		init( DEFAULT_RADIUS, DEFAULT_ACTIVITY, population );
-	}
-	
 	/**
 	 * Population is amount of people per square kilometre(!)
 	 * @param population
 	 */
-	public void init( int radius, int activity, int population ) {
-		super.init(activity, population);
-		this.radius = radius;
+	@Override
+	public void init( int population ) {
+		this.index = 0;
+		super.init( population);
+		this.radius = DEFAULT_RADIUS;
 	}
 	
 	@Override
-	protected void onCreatePerson(int index, IPerson person) {
-		Contagion contagion = IContagion.SupportedContagion.valueOf(getContagion()).getContagion();
-		if( index == 0 )
-			person.setContagion(getDate(), contagion);
+	protected void onCreatePerson( AbstractDomain domain, IPerson person) {
+		IEnvironment env = super.getEnvironment();
+		Contagion contagion = IContagion.SupportedContagion.valueOf(env.getContagion()).getContagion();
+		if( index == 0 ) {
+			person.setPosition((int)domain.getField().getLength()/2, (int)domain.getField().getWidth()/2);
+			person.setContagion( env.getDate(), contagion);
+		}
+		index++;
 	}
 	
 	/**
 	 * Move a person
 	 * @param population
 	 */
-	protected void onMovePerson( Date date, Person person) {
+	@Override
+	protected void onMovePerson( AbstractDomain domain, Date date, IPerson person) {
 		//analyseHub(date, person);//Create a new hub if the person has a risk of contagion
-		Contagion contagion = IContagion.SupportedContagion.getContagion(getContagion());
-		Collection<Person> persons = super.getPersons();
+		IEnvironment env = super.getEnvironment();
+		Contagion contagion = IContagion.SupportedContagion.getContagion( env.getContagion());
+		Collection<IPerson> persons = domain.getPersons();
 		if( person.getContagiousness(contagion) > 10 ){
 			for( IPerson other: persons) {
 				double distance = person.getLocation().getDistance(other.getLocation());
 				if( contagion.getDistance() < distance)
 					continue;
 				if( other.getContagiousness(contagion) < person.getContagiousness(contagion))
-					other.setContagion(getDate(), contagion);
+					other.setContagion( env.getDate(), contagion);
 			}
 		}
 		persons.remove(person);
@@ -84,17 +85,17 @@ public class RawEnvironment extends AbstractEnvironment{
 	}
 
 	
-	private Hub analyseHub( Date date, IPerson person ) {
+	private IHub analyseHub( AbstractDomain domain, Date date, IPerson person ) {
 		IPoint location = person.getLocation();
 		if( person.isHealthy())
 			return null;
-		Map<String, Hub> hubs = super.getHubs();
-		Hub hub = hubs.get(location.getIdentifier());
+		Map<String, IHub> hubs = domain.getHubs();
+		IHub hub = hubs.get(location.getIdentifier());
 		if( hub == null ) {
 			hub = new Hub( person );
 			hubs.put( location.getIdentifier(), hub );
 		}else {
-			hub.encounter(date, person);
+			hub.encounter(person, date);
 		}
 		return hub;
 	}

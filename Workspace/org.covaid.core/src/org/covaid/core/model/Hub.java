@@ -1,32 +1,30 @@
 package org.covaid.core.model;
 
-import java.util.ArrayList;
-import java.util.Collection;
+import java.util.Calendar;
 import java.util.Date;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.TreeMap;
+import java.util.stream.Collectors;
 
 import org.condast.commons.Utils;
+import org.condast.commons.date.DateUtils;
 import org.covaid.core.def.IContagion;
-import org.covaid.core.def.IHistory;
-import org.covaid.core.def.IHistoryListener;
 import org.covaid.core.def.IHub;
 import org.covaid.core.def.ILocation;
 import org.covaid.core.def.IPerson;
 
 public class Hub extends Point implements IHub {
 
-	private Collection<IHistory> histories;
+	//A list of person identifiers and when they were present here
+	private Map<Date, IPerson> persons;
 	
-	private IHistoryListener listener = (e)->{
-		for( IHistory history: this.histories) {
-			if( history.equals(e.getSource()))
-				continue;
-			history.alert(e.getDate(), e.getLocation(), e.getContagion());
-		}
-	};
-	
+	private ILocation location;
+
 	public Hub(String identifier, int xpos, int ypos) {
 		super(identifier, xpos, ypos);
-		this.histories = new ArrayList<>();
+		this.persons = new TreeMap<>();
+		this.location = new Location( identifier, xpos, ypos );
 	}
 
 	/**
@@ -37,30 +35,72 @@ public class Hub extends Point implements IHub {
 		this( person.getLocation().getIdentifier(), person.getLocation().getXpos(), person.getLocation().getYpos());
 	}
 	
+	@Override
+	public ILocation getLocation() {
+		return location;
+	}
+
 	/**
-	 * Respond to an encounter with a person
+	 * Respond to an encounter with a person. This happens when a person enters the location of this hub
+	 * The snapshots of the person and the location are compared, and the person is alerted
+	 * if the risk of infection has increased. Returns true if the snapshot has become worse
 	 * @param person
 	 * @return
 	 */
 	@Override
-	public boolean encounter( Date date, IPerson person ) {
+	public boolean encounter( IPerson person, Date date ) {
 		if( person.isHealthy() || !person.getLocation().getIdentifier().equals( super.getIdentifier()))
 			return false;
-		ILocation reference = createSnapshot( person.getCurrent());
-		ILocation test = person.createSnapshot();
+		ILocation check = person.createSnapshot();
+
+		//Determine the worst case situation for the encounter
+		ILocation worst = Location.createWorseCase(this.location, check);
 		
-		//Check if the current situation is worst that the person's
-		ILocation worst = createWorseCase(test, reference);
-		IContagion[] worse = reference.isWorse(test);
+		//Check if the person is worse off, and if so generate an alert		
+		IContagion[] worse = check.getWorse( worst );
 		if( Utils.assertNull(worse)) {
 			person.alert( date, worst);
-			return false;
-		}	
-		histories.add( person.getHistory() );
-		person.getHistory().addListener(listener);
+		}
+		
+		//If the hub has deteriorated, then add the person 
+		worse = this.location.getWorse( worst );
+		if( Utils.assertNull(worse))
+			this.location = worst;
+			
+		persons.put( date, person );
 		return true;
 	}
 
+	public boolean isEmpty() {
+		return this.persons.isEmpty();
+	}
+	
+	/**
+	 * Respond to an alert of a person. This happens when the person has become infected, and is alerting previous locations 
+	 * of the infection. Returns true if the snapshot has become worse
+	 * @param person
+	 * @return
+	 */
+	@Override
+	public boolean alert( IPerson person, Date date ) {
+		if( person.isHealthy() || !person.getLocation().getIdentifier().equals( super.getIdentifier()))
+			return false;
+		
+		this.location = createSnapShot(date);
+		Iterator<Map.Entry<Date, IPerson>> iterator = this.persons.entrySet().stream()
+				.filter(item -> !item.getKey().after(date))
+				.collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue)).entrySet().iterator();
+		
+		ILocation reference = person.get(date);
+		while( iterator.hasNext() ) {
+			Map.Entry<Date, IPerson> entry = iterator.next();
+			ILocation check = entry.getValue().get( date );
+			IContagion[] contagion = reference.getWorse(check);
+			if( !Utils.assertNull(contagion))
+				entry.getValue().alert(date, check);
+		}			
+		return true;
+	}
 
 	/**
 	 * A snap shot is a representation of the current state of this location, with respect to
@@ -70,43 +110,31 @@ public class Hub extends Point implements IHub {
 	 * @return
 	 */
 	@Override
-	public ILocation createSnapshot( Date date ) {
-		Location current = new Location( this );
-		ILocation worst = null;
-		for( IHistory history: this.histories ) {
-			ILocation snapshot = history.createSnapShot(date, this);
-			worst = createWorseCase(current, snapshot);
-		}
-		return worst;
-	}
-
-	/**
-	 * Create a new location from the reference by adding the highest contagions
-	 * from loc2
-	 * @param reference
-	 * @param loc2
-	 * @return
-	 */
-	@Override
-	public Location createWorseCase( ILocation reference, ILocation loc2 ) {
-		Location worst = new Location( reference );
-		for( IContagion contagion: reference.getContagion() ) {
-			double test = loc2.getContagion(contagion);
-			if( contagion.getContagiousness() < test)
-				worst.addContagion(contagion);
-		}
-		return worst;
-	}
-	
-	@Override
-	public void updateHub( Date date ) {
-		Collection<IHistory> temp = new ArrayList<IHistory>( this.histories);
-		for( IHistory history: temp ) {
-			history.update(date, this);
-			if( history.isEmpty()) {
-				history.removeListener(listener);
-				this.histories.remove(history);
+	public ILocation createSnapShot( Date current ) {
+		Iterator<Map.Entry<Date, IPerson>> iterator = this.persons.entrySet().iterator();
+		ILocation result = new Location( this.location.getIdentifier(), this );
+		while( iterator.hasNext()) {
+			Map.Entry<Date, IPerson> entry = iterator.next();
+			long days = DateUtils.getDifferenceDays( current, entry.getKey());
+			ILocation snapshot = entry.getValue().getHistory().createSnapShot(current, this);
+			for( IContagion test: snapshot.getContagion()) {
+				double risk = test.getContagiousnessInTime(days);
+				double reference = result.getContagion(test);
+				if( reference < risk )
+					result.addContagion( new Contagion(test.getIdentifier(), risk ));
 			}
 		}
+		return result;
+	}
+
+	@Override
+	public ILocation update( Date current ) {	
+		this.location = createSnapShot(current);
+		int days = (int) (2 * Location.getMaxContagionTime(location));
+		Calendar calendar = Calendar.getInstance();
+		calendar.setTime(current);
+		calendar.add(Calendar.DAY_OF_YEAR, -days);
+		this.persons.entrySet().removeIf(entry -> entry.getKey().before(calendar.getTime()));
+		return location;
 	}
 }

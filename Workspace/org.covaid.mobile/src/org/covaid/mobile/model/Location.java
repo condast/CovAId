@@ -17,6 +17,7 @@ import javax.persistence.OneToMany;
 import org.covaid.core.def.IContagion;
 import org.covaid.core.def.ILocation;
 import org.covaid.core.def.IPoint;
+import org.covaid.core.model.Contagion;
 
 @Entity(name="LOCATION")
 public class Location extends Point implements ILocation{
@@ -30,6 +31,10 @@ public class Location extends Point implements ILocation{
 
 	public Location( IPoint point) {
 		this( point.getXpos(), point.getYpos());
+	}
+
+	public Location( String identifier, IPoint point) {
+		this( identifier, point.getXpos(), point.getYpos());
 	}
 
 	public Location( int xpos, int ypos) {
@@ -59,6 +64,15 @@ public class Location extends Point implements ILocation{
 	public double getContagion( IContagion contagion ) {
 		Double result = this.contagions.get(contagion);
 		return ( result == null )?0: result;
+	}
+
+	@Override
+	public IContagion getContagion( String identifier ) {
+		for( IContagion contagion: this.contagions.keySet() ){
+			if( contagion.getIdentifier().equals(identifier))
+				return contagion;
+		}
+		return null;
 	}
 
 	public IContagion[] getContagion() {
@@ -95,7 +109,7 @@ public class Location extends Point implements ILocation{
 	 * @param location
 	 * @return
 	 */
-	public IContagion[] isWorse( ILocation location ) {
+	public IContagion[] getWorse( ILocation location ) {
 		Collection<IContagion> results = new ArrayList<>();
 		if( location.compareTo((IPoint)this) != 0 )
 			return new Contagion[0];//invalid comparison
@@ -125,5 +139,44 @@ public class Location extends Point implements ILocation{
 			return false;
 		Location test = (Location) obj;
 		return (( test.getXpos() - getXpos() == 0 ) && ( test.getYpos() - getYpos() == 0 ));
+	}
+
+	/**
+	 * Return true if the given location is more contagious than this one. This
+	 * means that there is at least one more contagious infection
+	 * Returns an empty list of the locations are not the same
+	 * @param location
+	 * @return
+	 */
+	@Override
+	public boolean isWorse( ILocation location ) {
+		for( IContagion contagion: this.contagions.keySet() ) {
+			double compare = location.getContagion( contagion);
+			if( compare  > contagion.getContagiousness())
+				return true;
+		}
+		return false;
+	}
+
+	/**
+	 * Returns the worst possible situation when combining the contagiousness of both locations
+	 * Returns null if the locations are not the same
+	 * @param location
+	 * @return
+	 */
+	@Override
+	public ILocation createWorst( ILocation location ) {
+		if( location.compareTo(this) != 0 )
+			return null;//invalid comparison
+		
+		ILocation worst = new Location( location.getIdentifier(), location.toPoint());
+		for( IContagion contagion: this.contagions.keySet() ) {
+			double compare = location.getContagion( contagion);
+			if( compare  > contagion.getContagiousness())
+				worst.addContagion(contagion);
+			else
+				worst.addContagion(location.getContagion( contagion.getIdentifier()));
+		}
+		return worst;
 	}
 }

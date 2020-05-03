@@ -4,18 +4,18 @@
    <extension
          point="org.eclipse.equinox.http.registry.servlets">
       <servlet
-            alias="/covaid/rest"
-            class="org.covaid.rest.RestServlet"
+            alias="/covaid/mobile/rest"
+            class="org.covaid.mobile.RestServlet"
             load-on-startup="true">
         <init-param name="javax.ws.rs.Application"
-    			    value="org.covaid.rest.RestApplication">
+    			    value="org.covaid.mobile.RestApplication">
 		</init-param>
       </servlet>
    </extension>
    <extension
          point="org.eclipse.equinox.http.registry.resources">
       <resource
-            alias="/covaidresources"
+            alias="/covaid-mobile"
             base-name="/web">
       </resource>
    </extension>

@@ -164,8 +164,14 @@ public class Person implements IPerson{
 		return NumberUtils.clipRange(0, 100, radius );
 	}
 
-	public void move( Point point ) {
-		this.location = point;
+	@Override
+	public ILocation get( Date date ) {
+		return this.getHistory().get(date);
+	}
+	
+	@Override
+	public void move( IPoint point ) {
+		this.location = (Point) point;
 	}
 
 	/**

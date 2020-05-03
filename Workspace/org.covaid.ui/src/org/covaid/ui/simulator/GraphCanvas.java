@@ -15,10 +15,11 @@ import java.util.logging.Logger;
 import org.condast.commons.ui.session.PushSession;
 import org.covaid.core.def.IContagion;
 import org.covaid.core.def.IEnvironment;
-import org.covaid.core.def.IEnvironmentListener;
+import org.covaid.core.def.IDomainListener;
 import org.covaid.core.def.IPerson;
-import org.covaid.core.def.IEnvironment.Events;
-import org.covaid.core.model.EnvironmentEvent;
+import org.covaid.core.environment.AbstractDomain;
+import org.covaid.core.environment.AbstractDomain.DomainEvents;
+import org.covaid.core.environment.DomainEvent;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.PaintListener;
 import org.eclipse.swt.graphics.Color;
@@ -29,24 +30,22 @@ import org.eclipse.swt.graphics.Rectangle;
 public class GraphCanvas extends Canvas {
 	private static final long serialVersionUID = 1L;
 
-	private PushSession<EnvironmentEvent> session;
+	private PushSession<DomainEvent> session;
 
-	private Map<IEnvironment, List<Data>> environments;
+	private Map<AbstractDomain, List<Data>> domains;
 
 	protected Logger logger = Logger.getLogger(this.getClass().getName());
 
-	private IEnvironmentListener listener = (e)->{
-		if( getDisplay().isDisposed() || !Events.ACTIVITY.equals(e.getEvent()))
+	private IDomainListener listener = (e)->{
+		if( getDisplay().isDisposed() || DomainEvents.UPDATE_PERSON.equals(e.getEvent()))
 			return;
-		IEnvironment env = (IEnvironment) e.getSource();
-		List<Data> list = environments.get(env );
+		AbstractDomain domain = (AbstractDomain) e.getSource();
+		IEnvironment env = (IEnvironment) domain.getEnvironment();
+		List<Data> list = domains.get( domain );
 		Data data = list.get(list.size()-1);
-		data.activity++;
-		if( data.activity < 300 )
-			return;
 		int infected = 0;
 		IContagion contagion = IContagion.SupportedContagion.getContagion(env.getContagion());
-		for( IPerson person: env.getPersons() ) {
+		for( IPerson person: e.getDomain().getPersons() ) {
 			if( person.getContagiousness( contagion ) > 10 )
 				infected++;
 		}
@@ -83,8 +82,8 @@ public class GraphCanvas extends Canvas {
 	public GraphCanvas(Composite parent, int style) {
 		super(parent, style);
 		this.createComposite(parent, style);
-		this.environments = new HashMap<>();
-		session = new PushSession<EnvironmentEvent>();
+		this.domains = new HashMap<>();
+		session = new PushSession<DomainEvent>();
 		session.start();
 	}
 
@@ -93,19 +92,23 @@ public class GraphCanvas extends Canvas {
 	}
 
 	public void addInput( IEnvironment environment) {
-		if( !this.environments.containsKey(environment) ) {
-			List<Data> list = Collections.synchronizedList( new ArrayList<>());
-			list.add( new Data( 0 ));
-			this.environments.put( environment, list);
+		for( AbstractDomain domain: environment.getDomains()) {
+			if( !this.domains.containsKey(domain) ) {
+				List<Data> list = Collections.synchronizedList( new ArrayList<>());
+				list.add( new Data( 0 ));
+				this.domains.put( domain, list);
+			}
+			domain.addListener(listener);
 		}
-		environment.addListener(listener);
 		requestLayout();
 	}
 
-	public void removeInput( IEnvironment environment) {
-		if( this.environments.containsKey(environment) ) {
-			this.environments.remove(environment);
-			environment.removeListener(listener);
+	public void removeInput( IEnvironment environment ) {
+		for( AbstractDomain domain: environment.getDomains()) {
+			if( this.domains.containsKey(domain) ) {
+				this.domains.remove(domain);
+				domain.removeListener(listener);
+			}
 		}
 	}
 
@@ -116,8 +119,8 @@ public class GraphCanvas extends Canvas {
 			gc.drawLine(0, 0, 0, rectangle.height - 20);
 			setData(null);
 			int colourIndex = 0;
-			for( IEnvironment env: this.environments.keySet() ) { 
-				Collection<Data> progress = environments.get(env);
+			for( AbstractDomain domain: this.domains.keySet() ) { 
+				Collection<Data> progress = domains.get(domain);
 				if( progress.isEmpty())
 					continue;
 				Iterator<Data> iterator = new ArrayList<Data>( progress).iterator();
@@ -139,9 +142,9 @@ public class GraphCanvas extends Canvas {
 	}
 
 	public void clear() {
-		for( IEnvironment env: this.environments.keySet()) {
-			this.environments.get(env).clear();
-			this.environments.get(env).add(new Data( 0 ));
+		for( AbstractDomain domain: this.domains.keySet()) {
+			domain.clear();
+			this.domains.get(domain).add(new Data( 0 ));
 		}
 	}
 
