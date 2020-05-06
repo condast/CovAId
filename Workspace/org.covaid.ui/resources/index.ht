@@ -7,7 +7,7 @@
     	<p>Ill</p>
      </div>
     <div class="col-4">
-		<input type="range" class="custom-range" id="customRange1" min="0" max="100">
+		<input type="range" class="healthRange" id="healthRange" min="0" max="100" onClick="updateHealth(2)">
 	</div>
      <div class="col-3">
     	<label for="customRange1">Tip Top</label>

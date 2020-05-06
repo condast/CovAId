@@ -2,7 +2,7 @@ package org.covaid.rest.service;
 
 import javax.persistence.EntityManagerFactory;
 
-import org.condast.commons.persistence.service.AbstractEntityManagerService;
+import org.condast.commons.persistence.service.AbstractFactoryService;
 import org.covaid.rest.Activator;
 import org.covaid.rest.core.Dispatcher;
 
@@ -11,7 +11,7 @@ import org.covaid.rest.core.Dispatcher;
  * @author Kees
  *
  */
-public class EntityManagerService extends AbstractEntityManagerService{
+public class EntityManagerService extends AbstractFactoryService<EntityManagerFactory>{
 
 	private Dispatcher service = Dispatcher.getInstance();
 	

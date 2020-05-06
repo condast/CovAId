@@ -16,11 +16,11 @@
 <setEntry value="org.condast.commons.legal"/>
 <setEntry value="org.condast.commons.test"/>
 <setEntry value="org.condast.js.react"/>
-<setEntry value="org.covaid.mobile"/>
-<setEntry value="org.covaid.orientdb"/>
+<setEntry value="org.covaid.rest"/>
 <setEntry value="org.google.geo.mapping.ui"/>
 <setEntry value="test.condast.com"/>
 <setEntry value="test.covaid.core"/>
+<setEntry value="test.covaid.mobile"/>
 </setAttribute>
 <booleanAttribute key="includeOptional" value="true"/>
 <booleanAttribute key="org.eclipse.jdt.launching.ATTR_USE_START_ON_FIRST_THREAD" value="true"/>
@@ -75,7 +75,6 @@
 <setEntry value="javax.xml.soap@default:default"/>
 <setEntry value="javax.xml.ws@default:default"/>
 <setEntry value="javax.xml@default:default"/>
-<setEntry value="oevm.javax.portlet@default:default"/>
 <setEntry value="oevm.org.aopalliance@default:default"/>
 <setEntry value="org.apache.commons.codec*1.10.0.v20151023-1447@default:default"/>
 <setEntry value="org.apache.commons.fileupload@default:default"/>
@@ -106,13 +105,6 @@
 <setEntry value="org.eclipse.equinox.registry@default:default"/>
 <setEntry value="org.eclipse.equinox.security@default:default"/>
 <setEntry value="org.eclipse.equinox.util@default:default"/>
-<setEntry value="org.eclipse.gemini.blueprint.core@default:default"/>
-<setEntry value="org.eclipse.gemini.blueprint.extender@default:default"/>
-<setEntry value="org.eclipse.gemini.blueprint.extensions@default:default"/>
-<setEntry value="org.eclipse.gemini.blueprint.io@default:default"/>
-<setEntry value="org.eclipse.gemini.dbaccess.util@default:default"/>
-<setEntry value="org.eclipse.gemini.jpa@default:default"/>
-<setEntry value="org.eclipse.gemini.management@default:default"/>
 <setEntry value="org.eclipse.jetty.continuation@default:default"/>
 <setEntry value="org.eclipse.jetty.http@default:default"/>
 <setEntry value="org.eclipse.jetty.io@default:default"/>
@@ -136,8 +128,6 @@
 <setEntry value="org.eclipse.rap.nebula.widgets.richtext@default:default"/>
 <setEntry value="org.eclipse.rap.rwt.osgi@default:default"/>
 <setEntry value="org.eclipse.rap.rwt@default:default"/>
-<setEntry value="org.eclipse.virgo.management.fragment@default:false"/>
-<setEntry value="org.eclipse.virgo.web.servlet.adapter@default:default"/>
 <setEntry value="org.glassfish.hk2.api@default:default"/>
 <setEntry value="org.glassfish.hk2.external.javax.inject@default:default"/>
 <setEntry value="org.glassfish.hk2.locator@default:default"/>
@@ -179,7 +169,9 @@
 <setEntry value="org.covaid.commons.support@default:default"/>
 <setEntry value="org.covaid.core@default:default"/>
 <setEntry value="org.covaid.dashboard@default:default"/>
-<setEntry value="org.covaid.rest@default:default"/>
+<setEntry value="org.covaid.mobile@default:default"/>
+<setEntry value="org.covaid.orientdb.fragment@default:false"/>
+<setEntry value="org.covaid.orientdb@default:default"/>
 <setEntry value="org.covaid.ui@default:default"/>
 <setEntry value="org.openlayer.map@default:default"/>
 </setAttribute>

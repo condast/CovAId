@@ -6,6 +6,8 @@ import org.osgi.framework.BundleContext;
 
 public class Activator implements BundleActivator {
 	
+	 public static String BUNDLE_ID = "org.covaid.orientdb";
+
 	private static BundleContext context;
 
 	private static DatabasePersistenceService graph = DatabasePersistenceService.getInstance();

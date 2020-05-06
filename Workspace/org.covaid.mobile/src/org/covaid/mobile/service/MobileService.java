@@ -8,10 +8,10 @@ import java.util.Collection;
 import javax.persistence.TypedQuery;
 
 import org.condast.commons.data.plane.IField;
-import org.condast.commons.persistence.service.AbstractEntityService;
-import org.condast.commons.persistence.service.IPersistenceService;
 import org.covaid.core.def.IMobile;
-import org.covaid.mobile.model.Mobile;
+import org.covaid.core.model.Mobile;
+import org.covaid.orientdb.def.IOrientPersistenceService;
+import org.covaid.orientdb.object.AbstractEntityService;
 
 public class MobileService extends AbstractEntityService<IMobile>{
 
@@ -21,17 +21,19 @@ public class MobileService extends AbstractEntityService<IMobile>{
 			"SELECT l FROM Location l WHERE l.latitude >= :latmin AND l.latitude <= :latmax AND "
 			+ "l.longitude >= :lonmin AND l.longitude <= :lonmax ";
 
-	public MobileService( IPersistenceService service ) {
+	public MobileService( IOrientPersistenceService service ) {
 		super( IMobile.class, service );
 	}
 
-	public Mobile create( String name, IField field ) {
+	public IMobile create( String name, IField field ) {
 		Calendar calendar = Calendar.getInstance();
 		String identifier = name + ":" + calendar.getTimeInMillis();
 		Mobile mobile = null;
 		try{
-			mobile = new Mobile( toHex( identifier, "UTF-8" ), field );
-			super.create(mobile);
+			mobile = (Mobile) super.create( Mobile.class );
+			mobile.setIdentifier( toHex( identifier, "UTF-8" ));
+			mobile.setField( field );
+			super.update(mobile);
 		}
 		catch( Exception ex ) {
 			ex.printStackTrace();

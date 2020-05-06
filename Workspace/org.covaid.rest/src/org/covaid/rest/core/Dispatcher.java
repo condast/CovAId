@@ -1,7 +1,11 @@
 package org.covaid.rest.core;
 
 import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.TreeSet;
+
+import javax.persistence.EntityManager;
 
 import org.condast.commons.persistence.service.AbstractPersistencyService;
 
@@ -22,6 +26,27 @@ public class Dispatcher extends AbstractPersistencyService {
 
 	public static Dispatcher getInstance() {
 		return dispatcher;
+	}
+
+	@Override
+	protected Map<String, String> onPrepareManager() {
+		Map<String, String> orientDBProp = new HashMap<String, String>(){
+			private static final long serialVersionUID = 1L;
+			{
+				put("javax.persistence.jdbc.url", "remote:localhost/test.odb");
+				put("javax.persistence.jdbc.user", "admin");
+				put("javax.persistence.jdbc.password", "admin");
+				put("com.orientdb.entityClasses", "com.example.domains");
+			}
+		};
+		return orientDBProp;
+	}
+
+	
+	@Override
+	protected void onManagerCreated(EntityManager manager) {
+		// TODO Auto-generated method stub
+		
 	}
 
 	public boolean isregistered( long userId, String token ) {

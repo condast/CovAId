@@ -50,4 +50,8 @@ public interface IMobile {
 
 	boolean addContact(SharedData data);
 
+	void setIdentifier(String identifier);
+
+	Date getTimestamp();
+
 }

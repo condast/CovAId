@@ -7,13 +7,14 @@ Bundle-ClassPath: org.covaid.orientdb
 Bundle-Activator: org.covaid.orientdb.Activator
 Bundle-Vendor: Condast
 Bundle-RequiredExecutionEnvironment: JavaSE-1.7
-Service-Component: OSGI-INF/org.aieonf.orientdb.service.LoginConsumer.xml,
- OSGI-INF/org.aieonf.orientdb.active.domain.xml,
- OSGI-INF/org.aieonf.orientdb.service.SecureCallConsumer.xml,
- OSGI-INF/org.covaid.orientdb.service.LoginConsumer.xml
+Service-Component: 
+ OSGI-INF/org.covaid.orientdb.service.LoginConsumer.xml,
+ OSGI-INF/org.covaid.orientdb.entity.manager.xml
 Import-Package: com.google.gson;version="2.7.0",
  com.orientechnologies.orient.core;version="2.2.37",
+ com.orientechnologies.orient.core.db;version="2.2.37",
  com.orientechnologies.orient.core.db.document;version="2.2.37",
+ com.orientechnologies.orient.core.entity;version="2.2.37",
  com.orientechnologies.orient.core.metadata;version="2.2.37",
  com.orientechnologies.orient.core.metadata.security;version="2.2.37",
  com.orientechnologies.orient.core.record;version="2.2.37",
@@ -45,3 +46,5 @@ Import-Package: com.google.gson;version="2.7.0",
  org.osgi.service.component.annotations;version="1.2.0"
 Automatic-Module-Name: org.covaid.orientdb
 Bundle-ActivationPolicy: lazy
+Export-Package: org.covaid.orientdb.def,
+ org.covaid.orientdb.object

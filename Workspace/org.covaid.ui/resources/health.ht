@@ -8,8 +8,8 @@
 				<p>${value.safety.min}</p>
 			</div>
 			<div class="col-4">
-				<input type="range" class="custom-range" id="customRange1"
-					min="${value.safety.min}" max="${value.safety.max}">
+				<input type="range" class="custom-range" id="healthRange"
+					min="${value.safety.min}" max="${value.safety.max}" onclick="updateHealth(2);">
 			</div>
 			<div class="col-1">
 				<label for="customRange1">${value.safety.max}</label>
@@ -94,4 +94,3 @@
 		</div>
 	</div>
 </div>
-</body>

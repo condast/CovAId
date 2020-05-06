@@ -1,6 +1,7 @@
 package org.covaid.ui.simulator;
 
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Canvas;
 
@@ -14,7 +15,8 @@ import java.util.logging.Logger;
 import org.condast.commons.data.plane.Field;
 import org.condast.commons.data.plane.IField;
 import org.condast.commons.data.util.Vector;
-import org.condast.commons.ui.session.PushSession;
+import org.condast.commons.ui.session.AbstractSessionHandler;
+import org.condast.commons.ui.session.SessionEvent;
 import org.covaid.core.def.IContagion;
 import org.covaid.core.def.IEnvironment;
 import org.covaid.core.def.IDomainListener;
@@ -36,36 +38,14 @@ public class DomainComposite extends Composite {
 
 	private Canvas canvas;
 
-	private PushSession<DomainEvent> session;
+	private SessionHandler handler;
 
 	private AbstractDomain domain;
 
 	private int counter;
-	private IDomainListener listener = (e)->{
-		if( getDisplay().isDisposed())
-			return;
-		session.addData(e);
-		counter++;
-		counter%=domain.getPopulation();
-		if( counter != 1 )
-			return;
-		getDisplay().asyncExec(()->{
-			try {
-				canvas.setData(e);
-				canvas.redraw();
-			}
-			catch( Exception ex ) {
-				ex.printStackTrace();
-			}
-			requestLayout();
-		});
-	};
 
 	private PaintListener paintListener = (event)->{
 		try{
-			DomainEvent ee = (DomainEvent) canvas.getData();
-			if(( ee == null )) // || ( ee.getPerson() == null ))
-				return;
 			updateCanvas(event.gc );
 		}
 		catch( Exception ex ){
@@ -84,8 +64,7 @@ public class DomainComposite extends Composite {
 		super(parent, style);
 		this.createComposite(parent, style);
 		this.counter = 0;
-		session = new PushSession<DomainEvent>();
-		session.start();
+		handler = new SessionHandler( getDisplay());
 	}
 
 	protected void createComposite( Composite parent, int style ) {
@@ -99,21 +78,18 @@ public class DomainComposite extends Composite {
 
 	public void setInput( AbstractDomain domain ) {
 		if( this.domain != null ) {
-			domain.removeListener(listener);
+			domain.removeListener(handler);
 		}
 		this.domain = domain;
 		if( this.domain != null ) {
-			domain.addListener(listener);
+			domain.addListener(handler);
 		}
 		canvas.requestLayout();
 	}
 
 	protected void updateCanvas( GC gc ) {
 		try {
-			DomainEvent event = (DomainEvent) canvas.getData();
-			if( event == null )
-				return;
-			for( IPerson person: event.getDomain().getPersons())
+			for( IPerson person: domain.getPersons())
 				updatePerson(gc, person);
 			gc.dispose();
 		}
@@ -124,10 +100,6 @@ public class DomainComposite extends Composite {
 
 	protected void updatePerson( GC gc, IPerson person ) {
 		try {
-			DomainEvent event = (DomainEvent) canvas.getData();
-			if( event == null )
-				return;
-			AbstractDomain domain = event.getDomain();
 			IEnvironment env = domain.getEnvironment();
 			IContagion contagion = IContagion.SupportedContagion.getContagion( env.getContagion());
 			Date date = env.getDate();
@@ -196,6 +168,38 @@ public class DomainComposite extends Composite {
 
 	public void dispose() {
 		canvas.removePaintListener(paintListener);
-		this.session.stop();
+		this.handler.dispose();
+	}
+	
+	private class SessionHandler extends AbstractSessionHandler<DomainEvent> 
+	implements IDomainListener{
+
+		protected SessionHandler(Display display) {
+			super(display);
+		}
+
+		@Override
+		public void notifyPersonChanged(DomainEvent event) {
+			if( getDisplay().isDisposed())
+				return;
+			
+			if(AbstractDomain.DomainEvents.UPDATE_PERSON.equals(event.getEvent()))
+				return;
+			addData(event);
+			counter++;
+		}
+
+		@Override
+		protected void onHandleSession(SessionEvent<DomainEvent> sevent) {
+			try {
+				canvas.redraw();
+			}
+			catch( Exception ex ) {
+				ex.printStackTrace();
+			}
+			requestLayout();
+
+		}
+		
 	}
 }

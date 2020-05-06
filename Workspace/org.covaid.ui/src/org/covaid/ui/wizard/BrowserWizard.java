@@ -5,14 +5,15 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.condast.commons.Utils;
 import org.condast.commons.messaging.http.AbstractHttpRequest;
 import org.condast.commons.messaging.http.ResponseEvent;
 import org.condast.js.commons.wizard.AbstractHtmlParser;
+import org.condast.js.commons.wizard.AbstractHtmlParser.Authentication;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.browser.Browser;
 import org.eclipse.swt.events.PaintListener;
 import org.eclipse.swt.graphics.GC;
-import org.eclipse.swt.graphics.LineAttributes;
 import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.widgets.Composite;
@@ -73,6 +74,8 @@ public class BrowserWizard extends Composite {
 	
 	private Links link;
 	
+	private Map<Authentication,String> auth;
+	
 	private PaintListener listener = (e)->{
 		Canvas canvas = (Canvas) e.getSource();
 		Rectangle rect = canvas.getBounds();
@@ -82,8 +85,6 @@ public class BrowserWizard extends Composite {
 		GC gc = e.gc;
 		gc.setBackground(getDisplay().getSystemColor(SWT.COLOR_DARK_CYAN));
 		gc.fillOval((rect.width-riskRadius)/2, (rect.height-riskRadius)/2, riskRadius, riskRadius);
-		LineAttributes la = gc.getLineAttributes();
-		//la.
 		gc.setLineWidth(4);
 		//gc.setLineStyle(SWT.LINE_DOT);
 		gc.setForeground(getDisplay().getSystemColor(SWT.COLOR_WHITE));
@@ -98,9 +99,21 @@ public class BrowserWizard extends Composite {
 	public BrowserWizard(Composite parent, int style) {
 		super(parent, style);
 		this.link = Links.DOWNLOAD;
+		this.auth = new HashMap<>();
 		createPage(parent, style);
 	}
 	
+	private String createVariables( String args ) {
+		StringBuilder builder = new StringBuilder();
+		String[] split = args.split("[&]");
+		for( String str: split ) {
+			builder.append("var " + str + ";\n");
+			String[] split1 = str.split("[=]");
+			auth.put(Authentication.valueOf(split1[0].toUpperCase()), split1[1]);
+		}
+		return builder.toString();
+	}
+
 	protected void createPage( Composite parent, int style ) {
 		super.setLayout(new FillLayout());
 		setLayout(new GridLayout(1, false));
@@ -112,7 +125,10 @@ public class BrowserWizard extends Composite {
 
 			@Override
 			protected void onHandleLinks( String linkStr) {
-				link = Links.valueOf(linkStr.toUpperCase());
+				String[] split = linkStr.split("[?]");
+				if( split.length>1)
+					createVariables(split[1]);
+				link = Links.valueOf(split[0].toUpperCase());
 				grpIndication.setVisible( !Links.DOWNLOAD.equals(link));
 				super.createPage( BrowserWizard.class.getResourceAsStream(link.toFile()));
 			}
@@ -125,6 +141,37 @@ public class BrowserWizard extends Composite {
 					break;
 				}
 				return result;
+			}
+
+			
+			@Override
+			protected String onHandleScript( Class<?> clss, String path) {
+				StringBuilder builder = new StringBuilder();
+				try {
+					builder.append( parse( clss.getResourceAsStream( path)));
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+				return builder.toString();
+			}
+
+			@Override
+			protected String onHandleAuthentication( String id, Authentication authentication) {
+				StringBuilder builder = new StringBuilder();
+				if( Utils.assertNull(auth))
+					return builder.toString();
+				builder.append("=");
+				switch( authentication ) {
+				case IDENTIFIER:
+					builder.append("'");
+					builder.append( auth.get(authentication));
+					builder.append("'");
+					break;
+				default:
+					builder.append( auth.get(authentication));
+					break;
+				}
+				return builder.toString();
 			}
 
 			@Override

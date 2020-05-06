@@ -1,0 +1,18 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Test mobile Packages
+Bundle-SymbolicName: test.covaid.mobile;singleton:=true
+Bundle-Version: 1.0.0.qualifier
+Bundle-ClassPath: .,
+ test.covaid.core
+Bundle-Vendor: Condast
+Automatic-Module-Name: test.covaid.core
+Import-Package: org.condast.commons.data.latlng,
+ org.condast.commons.data.plane,
+ org.condast.commons.test.core,
+ org.covaid.core.def,
+ org.covaid.core.model,
+ org.osgi.framework
+Bundle-ActivationPolicy: lazy
+Bundle-Activator: test.covaid.mobile.Activator
+Bundle-RequiredExecutionEnvironment: JavaSE-1.7

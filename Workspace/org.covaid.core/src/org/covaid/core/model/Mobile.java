@@ -3,6 +3,7 @@ package org.covaid.core.model;
 import java.util.Calendar;
 import java.util.Date;
 
+import org.condast.commons.data.plane.IField;
 import org.covaid.core.contagion.ContagionManager;
 import org.covaid.core.contagion.IContagionManager;
 import org.covaid.core.data.SharedData;
@@ -13,22 +14,48 @@ import org.covaid.core.def.IHistoryListener;
 import org.covaid.core.def.ILocation;
 import org.covaid.core.def.IMobile;
 import org.covaid.core.def.IPoint;
+import org.covaid.core.field.FieldChangeEvent;
+import org.covaid.core.field.IFieldListener;
 
-public class Mobile implements IMobile {
+public class Mobile implements IMobile, IFieldListener {
+
 		
 	//An anonymous id used for communication with the serrver
 	
 	private String identifier;
 	
 	private double risk, safety;
-	private StoredNode node;
+	private transient StoredNode node;
 	private IPoint location;
 
 	private History history;
+	
+	private Date timestamp;
+	
+	private transient IField field;
 
-	private IHistoryListener listener = (e)->{
+	private transient IHistoryListener listener = (e)->{
 		//history.alert(e.getDate(), e.getLocation(), e.getContagion());
 	};
+
+	
+	public Mobile() {
+		super();
+		this.timestamp = Calendar.getInstance().getTime();
+	}
+
+	/**
+	 * The Safety is the extent in which the bubble should protect you, e.g. for vulnerable people
+	 * The Risk is the amount of risk you are willing to take
+	 * @param id
+	 * @param safety (0-100)
+	 * @param risk (0-100)
+	 * @param location
+	 */
+	public Mobile( String identifier, IField field) {
+		this( identifier, 50, 50, new Point((int)field.getLength()/2, (int)field.getWidth()/2 ));
+		this.field = field;
+	}
 
 	/**
 	 * The Safety is the extent in which the bubble should protect you, e.g. for vulnerable people
@@ -52,6 +79,19 @@ public class Mobile implements IMobile {
 	@Override
 	public String getIdentifier() {
 		return identifier;
+	}
+
+	@Override
+	public void setIdentifier(String identifier) {
+		this.identifier = identifier;
+	}
+
+	public IField getField() {
+		return field;
+	}
+
+	public void setField(IField field) {
+		this.field = field;
 	}
 
 	@Override
@@ -108,6 +148,15 @@ public class Mobile implements IMobile {
 	}
 	
 	@Override
+	public Date getTimestamp() {
+		return timestamp;
+	}
+
+	public void setTimestamp(Date timestamp) {
+		this.timestamp = timestamp;
+	}
+
+	@Override
 	public boolean addContact( SharedData data ) {
 		StoredData current = this.node.get(data.getIdentifier());
 		if( current == null )
@@ -126,5 +175,11 @@ public class Mobile implements IMobile {
 			}
 		}
 		return true;
+	}
+
+	@Override
+	public void notifyFieldChange(FieldChangeEvent event) {
+		// TODO Auto-generated method stub
+		
 	}	
 }

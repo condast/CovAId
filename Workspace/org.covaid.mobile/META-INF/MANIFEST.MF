@@ -6,33 +6,33 @@ Bundle-Version: 1.0.0.qualifier
 Bundle-Activator: org.covaid.mobile.Activator
 Bundle-Vendor: Condast
 Bundle-RequiredExecutionEnvironment: JavaSE-1.7
-Meta-Persistence: 
 Automatic-Module-Name: org.covaid.rest
-Import-Package: com.orientechnologies.orient.object.jpa;version="2.2.37",
+Import-Package: com.google.gson;version="2.7.0",
+ com.orientechnologies.orient.core.entity;version="2.2.37",
+ com.orientechnologies.orient.object.db;version="2.2.37",
  javax.persistence;version="2.2.0",
  javax.servlet;version="3.0.0",
  javax.ws.rs;version="2.0.1",
  javax.ws.rs.core;version="2.0.1",
  nl.martijndwars.webpush.core,
  org.condast.commons.data.plane,
- org.condast.commons.data.util,
- org.condast.commons.date,
  org.condast.commons.i18n,
  org.condast.commons.messaging.http,
  org.condast.commons.messaging.push,
- org.condast.commons.messaging.rest,
- org.condast.commons.number,
  org.condast.commons.persistence.service,
+ org.condast.commons.project,
  org.condast.commons.strings,
  org.condast.js.commons.push,
- org.covaid.core.contagion,
- org.covaid.core.data,
  org.covaid.core.def,
  org.covaid.core.field,
  org.covaid.core.model,
+ org.covaid.orientdb.def,
+ org.covaid.orientdb.object,
  org.glassfish.jersey;version="2.25.1",
  org.glassfish.jersey.server;version="2.25.1",
  org.glassfish.jersey.servlet;version="2.25.1",
  org.osgi.framework;version="1.3.0",
  org.osgi.service.component.annotations;version="1.3.0"
-Require-Bundle: com.orientechnologies.orientdb-object;bundle-version="2.2.37"
+Service-Component: OSGI-INF/org.covaid.mobile.entity.service.xml,
+ OSGI-INF/org.covaid.mobile.service.field.xml
+Bundle-ActivationPolicy: lazy

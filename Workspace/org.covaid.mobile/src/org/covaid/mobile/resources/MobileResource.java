@@ -1,5 +1,6 @@
 package org.covaid.mobile.resources;
 
+import com.google.gson.Gson;
 import java.util.logging.Logger;
 
 import javax.ws.rs.Consumes;
@@ -12,8 +13,9 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import org.condast.commons.messaging.http.IHttpRequest.HttpStatus;
 import org.covaid.core.def.ILocation;
+import org.covaid.core.def.IMobile;
+import org.covaid.core.model.Mobile;
 import org.covaid.mobile.core.Dispatcher;
-import org.covaid.mobile.model.Mobile;
 import org.covaid.mobile.service.MobileService;
 import org.covaid.mobile.service.SnapshotService;
 
@@ -34,19 +36,60 @@ public class MobileResource {
 	 * @return
 	 */
 	@GET
+	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
 	@Path("/create")
 	public Response create( @QueryParam("identifier") String identifier ) {
-		logger.info( "Report for " + identifier );
+		logger.info( "Create " + identifier );
 		Dispatcher dispatcher = Dispatcher.getInstance();
 		Response result = null;
 		MobileService service = null;
 		try{
 			service = new MobileService(dispatcher);
 			service.open();
-			Mobile mobile = service.create( identifier, dispatcher.getField());
-			dispatcher.addFieldListener(mobile);
-			result = Response.ok().build();
+			IMobile mobile = service.create( identifier, dispatcher.getField());
+			//dispatcher.addFieldListener(mobile);
+			Gson gson = new Gson();
+			String str = gson.toJson( new CreateMobileData(mobile), CreateMobileData.class);
+			result = Response.ok( str ).build();
+		}
+		catch( Exception ex ){
+			ex.printStackTrace();
+			return Response.serverError().build();
+		}
+		finally {
+			service.close();			
+		}
+		return result;
+	}
+
+	/**
+	 * First report of an illness. Add the history so that the system can inform the network.
+	 * The system should return by giving the advice to contact a doctor
+	 * @param id
+	 * @param token
+	 * @param identifier
+	 * @param history
+	 * @return
+	 */
+	@GET
+	@Consumes(MediaType.APPLICATION_JSON)
+	@Produces(MediaType.APPLICATION_JSON)
+	@Path("/health")
+	public Response setHealth( @QueryParam("id") long id, @QueryParam("token") long token, @QueryParam("identifier") String identifier,
+			@QueryParam("health") int health) {
+		logger.info( "Set health " + health );
+		Dispatcher dispatcher = Dispatcher.getInstance();
+		Response result = null;
+		MobileService service = null;
+		try{
+			service = new MobileService(dispatcher);
+			service.open();
+			IMobile mobile = service.create( identifier, dispatcher.getField());
+			//dispatcher.addFieldListener(mobile);
+			Gson gson = new Gson();
+			String str = gson.toJson( new CreateMobileData(mobile), CreateMobileData.class);
+			result = Response.ok( str ).build();
 		}
 		catch( Exception ex ){
 			ex.printStackTrace();
@@ -94,5 +137,19 @@ public class MobileResource {
 			service.close();			
 		}
 		return result;
+	}
+	
+	@SuppressWarnings("unused")
+	private static class CreateMobileData{
+		
+		private long id;
+		private long token;
+		private String identifier;
+		public CreateMobileData( IMobile mobile) {
+			super();
+			this.identifier = mobile.getIdentifier();
+			this.id = mobile.hashCode();
+			this.token = mobile.getTimestamp().getTime();
+		}	
 	}
 }

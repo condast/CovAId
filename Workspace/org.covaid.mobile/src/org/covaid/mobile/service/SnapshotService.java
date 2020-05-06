@@ -4,10 +4,9 @@ import java.util.Collection;
 
 import javax.persistence.TypedQuery;
 
-import org.condast.commons.persistence.service.AbstractEntityService;
-import org.condast.commons.persistence.service.IPersistenceService;
 import org.covaid.core.def.ILocation;
-import org.covaid.core.model.Location;
+import org.covaid.orientdb.def.IOrientPersistenceService;
+import org.covaid.orientdb.object.AbstractEntityService;
 
 public class SnapshotService extends AbstractEntityService<ILocation>{
 
@@ -17,13 +16,13 @@ public class SnapshotService extends AbstractEntityService<ILocation>{
 			"SELECT l FROM Location l WHERE l.latitude >= :latmin AND l.latitude <= :latmax AND "
 			+ "l.longitude >= :lonmin AND l.longitude <= :lonmax ";
 
-	public SnapshotService( IPersistenceService service ) {
+	public SnapshotService( IOrientPersistenceService service ) {
 		super( ILocation.class, service );
 	}
 
 	public ILocation create( String name, int x, int y ) {
-		ILocation Location = new Location( name, x, y );
-		super.create(Location);
+		ILocation Location = null;//new Location( name, x, y );
+		//super.create(Location);
 		return Location;
 	}
 
