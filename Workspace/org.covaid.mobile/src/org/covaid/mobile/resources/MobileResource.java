@@ -1,6 +1,8 @@
 package org.covaid.mobile.resources;
 
 import com.google.gson.Gson;
+
+import java.util.Collection;
 import java.util.logging.Logger;
 
 import javax.ws.rs.Consumes;
@@ -11,6 +13,7 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import org.condast.commons.Utils;
 import org.condast.commons.messaging.http.IHttpRequest.HttpStatus;
 import org.covaid.core.def.ILocation;
 import org.covaid.core.def.IMobile;
@@ -64,8 +67,45 @@ public class MobileResource {
 	}
 
 	/**
-	 * First report of an illness. Add the history so that the system can inform the network.
-	 * The system should return by giving the advice to contact a doctor
+	 * Set the health of the owner
+	 * @param id
+	 * @param token
+	 * @param identifier
+	 * @param history
+	 * @return
+	 */
+	@GET
+	@Consumes(MediaType.APPLICATION_JSON)
+	@Produces(MediaType.APPLICATION_JSON)
+	@Path("/get")
+	public Response getMobile( @QueryParam("id") long id, @QueryParam("token") long token, @QueryParam("identifier") String identifier ) {
+		logger.info( "Get mobile " + identifier );
+		Dispatcher dispatcher = Dispatcher.getInstance();
+		Response result = null;
+		MobileService service = null;
+		try{
+			service = new MobileService(dispatcher);
+			service.open();
+			Collection<IMobile> results = service.find(identifier);
+			if( Utils.assertNull( results ))
+				return Response.noContent().build();
+			IMobile mobile = results.iterator().next();
+			Gson gson = new Gson();
+			String str = gson.toJson(mobile, Mobile.class);
+			result = Response.ok( str ).build();
+		}
+		catch( Exception ex ){
+			ex.printStackTrace();
+			return Response.serverError().build();
+		}
+		finally {
+			service.close();			
+		}
+		return result;
+	}
+
+	/**
+	 * Set the health of the owner
 	 * @param id
 	 * @param token
 	 * @param identifier
@@ -85,11 +125,91 @@ public class MobileResource {
 		try{
 			service = new MobileService(dispatcher);
 			service.open();
-			IMobile mobile = service.create( identifier, dispatcher.getField());
-			//dispatcher.addFieldListener(mobile);
-			Gson gson = new Gson();
-			String str = gson.toJson( new CreateMobileData(mobile), CreateMobileData.class);
-			result = Response.ok( str ).build();
+			Collection<IMobile> results = service.find(identifier);
+			if( Utils.assertNull( results ))
+				return Response.noContent().build();
+			IMobile mobile = results.iterator().next();
+			mobile.setHealth(health);
+			service.update(mobile);
+			result = Response.ok().build();
+		}
+		catch( Exception ex ){
+			ex.printStackTrace();
+			return Response.serverError().build();
+		}
+		finally {
+			service.close();			
+		}
+		return result;
+	}
+
+	/**
+	 * Set the safety of the owner
+	 * @param id
+	 * @param token
+	 * @param identifier
+	 * @param history
+	 * @return
+	 */
+	@GET
+	@Consumes(MediaType.APPLICATION_JSON)
+	@Produces(MediaType.APPLICATION_JSON)
+	@Path("/safety")
+	public Response setSafety( @QueryParam("id") long id, @QueryParam("token") long token, @QueryParam("identifier") String identifier,
+			@QueryParam("safety") int safety) {
+		logger.info( "Set safety " + safety );
+		Dispatcher dispatcher = Dispatcher.getInstance();
+		Response result = null;
+		MobileService service = null;
+		try{
+			service = new MobileService(dispatcher);
+			service.open();
+			Collection<IMobile> results = service.find(identifier);
+			if( Utils.assertNull( results ))
+				return Response.noContent().build();
+			IMobile mobile = results.iterator().next();
+			mobile.setSafety( safety );
+			service.update(mobile);
+			result = Response.ok().build();
+		}
+		catch( Exception ex ){
+			ex.printStackTrace();
+			return Response.serverError().build();
+		}
+		finally {
+			service.close();			
+		}
+		return result;
+	}
+
+	/**
+	 * Set the safety of the owner
+	 * @param id
+	 * @param token
+	 * @param identifier
+	 * @param history
+	 * @return
+	 */
+	@GET
+	@Consumes(MediaType.APPLICATION_JSON)
+	@Produces(MediaType.APPLICATION_JSON)
+	@Path("/email")
+	public Response setEmail( @QueryParam("id") long id, @QueryParam("token") long token, @QueryParam("identifier") String identifier,
+			@QueryParam("email") String email) {
+		logger.info( "Set email of general practitioner " + email );
+		Dispatcher dispatcher = Dispatcher.getInstance();
+		Response result = null;
+		MobileService service = null;
+		try{
+			service = new MobileService(dispatcher);
+			service.open();
+			Collection<IMobile> results = service.find(identifier);
+			if( Utils.assertNull( results ))
+				return Response.noContent().build();
+			IMobile mobile = results.iterator().next();
+			mobile.setEmail( email );
+			service.update(mobile);
+			result = Response.ok().build();
 		}
 		catch( Exception ex ){
 			ex.printStackTrace();

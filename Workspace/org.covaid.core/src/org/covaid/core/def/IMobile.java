@@ -26,9 +26,9 @@ public interface IMobile {
 
 	String getIdentifier();
 
-	double getRisk();
+	double getHealth();
 
-	void setRisk(double risk);
+	void setHealth(double risk);
 
 	double getSafety();
 
@@ -53,5 +53,9 @@ public interface IMobile {
 	void setIdentifier(String identifier);
 
 	Date getTimestamp();
+
+	String getEmail();
+
+	void setEmail(String email);
 
 }

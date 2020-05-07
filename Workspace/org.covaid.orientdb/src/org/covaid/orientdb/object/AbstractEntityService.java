@@ -11,6 +11,7 @@ import org.condast.commons.IUpdateable;
 import org.covaid.orientdb.def.IOrientPersistenceService;
 
 import com.orientechnologies.orient.core.entity.OEntityManager;
+import com.orientechnologies.orient.core.sql.query.OSQLSynchQuery;
 import com.orientechnologies.orient.object.db.OObjectDatabaseTx;
 
 public abstract class AbstractEntityService<O extends Object> {
@@ -104,8 +105,10 @@ public abstract class AbstractEntityService<O extends Object> {
 	 * @return
 	 */
 	public List<O> query( String querystr ) {
-		TypedQuery<O> query = null;//manager.createQuery( querystr, clss );
-		return query.getResultList();
+		List<O> results =  this.service.getDatabase().query( new OSQLSynchQuery<O>( querystr ));
+		for( O result: results)
+			this.service.getDatabase().detach(result);
+		return results;
 	}
 
 	/**
@@ -141,6 +144,7 @@ public abstract class AbstractEntityService<O extends Object> {
 			IUpdateable updateable = (IUpdateable) obj;
 			updateable.setUpdateDate( Calendar.getInstance().getTime());
 		}
+		service.getDatabase().attach(obj);
 		service.getDatabase().save(obj);
 	}
 

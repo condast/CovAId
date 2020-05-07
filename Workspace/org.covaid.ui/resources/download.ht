@@ -1,4 +1,4 @@
 <div class="container-fluid" style="margin-top: 30px">
 	<h1>Download App</h1>
-	<img class="center-block" src="/covaid/images/huge/Covid-search-512.png" class="img-fluid" alt="Responsive image" onclick="registerMobile();">
+	<img class="center-block" src="/covaid/images/huge/Covid-search-512.png" class="img-fluid" style="width:50%" alt="Responsive image" onclick="registerMobile();">
 </div>

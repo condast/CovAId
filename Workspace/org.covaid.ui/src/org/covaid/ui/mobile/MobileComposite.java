@@ -3,13 +3,13 @@ package org.covaid.ui.mobile;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Label;
-import org.covaid.ui.wizard.BrowserWizard;
+import org.covaid.ui.wizard.MobileWizard;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.GridData;
 
 public class MobileComposite extends Composite {
 	private static final long serialVersionUID = 1L;
-	private BrowserWizard wizard;
+	private MobileWizard wizard;
 	private Label label_1;
 	
 	/**
@@ -23,7 +23,7 @@ public class MobileComposite extends Composite {
 		
 		Label label = new Label(this, SWT.NONE);
 		label.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1));
-		wizard = new BrowserWizard(this, SWT.BORDER);
+		wizard = new MobileWizard(this, SWT.BORDER);
 		wizard.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1));
 		label_1 = new Label(this, SWT.NONE);
 		label_1.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1));

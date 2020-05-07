@@ -24,7 +24,8 @@ public class Mobile implements IMobile, IFieldListener {
 	
 	private String identifier;
 	
-	private double risk, safety;
+	private double health, safety;
+	private String email;//doctor email
 	private transient StoredNode node;
 	private IPoint location;
 
@@ -65,11 +66,11 @@ public class Mobile implements IMobile, IFieldListener {
 	 * @param risk (0-100)
 	 * @param location
 	 */
-	public Mobile( String identifier, double safety, double risk, IPoint location) {
+	public Mobile( String identifier, double safety, double health, IPoint location) {
 		super();
 		this.identifier = identifier;
 		this.safety = safety;
-		this.risk = risk;
+		this.health = health;
 		this.node = new StoredNode(identifier );
 		this.location = location;
 		this.history = new History();
@@ -86,6 +87,16 @@ public class Mobile implements IMobile, IFieldListener {
 		this.identifier = identifier;
 	}
 
+	@Override
+	public String getEmail() {
+		return email;
+	}
+
+	@Override
+	public void setEmail(String email) {
+		this.email = email;
+	}
+
 	public IField getField() {
 		return field;
 	}
@@ -95,13 +106,15 @@ public class Mobile implements IMobile, IFieldListener {
 	}
 
 	@Override
-	public double getRisk() {
-		return risk;
+	public double getHealth() {
+		return health;
 	}
 
 	@Override
-	public void setRisk(double risk) {
-		this.risk = risk;
+	public void setHealth(double health) {
+		this.health = health;
+		if( this.health < this.safety )
+			this.safety=  this.health;
 	}
 
 	@Override

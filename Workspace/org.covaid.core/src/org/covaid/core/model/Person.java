@@ -175,7 +175,7 @@ public class Person implements IPerson{
 	 */
 	@Override
 	public double getRiskBubble( IContagion contagion ) {
-		double radius = contagion.getDistance() * (100 - mobile.getRisk())/100;
+		double radius = contagion.getDistance() * (100 - mobile.getHealth())/100;
 		return NumberUtils.clipRange(0, 100, radius );
 	}
 
