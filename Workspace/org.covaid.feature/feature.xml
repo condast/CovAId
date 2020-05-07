@@ -23,29 +23,31 @@
       <import plugin="org.condast.commons.messaging"/>
       <import plugin="org.condast.commons"/>
       <import plugin="org.slf4j.api"/>
-      <import plugin="org.condast.commons.data"/>
-      <import plugin="org.condast.commons.ui"/>
-      <import plugin="org.eclipse.rap.rwt"/>
-      <import plugin="org.eclipse.osgi"/>
-      <import plugin="javax.servlet"/>
       <import plugin="org.condast.commons.authentication"/>
+      <import plugin="org.condast.commons.data"/>
       <import plugin="org.eclipse.equinox.preferences"/>
       <import plugin="javax.persistence"/>
       <import plugin="org.condast.commons.authentication.ui"/>
       <import plugin="org.condast.commons.bugzilla"/>
       <import plugin="org.condast.commons.persistence"/>
+      <import plugin="org.condast.commons.ui"/>
       <import plugin="org.condast.js.commons"/>
       <import plugin="org.eclipse.core.commands"/>
       <import plugin="org.eclipse.equinox.security"/>
       <import plugin="org.eclipse.rap.jface"/>
+      <import plugin="org.eclipse.rap.rwt"/>
+      <import plugin="org.eclipse.osgi"/>
       <import plugin="org.eclipse.osgi.services"/>
       <import plugin="com.orientechnologies.orientdb-core"/>
       <import plugin="com.orientechnologies.orientdb-graphdb"/>
+      <import plugin="javax.servlet"/>
       <import plugin="javax.ws.rs"/>
       <import plugin="org.glassfish.jersey.core.jersey-common"/>
       <import plugin="org.glassfish.jersey.core.jersey-server"/>
       <import plugin="org.glassfish.jersey.containers.jersey-container-servlet-core"/>
       <import plugin="org.openlayer.map"/>
+      <import plugin="javassist"/>
+      <import plugin="com.orientechnologies.orientdb-object"/>
    </requires>
 
    <plugin
@@ -84,6 +86,13 @@
 
    <plugin
          id="org.covaid.ui"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="org.covaid.mobile"
          download-size="0"
          install-size="0"
          version="0.0.0"

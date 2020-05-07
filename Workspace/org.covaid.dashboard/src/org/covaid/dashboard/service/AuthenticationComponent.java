@@ -16,7 +16,7 @@ import org.osgi.service.component.annotations.ReferencePolicy;
 )
 public class AuthenticationComponent{
 
-	public static final String COMPONENT_NAME = "org.satr.arnac.dashboard.service.login";
+	public static final String COMPONENT_NAME = "org.covaid.dashboard.service.login";
 
 	private AuthenticationDispatcher dispatcher = AuthenticationDispatcher.getInstance();
 	

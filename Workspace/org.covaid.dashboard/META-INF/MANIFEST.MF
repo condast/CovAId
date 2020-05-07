@@ -6,11 +6,10 @@ Bundle-Version: 1.0.0.qualifier
 Bundle-Vendor: condast
 Bundle-RequiredExecutionEnvironment: JavaSE-1.7
 Service-Component: OSGI-INF/contribution.xml,
- OSGI-INF/org.satr.arnac.dashboard.service.location.xml,
- OSGI-INF/org.satr.arnac.dashboard.service.login.xml,
- OSGI-INF/org.satr.arnac.bugzilla.provider.xml,
  OSGI-INF/org.covaid.dashboard.bugzilla.provider.xml,
- OSGI-INF/org.covaid.dashboard.field.provider.xml
+ OSGI-INF/org.covaid.dashboard.field.provider.xml,
+ OSGI-INF/org.covaid.dashboard.service.location.xml,
+ OSGI-INF/org.covaid.dashboard.service.login.xml
 Import-Package: com.google.gson;version="2.7.0",
  javax.persistence;version="2.2.0",
  org.condast.commons.authentication.callback,

@@ -1,4 +1,7 @@
-const MOBILE_DEFAULT = 'http://127.0.0.1:10080/covaid/mobile/rest/';
+//const MOBILE_DEFAULT = 'http://127.0.0.1:10080/covaid/mobile/rest/';
+const MOBILE_DEFAULT = 'http://www.condast.com:8080/covaid/mobile/rest/';
+
+
 const MOBILE_CREATE_URL = MOBILE_DEFAULT + 'create';
 const MOBILE_SET_HEALTH = MOBILE_DEFAULT + 'health';
 const MOBILE_SET_SAFETY = MOBILE_DEFAULT + 'safety';

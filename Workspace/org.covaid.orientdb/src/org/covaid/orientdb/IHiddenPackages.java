@@ -11,6 +11,7 @@ import org.glassfish.jersey.*;
 
 
 import com.orientechnologies.orient.core.*;
+import com.orientechnologies.orient.core.db.*;
 import com.orientechnologies.orient.core.metadata.*;
 import com.orientechnologies.orient.core.record.*;
 

@@ -61,7 +61,8 @@ public class MobileResource {
 			return Response.serverError().build();
 		}
 		finally {
-			service.close();			
+			if( service != null )
+				service.close();			
 		}
 		return result;
 	}
@@ -99,7 +100,8 @@ public class MobileResource {
 			return Response.serverError().build();
 		}
 		finally {
-			service.close();			
+			if( service != null )
+				service.close();			
 		}
 		return result;
 	}
@@ -138,7 +140,8 @@ public class MobileResource {
 			return Response.serverError().build();
 		}
 		finally {
-			service.close();			
+			if( service != null )
+				service.close();			
 		}
 		return result;
 	}
@@ -177,7 +180,8 @@ public class MobileResource {
 			return Response.serverError().build();
 		}
 		finally {
-			service.close();			
+			if( service != null )
+				service.close();			
 		}
 		return result;
 	}
@@ -216,7 +220,8 @@ public class MobileResource {
 			return Response.serverError().build();
 		}
 		finally {
-			service.close();			
+			if( service != null )
+				service.close();			
 		}
 		return result;
 	}
@@ -254,7 +259,8 @@ public class MobileResource {
 			return Response.serverError().build();
 		}
 		finally {
-			service.close();			
+			if( service != null )
+				service.close();			
 		}
 		return result;
 	}

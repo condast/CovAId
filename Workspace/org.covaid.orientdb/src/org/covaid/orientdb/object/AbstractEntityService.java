@@ -49,14 +49,16 @@ public abstract class AbstractEntityService<O extends Object> {
 
 	public void open() {
 		OObjectDatabaseTx db = this.service.getDatabase();
-		db.activateOnCurrentThread();
 		Map<String, String> args = service.getArgs();
 		open = db.open( args.get(IOrientPersistenceService.Attributes.USER.toJdbcProperty()), 
 				args.get( IOrientPersistenceService.Attributes.PASSWORD.toJdbcProperty()));
+		open.activateOnCurrentThread();
+
 	}
 
 	public void close() {
-		open.close();
+		if( open != null )
+			open.close();
 		open = null;
 	}
 

@@ -7,7 +7,7 @@ import org.osgi.service.component.annotations.Reference;
 import org.osgi.service.component.annotations.ReferenceCardinality;
 import org.osgi.service.component.annotations.ReferencePolicy;
 
-@Component( name="org.satr.arnac.dashboard.service.location",
+@Component( name="org.covaid.dashboard.service.location",
 			immediate=true)
 public class LocationService {
 

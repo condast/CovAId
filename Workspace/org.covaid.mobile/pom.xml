@@ -12,5 +12,5 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xs
     </parent>
 
   <packaging>eclipse-plugin</packaging>
-  <artifactId>org.covaid.rest</artifactId>
+  <artifactId>org.covaid.mobile</artifactId>
 </project>

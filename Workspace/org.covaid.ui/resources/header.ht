@@ -19,7 +19,7 @@
 <script src="/covaid/web/jquery/popper.min.js" crossorigin="anonymous"
 	type="text/javascript"></script>
 <!-- Include all compiled plugins (below), or include individual files as needed -->
-<script src="/bootstrap/js/bootstrap.min.js" crossorigin="anonymous"
+<script src="/covaid/web/bootstrap/js/bootstrap.min.js" crossorigin="anonymous"
 	type="text/javascript"></script>
 <script type="text/javascript">
 	${script.js.mobile^js};
