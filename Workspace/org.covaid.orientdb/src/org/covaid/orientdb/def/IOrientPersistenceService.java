@@ -60,4 +60,7 @@ public interface IOrientPersistenceService {
 
 	Map<String, String> getArgs();
 
+	OObjectDatabaseTx open();
+
+	void close();
 }

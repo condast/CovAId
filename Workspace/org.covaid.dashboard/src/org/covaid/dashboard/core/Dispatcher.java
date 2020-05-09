@@ -7,10 +7,10 @@ import org.condast.commons.data.latlng.LatLng;
 import org.condast.commons.data.plane.Field;
 import org.condast.commons.data.plane.IField;
 import org.condast.commons.strings.StringStyler;
-import org.covaid.core.def.IEnvironment;
-import org.covaid.core.environment.Environment;
-import org.covaid.core.environment.CovaidDomain;
-import org.covaid.core.environment.RawDomain;
+import org.covaid.core.def.IFieldEnvironment;
+import org.covaid.core.environment.field.CovaidDomain;
+import org.covaid.core.environment.field.FieldEnvironment;
+import org.covaid.core.environment.field.RawDomain;
 import org.covaid.core.field.FieldChangeEvent;
 import org.covaid.core.field.IFieldListener;
 import org.covaid.core.field.IFieldProvider;
@@ -49,7 +49,7 @@ public class Dispatcher implements IFieldProvider{
 		}
 	}
 
-	private IEnvironment environment;
+	private IFieldEnvironment environment;
 	
 	private IField field;
 	
@@ -58,7 +58,7 @@ public class Dispatcher implements IFieldProvider{
 	private static Dispatcher dispatcher = new Dispatcher();
 
 	private Dispatcher() {
-		this.environment = new Environment();
+		this.environment = new FieldEnvironment();
 		environment.addDomain( new RawDomain());
 		environment.addDomain( new CovaidDomain());
 		field = new Field(new LatLng(0,0), DEFAULT_LENGTH, DEFAULT_WIDTH);

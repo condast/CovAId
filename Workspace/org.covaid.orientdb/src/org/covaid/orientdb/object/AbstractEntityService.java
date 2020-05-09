@@ -3,7 +3,6 @@ package org.covaid.orientdb.object;
 import java.lang.reflect.Constructor;
 import java.util.Calendar;
 import java.util.List;
-import java.util.Map;
 
 import javax.persistence.TypedQuery;
 
@@ -21,7 +20,6 @@ public abstract class AbstractEntityService<O extends Object> {
 	private IOrientPersistenceService service;
 	private OEntityManager manager;
 	private boolean connected;
-	private OObjectDatabaseTx open;
 	
 	private Class<O> clss;
 	
@@ -47,19 +45,14 @@ public abstract class AbstractEntityService<O extends Object> {
 		return manager;
 	}
 
-	public void open() {
-		OObjectDatabaseTx db = this.service.getDatabase();
-		Map<String, String> args = service.getArgs();
-		open = db.open( args.get(IOrientPersistenceService.Attributes.USER.toJdbcProperty()), 
-				args.get( IOrientPersistenceService.Attributes.PASSWORD.toJdbcProperty()));
-		open.activateOnCurrentThread();
-
+	public boolean open() {
+		OObjectDatabaseTx db = this.service.open();
+		db.activateOnCurrentThread();
+		return true;
 	}
 
 	public void close() {
-		if( open != null )
-			open.close();
-		open = null;
+		this.service.close();
 	}
 
 	/**
@@ -155,12 +148,8 @@ public abstract class AbstractEntityService<O extends Object> {
 	 * @param id
 	 * @return true if the object existed prior to removal
 	 */
-	public boolean remove( long id ) {
-		O obj = null;//manager.find( clss, id);
-		boolean retval = ( obj != null );
-		//if( obj != null )
-		//	manager.remove(obj);
-		return retval;
+	public boolean remove( O obj ) {
+		return ( service.getDatabase().delete(obj) != null );	
 	}
 	
 	/**

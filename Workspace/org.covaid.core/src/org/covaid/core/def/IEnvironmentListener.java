@@ -1,7 +1,7 @@
 package org.covaid.core.def;
 
 @FunctionalInterface
-public interface IEnvironmentListener {
+public interface IEnvironmentListener<T extends Object> {
 
-	public void notifyChanged( EnvironmentEvent event );
+	public void notifyChanged( EnvironmentEvent<T> event );
 }

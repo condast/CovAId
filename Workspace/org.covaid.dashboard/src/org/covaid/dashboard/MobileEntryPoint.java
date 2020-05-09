@@ -23,8 +23,6 @@ public class MobileEntryPoint extends AbstractEntryPoint {
 			RWT.setLocale(locale);
 			RWT.getUISession().setLocale(locale);
 			Locale.setDefault( locale );
-			parent.setLayout( new GridLayout(2, false ));
-
 	        parent.setLayout(new FillLayout());       
 	        Composite root = new MobileComposite( parent, SWT.None );
 			root.setData( RWT.CUSTOM_VARIANT, S_COVAID );

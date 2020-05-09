@@ -16,7 +16,6 @@
 <setEntry value="org.condast.commons.legal"/>
 <setEntry value="org.condast.commons.test"/>
 <setEntry value="org.condast.js.react"/>
-<setEntry value="org.covaid.rest"/>
 <setEntry value="org.google.geo.mapping.ui"/>
 <setEntry value="test.condast.com"/>
 <setEntry value="test.covaid.core"/>
@@ -155,6 +154,7 @@
 </setAttribute>
 <setAttribute key="selected_workspace_bundles">
 <setEntry value="nl.martijndwars.webpush@default:default"/>
+<setEntry value="org.apache.oltu@default:default"/>
 <setEntry value="org.condast.commons.authentication.ui@default:default"/>
 <setEntry value="org.condast.commons.authentication@default:default"/>
 <setEntry value="org.condast.commons.bugzilla@default:default"/>
@@ -170,8 +170,8 @@
 <setEntry value="org.covaid.core@default:default"/>
 <setEntry value="org.covaid.dashboard@default:default"/>
 <setEntry value="org.covaid.mobile@default:default"/>
-<setEntry value="org.covaid.orientdb.fragment@default:false"/>
 <setEntry value="org.covaid.orientdb@default:default"/>
+<setEntry value="org.covaid.rest@default:default"/>
 <setEntry value="org.covaid.ui@default:default"/>
 <setEntry value="org.openlayer.map@default:default"/>
 </setAttribute>

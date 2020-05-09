@@ -8,6 +8,7 @@ Automatic-Module-Name: org.covaid.core
 Bundle-RequiredExecutionEnvironment: JavaSE-1.7
 Import-Package: javassist.util.proxy;version="3.22.0.GA",
  org.condast.commons,
+ org.condast.commons.auth,
  org.condast.commons.authentication.user,
  org.condast.commons.data.latlng,
  org.condast.commons.data.plane,
@@ -21,6 +22,9 @@ Export-Package: org.covaid.core.contagion,
  org.covaid.core.data,
  org.covaid.core.def,
  org.covaid.core.environment,
+ org.covaid.core.environment.field,
+ org.covaid.core.environment.frogger,
  org.covaid.core.field,
+ org.covaid.core.mobile,
  org.covaid.core.model,
  org.covaid.core.user

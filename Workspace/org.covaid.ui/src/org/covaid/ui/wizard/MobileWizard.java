@@ -2,18 +2,22 @@ package org.covaid.ui.wizard;
 
 import com.google.gson.Gson;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.logging.Logger;
 
-import org.condast.commons.Utils;
+import org.condast.commons.auth.AuthenticationData;
+import org.condast.commons.auth.AuthenticationData.Authentication;
 import org.condast.commons.messaging.http.AbstractHttpRequest;
 import org.condast.commons.messaging.http.ResponseEvent;
 import org.condast.js.commons.controller.AbstractJavascriptController;
 import org.condast.js.commons.eval.IEvaluationListener;
 import org.condast.js.commons.wizard.AbstractHtmlParser;
-import org.condast.js.commons.wizard.AbstractHtmlParser.Authentication;
 import org.covaid.core.def.IMobile;
+import org.covaid.core.mobile.IMobileRegistration;
+import org.covaid.core.mobile.RegistrationEvent;
 import org.covaid.core.model.Mobile;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.browser.Browser;
@@ -31,12 +35,13 @@ import org.eclipse.swt.widgets.Canvas;
 public class MobileWizard extends Composite {
 	private static final long serialVersionUID = 1L;
 
-	//public static final String S_PATH = "http://localhost:10080/covaid/mobile/rest";
-	public static final String S_PATH = "http://www.condast.com:8080/covaid/mobile/rest";
+	public static final String S_PATH = "http://localhost:10080/covaid/mobile/rest";
+	//public static final String S_PATH = "http://www.condast.com:8080/covaid/mobile/rest";
 
 	private enum Requests{
 
 		CREATE,
+		REMOVE,
 		GET,
 		GET_SAFETY,
 		GET_RISK;
@@ -83,12 +88,13 @@ public class MobileWizard extends Composite {
 	private AbstractHtmlParser wizard;
 	
 	private Links link;
-	
-	private Map<Authentication,String> auth;
-	
+		
 	private CanvasController controller;
 	
 	private IMobile mobile;
+	private AuthenticationData authData;
+	
+	private Collection<IMobileRegistration> listeners;
 	
 	private Logger logger = Logger.getLogger(this.getClass().getName());
 	
@@ -114,18 +120,9 @@ public class MobileWizard extends Composite {
 	private IEvaluationListener<Object> elistener = (event) ->{
 		try {
 			logger.info("CALLBACK");
-			if(!CanvasController.S_CALLBACK_ID.equals(event.getId()))
+			if(!CanvasController.S_INITIALISTED_ID.equals(event.getId()) || ( this.authData == null ))
 				return;
-			if( Utils.assertNull( event.getData()))
-				return;
-			Object[] data=  event.getData();
 			
-			WebClient client = new WebClient();
-			Map<String, String> params = new HashMap<>();
-			params.put( Authentication.ID.toString(), String.valueOf( new Double((double) data[0]).longValue()));
-			params.put( Authentication.TOKEN.toString(), String.valueOf( new Double((double) data[1]).longValue()));
-			params.put( Authentication.IDENTIFIER.toString(), (String) data[2]);
-			client.sendGet(Requests.GET, params);
 		}
 		catch( Exception ex ) {
 			ex.printStackTrace();
@@ -140,19 +137,26 @@ public class MobileWizard extends Composite {
 	public MobileWizard(Composite parent, int style) {
 		super(parent, style | SWT.NO_SCROLL);
 		this.link = Links.DOWNLOAD;
-		this.auth = new HashMap<>();
 		createPage(parent, style | SWT.NO_SCROLL);
 		this.controller = new CanvasController( this.browser );
 		this.controller.addEvaluationListener(elistener);
+		this.listeners = new ArrayList<>();
 	}
 	
-	private String createVariables( String args ) {
+	private String createVariables( String args ) throws Exception {
 		StringBuilder builder = new StringBuilder();
 		String[] split = args.split("[&]");
+		Map<Authentication, String> auth = new HashMap<>();
 		for( String str: split ) {
 			builder.append("var " + str + ";\n");
 			String[] split1 = str.split("[=]");
-			auth.put(Authentication.valueOf(split1[0].toUpperCase()), split1[1]);
+			auth.put(AuthenticationData.Authentication.valueOf(split1[0].toUpperCase()), split1[1]);
+		}
+		this.authData = new AuthenticationData(auth);
+		if( mobile == null ) {
+			WebClient client = new WebClient();
+			Map<String, String> params = authData.toMap();
+			client.sendGet(Requests.GET, params);
 		}
 		return builder.toString();
 	}
@@ -167,12 +171,16 @@ public class MobileWizard extends Composite {
 
 			@Override
 			protected void onHandleLinks( String linkStr) {
-				String[] split = linkStr.split("[?]");
-				if( split.length>1)
-					createVariables(split[1]);
-				link = Links.valueOf(split[0].toUpperCase());
-				grpIndication.setVisible( !Links.DOWNLOAD.equals(link));
-				super.createPage( MobileWizard.class.getResourceAsStream(link.toFile()));
+				try {
+					String[] split = linkStr.split("[?]");
+					if( split.length>1)
+						createVariables(split[1]);
+					link = Links.valueOf(split[0].toUpperCase());
+					grpIndication.setVisible( !Links.DOWNLOAD.equals(link));
+					super.createPage( MobileWizard.class.getResourceAsStream(link.toFile()));
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
 			}
 			
 			@Override
@@ -204,19 +212,19 @@ public class MobileWizard extends Composite {
 			}
 
 			@Override
-			protected String onHandleAuthentication( String id, Authentication authentication) {
+			protected String onHandleAuthentication( String id, AuthenticationData.Authentication authentication) {
 				StringBuilder builder = new StringBuilder();
-				if( Utils.assertNull(auth))
+				if( authData == null )
 					return builder.toString();
 				builder.append("=");
 				switch( authentication ) {
 				case IDENTIFIER:
 					builder.append("'");
-					builder.append( auth.get(authentication));
+					builder.append( authData.getIdentifier());
 					builder.append("'");
 					break;
 				default:
-					builder.append( auth.get(authentication));
+					builder.append( authData.get(authentication));
 					break;
 				}
 				return builder.toString();
@@ -276,12 +284,35 @@ public class MobileWizard extends Composite {
 		wizard.createPage( MobileWizard.class.getResourceAsStream( link.toFile()));	
 	}
 
+	public void addRegistrationListener( IMobileRegistration listener ) {
+		this.listeners.add(listener);
+	}
+
+	public void removeRegistrationListener( IMobileRegistration listener ) {
+		this.listeners.remove(listener);
+	}
+	
+	protected void notifyRegistrationEvent( RegistrationEvent event ){
+		for( IMobileRegistration listener: this.listeners )
+			listener.notifyMobileRegistration(event);
+	}
+
 	@Override
 	protected void checkSubclass() {
 		// Disable the check that prevents subclassing of SWT components
 	}
 	
 	public void dispose() {
+		if( this.mobile != null ) {
+			WebClient client = new WebClient();
+			Map<String, String> params = authData.toMap();
+			try {
+				client.sendGet(Requests.REMOVE, params);
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+			this.mobile = null;
+		}
 		this.controller.removeEvaluationListener(elistener);
 		this.controller.dispose();
 		super.dispose();
@@ -308,17 +339,30 @@ public class MobileWizard extends Composite {
 				throws IOException {
 			Gson gson = new Gson();
 			switch( event.getRequest()) {
-			case CREATE:
+			case CREATE://is usually not called, but done directly from html
+				mobile = gson.fromJson( event.getResponse(), Mobile.class );
 				break;
 			case GET:
-				mobile = gson.fromJson( event.getResponse(), Mobile.class );
+				IMobile newMobile = gson.fromJson( event.getResponse(), Mobile.class );
+				if(( mobile == null ) || !mobile.getIdentifier().equals( newMobile.getIdentifier()))
+					notifyRegistrationEvent( new RegistrationEvent(browser, IMobileRegistration.RegistrationTypes.REGISTER, authData, mobile));
 				canvas.redraw();
+				break;
+			case REMOVE:
+				notifyRegistrationEvent( new RegistrationEvent(browser, IMobileRegistration.RegistrationTypes.UNREGISTER, authData, mobile));
 				break;
 			default:
 				break;// TODO Auto-generated method stub
 			}
 			return null;
 		}
+
+		@Override
+		protected void onHandleResponseFail(HttpStatus status, ResponseEvent<Requests, StringBuilder> event)
+				throws IOException {
+			logger.info("REQUEST: " + event.getRequest() + ", STATUS: " + status);
+			super.onHandleResponseFail(status, event);
+		}	
 	}
 	
 	private class CanvasController extends AbstractJavascriptController{

@@ -1,13 +1,13 @@
-package org.covaid.rest.service;
+package org.covaid.mobile.service;
 
 import java.util.Collection;
 
 import javax.persistence.TypedQuery;
 
-import org.condast.commons.persistence.service.AbstractEntityService;
-import org.condast.commons.persistence.service.IPersistenceService;
-import org.covaid.rest.model.Doctor;
-import org.covaid.rest.model.Notification;
+import org.covaid.core.model.Doctor;
+import org.covaid.mobile.model.Notification;
+import org.covaid.orientdb.def.IOrientPersistenceService;
+import org.covaid.orientdb.object.AbstractEntityService;
 
 public class NotificationService extends AbstractEntityService<Notification>{
 
@@ -17,13 +17,13 @@ public class NotificationService extends AbstractEntityService<Notification>{
 			"SELECT l FROM Notification l WHERE l.latitude >= :latmin AND l.latitude <= :latmax AND "
 			+ "l.longitude >= :lonmin AND l.longitude <= :lonmax ";
 
-	public NotificationService( IPersistenceService service ) {
+	public NotificationService(  IOrientPersistenceService service ) {
 		super( Notification.class, service );
 	}
 
 	public Notification create( String name, String identifier, Doctor doctor ) {
 		Notification Notification = new Notification( name, doctor, identifier );
-		super.create(Notification);
+		//super.create(Notification);
 		return Notification;
 	}
 

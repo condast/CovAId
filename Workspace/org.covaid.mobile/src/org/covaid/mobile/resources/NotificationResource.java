@@ -1,4 +1,4 @@
-package org.covaid.rest.resources;
+package org.covaid.mobile.resources;
 
 import com.google.gson.Gson;
 import java.util.Collection;
@@ -14,11 +14,11 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import org.condast.commons.Utils;
 import org.condast.commons.messaging.http.IHttpRequest.HttpStatus;
-import org.covaid.rest.core.Dispatcher;
-import org.covaid.rest.model.Doctor;
-import org.covaid.rest.model.Notification;
-import org.covaid.rest.service.DoctorService;
-import org.covaid.rest.service.NotificationService;
+import org.covaid.core.model.Doctor;
+import org.covaid.mobile.core.Dispatcher;
+import org.covaid.mobile.model.Notification;
+import org.covaid.mobile.service.DoctorService;
+import org.covaid.mobile.service.NotificationService;
 
 @Path("/push")
 public class NotificationResource {
@@ -52,7 +52,7 @@ public class NotificationResource {
 			if( Utils.assertNull(doctors))
 				result = Response.noContent().build();
 			Gson gson = new Gson();
-			String str = gson.toJson(doctors, Notification[].class );
+			String str = null;//gson.toJson(doctors, Notification[].class );
 			result = Response.ok( str ).build();
 		}
 		catch( Exception ex ){

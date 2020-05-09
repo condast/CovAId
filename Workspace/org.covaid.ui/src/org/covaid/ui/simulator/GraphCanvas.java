@@ -6,6 +6,7 @@ import org.eclipse.swt.widgets.Canvas;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -14,12 +15,14 @@ import java.util.logging.Logger;
 
 import org.condast.commons.ui.session.PushSession;
 import org.covaid.core.def.IContagion;
-import org.covaid.core.def.IEnvironment;
+import org.covaid.core.def.IFieldEnvironment;
 import org.covaid.core.def.IDomainListener;
 import org.covaid.core.def.IPerson;
 import org.covaid.core.environment.AbstractDomain;
-import org.covaid.core.environment.AbstractDomain.DomainEvents;
+import org.covaid.core.environment.IDomain.DomainEvents;
+import org.covaid.core.environment.field.IFieldDomain;
 import org.covaid.core.environment.DomainEvent;
+import org.covaid.core.environment.IDomain;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.PaintListener;
 import org.eclipse.swt.graphics.Color;
@@ -30,22 +33,22 @@ import org.eclipse.swt.graphics.Rectangle;
 public class GraphCanvas extends Canvas {
 	private static final long serialVersionUID = 1L;
 
-	private PushSession<DomainEvent> session;
+	private PushSession<DomainEvent<Date>> session;
 
-	private Map<AbstractDomain, List<Data>> domains;
+	private Map<IFieldDomain, List<Data>> domains;
 
 	protected Logger logger = Logger.getLogger(this.getClass().getName());
 
 	private IDomainListener listener = (e)->{
 		if( getDisplay().isDisposed() || DomainEvents.UPDATE_PERSON.equals(e.getEvent()))
 			return;
-		AbstractDomain domain = (AbstractDomain) e.getSource();
-		IEnvironment env = (IEnvironment) domain.getEnvironment();
+		IFieldDomain domain = (IFieldDomain) e.getSource();
+		IFieldEnvironment env = (IFieldEnvironment) domain.getEnvironment();
 		List<Data> list = domains.get( domain );
 		Data data = list.get(list.size()-1);
 		int infected = 0;
 		IContagion contagion = IContagion.SupportedContagion.getContagion(env.getContagion());
-		for( IPerson person: e.getDomain().getPersons() ) {
+		for( IPerson person: domain.getPersons() ) {
 			if( person.getContagiousness( contagion ) > 10 )
 				infected++;
 		}
@@ -83,7 +86,7 @@ public class GraphCanvas extends Canvas {
 		super(parent, style);
 		this.createComposite(parent, style);
 		this.domains = new HashMap<>();
-		session = new PushSession<DomainEvent>();
+		session = new PushSession<DomainEvent<Date>>();
 		session.start();
 	}
 
@@ -91,20 +94,20 @@ public class GraphCanvas extends Canvas {
 		addPaintListener(paintListener);
 	}
 
-	public void addInput( IEnvironment environment) {
-		for( AbstractDomain domain: environment.getDomains()) {
+	public void addInput( IFieldEnvironment environment) {
+		for( IDomain<Date> domain: environment.getDomains()) {
 			if( !this.domains.containsKey(domain) ) {
 				List<Data> list = Collections.synchronizedList( new ArrayList<>());
 				list.add( new Data( 0 ));
-				this.domains.put( domain, list);
+				this.domains.put( (IFieldDomain) domain, list);
 			}
 			domain.addListener(listener);
 		}
 		requestLayout();
 	}
 
-	public void removeInput( IEnvironment environment ) {
-		for( AbstractDomain domain: environment.getDomains()) {
+	public void removeInput( IFieldEnvironment environment ) {
+		for( IDomain<Date> domain: environment.getDomains()) {
 			if( this.domains.containsKey(domain) ) {
 				this.domains.remove(domain);
 				domain.removeListener(listener);
@@ -119,7 +122,7 @@ public class GraphCanvas extends Canvas {
 			gc.drawLine(0, 0, 0, rectangle.height - 20);
 			setData(null);
 			int colourIndex = 0;
-			for( AbstractDomain domain: this.domains.keySet() ) { 
+			for( IFieldDomain domain: this.domains.keySet() ) { 
 				Collection<Data> progress = domains.get(domain);
 				if( progress.isEmpty())
 					continue;
@@ -142,7 +145,7 @@ public class GraphCanvas extends Canvas {
 	}
 
 	public void clear() {
-		for( AbstractDomain domain: this.domains.keySet()) {
+		for( IDomain<Date> domain: this.domains.keySet()) {
 			domain.clear();
 			this.domains.get(domain).add(new Data( 0 ));
 		}

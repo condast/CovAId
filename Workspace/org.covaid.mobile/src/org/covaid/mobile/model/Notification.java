@@ -1,4 +1,4 @@
-package org.covaid.rest.model;
+package org.covaid.mobile.model;
 
 import java.util.Calendar;
 import java.util.Date;

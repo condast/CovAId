@@ -2,6 +2,8 @@ package org.covaid.mobile.resources;
 
 import com.google.gson.Gson;
 
+import java.text.DateFormat;
+import java.util.Calendar;
 import java.util.Collection;
 import java.util.logging.Logger;
 
@@ -42,16 +44,15 @@ public class MobileResource {
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
 	@Path("/create")
-	public Response create( @QueryParam("identifier") String identifier ) {
-		logger.info( "Create " + identifier );
+	public Response create() {
+		logger.info( "Create New Mobile" );
 		Dispatcher dispatcher = Dispatcher.getInstance();
 		Response result = null;
 		MobileService service = null;
 		try{
 			service = new MobileService(dispatcher);
 			service.open();
-			IMobile mobile = service.create( identifier, dispatcher.getField());
-			//dispatcher.addFieldListener(mobile);
+			IMobile mobile = service.create( DateFormat.getTimeInstance().format( Calendar.getInstance().getTime()), dispatcher.getField());
 			Gson gson = new Gson();
 			String str = gson.toJson( new CreateMobileData(mobile), CreateMobileData.class);
 			result = Response.ok( str ).build();
@@ -65,6 +66,42 @@ public class MobileResource {
 				service.close();			
 		}
 		return result;
+	}
+
+	/**
+	 * Set the health of the owner
+	 * @param id
+	 * @param token
+	 * @param identifier
+	 * @param history
+	 * @return
+	 */
+	@GET
+	@Consumes(MediaType.APPLICATION_JSON)
+	@Produces(MediaType.APPLICATION_JSON)
+	@Path("/remove")
+	public Response remove( @QueryParam("id") long id, @QueryParam("token") long token, @QueryParam("identifier") String identifier ) {
+		logger.info( "Remove mobile " + identifier );
+		Dispatcher dispatcher = Dispatcher.getInstance();
+		Response response = null;
+		MobileService service = null;
+		try{
+			service = new MobileService(dispatcher);
+			service.open();
+			boolean result = service.remove(identifier);
+			if( !result )
+				return Response.noContent().build();
+			response = Response.ok().build();
+		}
+		catch( Exception ex ){
+			ex.printStackTrace();
+			return Response.serverError().build();
+		}
+		finally {
+			if( service != null )
+				service.close();			
+		}
+		return response;
 	}
 
 	/**

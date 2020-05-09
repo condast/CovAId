@@ -18,13 +18,14 @@ import org.condast.commons.data.util.Vector;
 import org.condast.commons.ui.session.AbstractSessionHandler;
 import org.condast.commons.ui.session.SessionEvent;
 import org.covaid.core.def.IContagion;
-import org.covaid.core.def.IEnvironment;
+import org.covaid.core.def.IFieldEnvironment;
 import org.covaid.core.def.IDomainListener;
 import org.covaid.core.def.ILocation;
 import org.covaid.core.def.IPerson;
 import org.covaid.core.def.IPoint;
-import org.covaid.core.environment.AbstractDomain;
 import org.covaid.core.environment.DomainEvent;
+import org.covaid.core.environment.IDomain;
+import org.covaid.core.environment.field.IFieldDomain;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.PaintListener;
 import org.eclipse.swt.graphics.Color;
@@ -40,7 +41,7 @@ public class DomainComposite extends Composite {
 
 	private SessionHandler handler;
 
-	private AbstractDomain domain;
+	private IFieldDomain domain;
 
 	private int counter;
 
@@ -76,7 +77,7 @@ public class DomainComposite extends Composite {
 		canvas.addListener(SWT.RESIZE, (elistener)->{ resize( canvas.getBounds()); });
 	}
 
-	public void setInput( AbstractDomain domain ) {
+	public void setInput( IFieldDomain domain ) {
 		if( this.domain != null ) {
 			domain.removeListener(handler);
 		}
@@ -100,9 +101,9 @@ public class DomainComposite extends Composite {
 
 	protected void updatePerson( GC gc, IPerson person ) {
 		try {
-			IEnvironment env = domain.getEnvironment();
+			IFieldEnvironment env = (IFieldEnvironment) domain.getEnvironment();
 			IContagion contagion = IContagion.SupportedContagion.getContagion( env.getContagion());
-			Date date = env.getDate();
+			Date date = env.getTimeStep();
 
 			double safety = person.getSafetyBubble(contagion, Calendar.getInstance().getTime());
 
@@ -158,7 +159,6 @@ public class DomainComposite extends Composite {
 		float scale = (float)rectangle.height/rectangle.width;
 		field = new Field( field.getCoordinates(), field.getLength(),  (int) (field.getLength()*scale ));
 		domain.setField(field);
-		domain.setField(field);
 	}
 
 	@Override
@@ -183,7 +183,7 @@ public class DomainComposite extends Composite {
 			if( getDisplay().isDisposed())
 				return;
 			
-			if(AbstractDomain.DomainEvents.UPDATE_PERSON.equals(event.getEvent()))
+			if(IDomain.DomainEvents.UPDATE_PERSON.equals(event.getEvent()))
 				return;
 			addData(event);
 			counter++;

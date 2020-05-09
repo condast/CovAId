@@ -1,5 +1,6 @@
 package org.covaid.core.model;
 
+import java.util.Calendar;
 import java.util.Date;
 import java.util.Map;
 
@@ -21,19 +22,28 @@ public class Person implements IPerson{
 	
 	private IMobile mobile;
 
-	public Person( Point point, double safety, double risk) {
-		this( point.getIdentifier(), point.getXpos(), point.getYpos(), safety, risk );
+	public Person( Point point, double safety, double health) {
+		this( point.getIdentifier(), point.getXpos(), point.getYpos(), safety, health );
+	}
+
+	public Person( String identifier, int xpos, int ypos, double safety) {
+		this( identifier, xpos, ypos, safety, 100 );
 	}
 	
-	public Person( String identifier, int xpos, int ypos, double safety, double risk) {
+	public Person( String identifier, int xpos, int ypos, double safety, double health) {
 		location = new Point( identifier, xpos, ypos);
-		mobile = new Mobile(identifier, safety, risk, location);
+		mobile = new Mobile(identifier, safety, health, location);
 		this.state = States.HEALTHY;
 		this.monitor = null;
 	}
 
-	public Person( String identifier, int xpos, int ypos, double safety, double risk, Date date, Contagion contagion) {
-		this( identifier, xpos, ypos, safety, risk );
+	public Person( String identifier, int xpos, int ypos, double safety, Contagion contagion) {
+		this( identifier, xpos, ypos, safety, 100 - contagion.getContagiousness() );
+		setContagion( Calendar.getInstance().getTime(), contagion );
+	}
+
+	public Person( String identifier, int xpos, int ypos, double safety, Date date, Contagion contagion) {
+		this( identifier, xpos, ypos, safety, 100 - contagion.getContagiousness() );
 		setContagion( date, contagion );
 	}
 

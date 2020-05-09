@@ -5,7 +5,7 @@ import javax.ws.rs.ApplicationPath;
 
 import org.condast.commons.messaging.http.AbstractServletWrapper;
 import org.condast.commons.messaging.rest.CorsFilter;
-import org.covaid.rest.resources.NotificationResource;
+import org.covaid.rest.resources.FroggerResource;
 import org.covaid.rest.resources.PushResource;
 import org.glassfish.jersey.server.ResourceConfig;
 import org.glassfish.jersey.servlet.ServletContainer;
@@ -31,7 +31,7 @@ public class RestServlet extends AbstractServletWrapper {
 		//Loading classes is the safest way...
 		//in equinox the scanning of packages may not work
 		private RestApplication() {
-			register( NotificationResource.class );
+			register( FroggerResource.class );
 			register( PushResource.class );
 		}
 	}

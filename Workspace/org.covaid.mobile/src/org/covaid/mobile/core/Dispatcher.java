@@ -27,8 +27,8 @@ import com.orientechnologies.orient.core.entity.OEntityManager;
 public class Dispatcher extends AbstractPersistenceService {
 
 	//Needs to be the same as in the persistence.xml file
-	private static final String S_COVAID_SERVICE_ID = "org.covaid.rest.service"; 
-	private static final String S_COVAID_SERVICE = "CovAID REST Service"; 
+	private static final String S_COVAID_SERVICE_ID = "org.covaid.mobile.service"; 
+	private static final String S_COVAID_SERVICE = "CovAID MOBILE Service"; 
 
 	protected static final String S_LOCAL = "plocal:";
 	protected static final String S_FILE = "file:";	

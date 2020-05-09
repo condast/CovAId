@@ -3,6 +3,7 @@ package org.covaid.ui.simulator;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.layout.GridLayout;
 
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -11,12 +12,13 @@ import org.condast.commons.data.plane.IField;
 import org.condast.commons.strings.StringStyler;
 import org.condast.commons.ui.session.PushSession;
 import org.covaid.core.def.IContagion;
-import org.covaid.core.def.IEnvironment;
+import org.covaid.core.def.IFieldEnvironment;
 import org.covaid.core.def.IEnvironmentListener;
-import org.covaid.core.environment.CovaidDomain;
-import org.covaid.core.environment.AbstractDomain;
 import org.covaid.core.environment.DomainEvent;
-import org.covaid.core.environment.RawDomain;
+import org.covaid.core.environment.IDomain;
+import org.covaid.core.environment.field.CovaidDomain;
+import org.covaid.core.environment.field.IFieldDomain;
+import org.covaid.core.environment.field.RawDomain;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
@@ -81,7 +83,7 @@ public class SimulatorComposite extends Composite {
 
 	private PushSession<DomainEvent> session;
 
-	private IEnvironment environment;
+	private IFieldEnvironment environment;
 
 	private Label lblDay;
 	private Label lblDayValue;
@@ -436,7 +438,7 @@ public class SimulatorComposite extends Composite {
 	}
 
 
-	public void setInput( IEnvironment environment) {
+	public void setInput( IFieldEnvironment environment) {
 		if( this.environment != null ) {
 				environment.removeListener(covaidListener);
 			this.graphCanvas.removeInput(environment);
@@ -445,9 +447,9 @@ public class SimulatorComposite extends Composite {
 		if( this.environment != null ){
 			this.environment.addListener(covaidListener);
 			IField field = environment.getField();
-			for( AbstractDomain domain: environment.getDomains()) {
+			for( IDomain<Date> domain: environment.getDomains()) {
 				DomainComposite canvas = canvases.get( domain.getName());
-				canvas.setInput(domain);
+				canvas.setInput((IFieldDomain) domain);
 				Point point = canvas.computeSize((int)field.getLength(), (int)field.getWidth());
 				canvas.resize( new Rectangle( 0, 0, point.x, point.y));
 			}

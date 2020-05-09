@@ -74,7 +74,7 @@ public class PushResource{
 		try{
 			logger.info( "Subscription request for " + id + ": " + subscription );
 			ISubscription sub = Push.subscribe(id, token, subscription);
-			service.start(id, 0);
+			service.subscribe(id, 0);
 			return ( sub == null )? Response.status( Status.BAD_REQUEST).build(): 
 				Response.ok().build();
 		}

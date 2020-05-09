@@ -41,12 +41,17 @@ public abstract class AbstractPersistenceService implements IOrientPersistenceSe
 
 	private Lock lock;
 	
+	private OObjectDatabaseTx db;
+	
+	private int dbcounter;
+	
 	private final Logger logger = Logger.getLogger( this.getClass().getCanonicalName());
 
 	protected AbstractPersistenceService( String id, String name ) {
 		this.id = id;
 		this.name = name;
 		this.connected = false;
+		this.dbcounter = 0;
 		lock = new ReentrantLock();
 		listeners = new ArrayList<IPersistencyServiceListener>();
 	}
@@ -75,23 +80,33 @@ public abstract class AbstractPersistenceService implements IOrientPersistenceSe
 		return manager;
 	}
 
-	public boolean open() {
-		OObjectDatabaseTx db = this.getDatabase();
+	@Override
+	public synchronized OObjectDatabaseTx open() {
+		if( this.db != null ) {
+			this.dbcounter++;
+			return db;
+		}
+		db = this.getDatabase();
 		if( db == null )
-			return false;
+			return null;
 		db.open( args.get(IOrientPersistenceService.Attributes.USER.toJdbcProperty()), 
 				args.get( IOrientPersistenceService.Attributes.PASSWORD.toJdbcProperty()));
-		return true;
+		return db;
 	}
 
-	public void close() {
-		OObjectDatabaseTx db = getDatabase();
+	@Override
+	public synchronized void close() {
+		if(dbcounter > 0 ) {
+			dbcounter--;
+			return;
+		}
 		if( db != null )
 			db.close();
+		db = null;
 	}
 
 	public boolean registerEntityClass( Class<?> clss) {
-		OObjectDatabaseTx db = getDatabase();
+		db = getDatabase();
 		if( db == null)
 			return false;
 		db.getEntityManager().registerEntityClass(clss);

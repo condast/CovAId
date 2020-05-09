@@ -41,6 +41,14 @@ public class MobileService extends AbstractEntityService<IMobile>{
 		return results;
 	}
 
+	public boolean remove( String identifier ){
+		Collection<IMobile> results = super.query( S_QUERY_FIND_MOBILE + identifier + "'");
+		boolean result = false;
+		for( IMobile mobile: results)
+			result |= super.remove(mobile);
+		return result;
+	}
+
 	public static String toHex(String arg, String charset) throws UnsupportedEncodingException {
 	    return String.format("%040x", new BigInteger(1, arg.getBytes( charset )));
 	}

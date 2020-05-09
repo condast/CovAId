@@ -1,11 +1,8 @@
 package org.covaid.core.def;
 
-import java.util.Date;
+import org.covaid.core.environment.IDomain;
 
-import org.condast.commons.data.plane.IField;
-import org.covaid.core.environment.AbstractDomain;
-
-public interface IEnvironment {
+public interface IEnvironment<T extends Object> {
 
 	public enum Events{
 		ACTIVITY,
@@ -21,35 +18,11 @@ public interface IEnvironment {
 
 	void init(int population);
 
-	/**
-	 * Population is amount of people per square kilometre(!)
-	 * @param population
-	 */
-	void init(int activity, int population);
-
-	String getDayString(boolean trunc);
-
-	String getContagion();
-
-	void setContagion(String contagion);
-
-	IField getField();
-
-	void setField(IField field);
-
-	void zoomIn();
-
-	void zoomOut();
-
 	int getDays();
 
-	/**
-	 * Get the simulated date
-	 * @return
-	 */
-	Date getDate();
-
 	void start();
+
+	boolean pause();
 
 	void stop();
 
@@ -61,13 +34,15 @@ public interface IEnvironment {
 
 	int getPopulation();
 
-	void addDomain(AbstractDomain domain);
+	void addDomain( IDomain<T> domain);
 
-	void removeDomain(AbstractDomain domain);
+	void removeDomain( IDomain<T> domain);
 
-	AbstractDomain[] getDomains();
+	IDomain<T>[] getDomains();
 
-	void addListener(IEnvironmentListener listener);
+	void addListener(IEnvironmentListener<T> listener);
 
-	void removeListener(IEnvironmentListener listener);
+	void removeListener(IEnvironmentListener<T> listener);
+
+	T getTimeStep();
 }

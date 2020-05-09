@@ -39,7 +39,6 @@ public class Mobile implements IMobile, IFieldListener {
 		//history.alert(e.getDate(), e.getLocation(), e.getContagion());
 	};
 
-	
 	public Mobile() {
 		super();
 		this.timestamp = Calendar.getInstance().getTime();
