@@ -21,9 +21,9 @@ public abstract class AbstractEntityService<O extends Object> {
 	private OEntityManager manager;
 	private boolean connected;
 	
-	private Class<O> clss;
+	private Class<?> clss;
 	
-	public AbstractEntityService( Class<O> clss, IOrientPersistenceService service) {
+	public AbstractEntityService( Class<?> clss, IOrientPersistenceService service) {
 		super();
 		this.connected = false;
 		service.connect();

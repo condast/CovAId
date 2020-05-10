@@ -1,20 +1,18 @@
 package org.covaid.core.def;
 
-import java.util.Date;
+public interface ILocation<T extends Object> extends IPoint{
 
-public interface ILocation extends IPoint{
+	void addContagion( IContagion<T> contagion);
 
-	void addContagion( IContagion contagion);
+	boolean removeContagion(IContagion<T> contagion);
 
-	boolean removeContagion(IContagion contagion);
+	double getContagion(IContagion<T> contagion);
 
-	double getContagion(IContagion contagion);
+	IContagion<T> getContagion(String identifier);
 
-	IContagion getContagion(String identifier);
+	IContagion<T>[] getContagion();
 
-	IContagion[] getContagion();
-
-	boolean isContagious(Date date);
+	boolean isContagious(T date);
 
 	boolean isContagious(long days);
 
@@ -24,7 +22,7 @@ public interface ILocation extends IPoint{
 	 * @param location
 	 * @return
 	 */
-	IContagion[] getWorse( ILocation location);
+	IContagion<T>[] getWorse( ILocation<T> location);
 
 	IPoint toPoint();
 
@@ -34,7 +32,7 @@ public interface ILocation extends IPoint{
 	 * @param location
 	 * @return
 	 */
-	ILocation createWorst(ILocation location);
+	ILocation<T> createWorst(ILocation<T> location);
 
 	/**
 	 * Return true if the given location is more contagious than this one. This
@@ -43,6 +41,6 @@ public interface ILocation extends IPoint{
 	 * @param location
 	 * @return
 	 */
-	boolean isWorse(ILocation location);
+	boolean isWorse(ILocation<T> location);
 
 }

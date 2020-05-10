@@ -3,6 +3,7 @@ package org.covaid.rest.resources;
 import com.google.gson.Gson;
 
 import java.util.Calendar;
+import java.util.Map;
 import java.util.logging.Logger;
 
 import javax.ws.rs.Consumes;
@@ -12,7 +13,11 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+
+import org.condast.commons.strings.StringUtils;
 import org.covaid.core.def.IEnvironment;
+import org.covaid.core.model.Hub;
+import org.covaid.core.model.Point;
 import org.covaid.rest.core.Dispatcher;
 
 @Path("/")
@@ -40,6 +45,8 @@ public class FroggerResource {
 		Dispatcher dispatcher = Dispatcher.getInstance();
 		Response result = null;
 		try{
+			if( StringUtils.isEmpty(identifier))
+				return Response.serverError().build();
 			IEnvironment<Integer> env = dispatcher.register(identifier);
 			Gson gson = new Gson();
 			String str = gson.toJson( new CreateRegisterData(env), CreateRegisterData.class);
@@ -70,6 +77,8 @@ public class FroggerResource {
 		Dispatcher dispatcher = Dispatcher.getInstance();
 		Response response = null;
 		try{
+			if( StringUtils.isEmpty(identifier))
+				return Response.serverError().build();
 			boolean result = dispatcher.start(identifier, width, density, infected );
 			response = Response.ok( result ).build();
 		}
@@ -97,6 +106,8 @@ public class FroggerResource {
 		Dispatcher dispatcher = Dispatcher.getInstance();
 		Response response = null;
 		try{
+			if( StringUtils.isEmpty(identifier))
+				return Response.serverError().build();
 			boolean result = dispatcher.pause(identifier);
 			response = Response.ok( result ).build();
 		}
@@ -124,8 +135,41 @@ public class FroggerResource {
 		Dispatcher dispatcher = Dispatcher.getInstance();
 		Response response = null;
 		try{
+			if( StringUtils.isEmpty(identifier))
+				return Response.serverError().build();
 			boolean result = dispatcher.stop(identifier);
 			response = Response.ok( result ).build();
+		}
+		catch( Exception ex ){
+			ex.printStackTrace();
+			return Response.serverError().build();
+		}
+		return response;
+	}
+
+	/**
+	 * Get the updated information about the hubs
+	 * @param id
+	 * @param token
+	 * @param identifier
+	 * @param history
+	 * @return
+	 */
+	@GET
+	@Consumes(MediaType.APPLICATION_JSON)
+	@Produces(MediaType.TEXT_PLAIN)
+	@Path("/update")
+	public Response getUpdate( @QueryParam("id") long id, @QueryParam("token") long token, @QueryParam("identifier") String identifier) {
+		logger.info( "Update information " + identifier );
+		Dispatcher dispatcher = Dispatcher.getInstance();
+		Response response = null;
+		try{
+			if( StringUtils.isEmpty(identifier))
+				return Response.serverError().build();
+			Map<Integer, Map<Point, Hub>> results = dispatcher.getUpdate(identifier);
+			Gson gson = new Gson();
+			String str = gson.toJson(results, Map.class);
+			response = Response.ok( str ).build();
 		}
 		catch( Exception ex ){
 			ex.printStackTrace();

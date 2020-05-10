@@ -3,8 +3,12 @@ package org.covaid.rest.core;
 import java.util.Map;
 import java.util.TreeMap;
 import org.covaid.core.def.IEnvironment;
+import org.covaid.core.def.IHub;
+import org.covaid.core.def.IPoint;
 import org.covaid.core.environment.AbstractEnvironment;
 import org.covaid.core.environment.frogger.FroggerDomain;
+import org.covaid.core.model.Hub;
+import org.covaid.core.model.Point;
 import org.covaid.orientdb.object.AbstractPersistenceService;
 
 import com.orientechnologies.orient.core.entity.OEntityManager;
@@ -17,7 +21,7 @@ public class Dispatcher extends AbstractPersistenceService {
 
 	private static Dispatcher dispatcher = new Dispatcher();
 	
-	private TreeMap<String, IEnvironment<Integer>> environments;
+	private TreeMap<String, Environment> environments;
 
 	private Dispatcher() {
 		super( S_COVAID_SERVICE_ID, S_COVAID_SERVICE );
@@ -29,7 +33,7 @@ public class Dispatcher extends AbstractPersistenceService {
 	}
 	
 	public IEnvironment<Integer> register( String identifier ) {
-		IEnvironment<Integer> result = this.environments.get( identifier);
+		Environment result = this.environments.get( identifier);
 		if( result == null ) {
 			result = new Environment( identifier );
 			this.environments.put(identifier, result);
@@ -63,26 +67,12 @@ public class Dispatcher extends AbstractPersistenceService {
 		return result.pause();
 	}
 
-	private class Environment extends AbstractEnvironment<Integer>{
-
-		private FroggerDomain domain;
+	public Map<Integer, Map<Point,Hub>> getUpdate(String identifier) {
+		Environment result = (Environment) this.environments.get( identifier);
+		if( result == null )
+			return null;
 		
-		protected Environment( String name) {
-			super(name);
-			this.domain = new FroggerDomain( name, this);
-			super.addDomain(domain);
-		}
-	
-		public void init(int width, int density, int infected) {
-			int population = (int)((double)width*density/100);
-			super.init(population);
-			domain.init(width, density, infected);
-		}
-
-		@Override
-		public Integer getTimeStep() {
-			return super.getDays();
-		}
+		return result.getUpdate();
 	}
 
 	@Override
@@ -99,6 +89,32 @@ public class Dispatcher extends AbstractPersistenceService {
 
 	public void subscribe(long id, int i) {
 		// TODO Auto-generated method stub
+	
+	}
+
+	private class Environment extends AbstractEnvironment<Integer>{
+
+		private FroggerDomain domain;
 		
+		protected Environment( String name) {
+			super(name);
+			this.domain = new FroggerDomain( name, this);
+			super.addDomain(domain);
+		}
+	
+		public void init(int width, int density, int infected) {
+			int population = (int)((double)width*density/100);
+			super.init(population);
+			domain.init(width, infected);
+		}
+
+		@Override
+		public Integer getTimeStep() {
+			return super.getDays();
+		}
+		
+		public Map<Integer, Map<Point, Hub>> getUpdate(){
+			return domain.getUpdate();
+		}
 	}
 }

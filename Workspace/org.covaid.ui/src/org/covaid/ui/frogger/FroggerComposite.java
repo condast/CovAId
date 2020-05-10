@@ -3,6 +3,8 @@ package org.covaid.ui.frogger;
 import com.google.gson.Gson;
 import java.io.IOException;
 import java.util.Map;
+import java.util.Timer;
+import java.util.TimerTask;
 import java.util.logging.Logger;
 
 import org.condast.commons.auth.AuthenticationData;
@@ -31,6 +33,8 @@ public class FroggerComposite extends Composite {
 	public static final String S_PATH = "http://localhost:10080/covaid/rest";
 	//public static final String S_PATH = "http://www.condast.com:8080/covaid/mobile/rest";
 
+	public static final int DEFAULT_WIDTH = 100;//metres
+
 	private enum Requests{
 
 		REGISTER,
@@ -38,7 +42,8 @@ public class FroggerComposite extends Composite {
 		PAUSE,
 		STOP,
 		GET_DAY,
-		GET_HUBS;
+		GET_HUBS, 
+		UPDATE;
 		
 		@Override
 		public String toString() {
@@ -46,14 +51,48 @@ public class FroggerComposite extends Composite {
 		}
 	}
 	
+	private enum Attributes{
+
+		WIDTH,
+		DENSITY,
+		INFECTED;
+		
+		@Override
+		public String toString() {
+			return StringStyler.xmlStyleString( super.toString());
+		}
+	}
 	private Group grpIndication;
 	private Canvas canvas;
+	private Slider sliderDensity;
+	private Label lblDensityValue;
+	
+	private Slider sliderInfections;
+	private Label lblInfectionsValue;
 	private Button btnStart;
 	private Button btnPause;
 
 	private AuthenticationData data;
 	
 	private boolean started;
+	
+	private Timer timer;
+	private TimerTask timerTask = new TimerTask(){
+
+		@Override
+		public void run() {
+			try {
+				if(!started || ( data == null ))
+					return;
+				WebClient client = new WebClient();
+				Map<String, String> params = data.toMap();
+				client.sendGet(Requests.UPDATE, params);
+			} catch (Exception e1) {
+				e1.printStackTrace();
+			}
+		}
+		
+	};
 	
 	private Logger logger = Logger.getLogger(this.getClass().getName());
 	
@@ -97,7 +136,21 @@ public class FroggerComposite extends Composite {
 		super(parent, style | SWT.NO_SCROLL);
 		createPage(parent, style | SWT.NO_SCROLL);
 		this.started = false;
-		
+	    this.timer = new Timer(true);
+	    timer.scheduleAtFixedRate(timerTask, 0, 1000);
+	}
+
+	protected void createPage( Composite parent, int style ) {
+		super.setLayout(new GridLayout(1, true));
+		setLayout(new GridLayout(3, false));
+		grpIndication = new Group(this, SWT.BORDER);
+		grpIndication.setLayout(new FillLayout(SWT.HORIZONTAL));
+		grpIndication.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 3, 1));
+		grpIndication.setText("Surroundings");
+
+		canvas = new Canvas(grpIndication, SWT.NONE);
+		canvas.addPaintListener(listener);
+
 		Group grpPlay = new Group(this, SWT.NONE);
 		grpPlay.setLayout(new GridLayout(4, false));
 		grpPlay.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false, 1, 1));
@@ -113,6 +166,9 @@ public class FroggerComposite extends Composite {
 					Requests request = started? Requests.STOP: Requests.START;
 					WebClient client = new WebClient();
 					Map<String, String> params = data.toMap();
+					params.put( Attributes.DENSITY.toString(), String.valueOf( sliderDensity.getSelection()));
+					params.put( Attributes.INFECTED.toString(), String.valueOf( sliderInfections.getSelection()));
+					params.put( Attributes.WIDTH.toString(), String.valueOf( DEFAULT_WIDTH ));
 					client.sendGet(request, params);
 				} catch (Exception e1) {
 					e1.printStackTrace();
@@ -152,59 +208,71 @@ public class FroggerComposite extends Composite {
 		Label lblDensity = new Label(grpSettings, SWT.NONE);
 		lblDensity.setText("Density:");
 		
-		Slider slider = new Slider(grpSettings, SWT.NONE);
-		slider.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
-		
-		Label lblDensityValue = new Label(grpSettings, SWT.NONE);
-		lblDensityValue.setText("0");
+		sliderDensity = new Slider(grpSettings, SWT.NONE);
+		sliderDensity.setSelection(50);
+		sliderDensity.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
+		sliderDensity.addSelectionListener( new SelectionAdapter() {
+			private static final long serialVersionUID = 1L;
+
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				Slider slider = (Slider) e.widget;
+				lblDensityValue.setText(String.valueOf( slider.getSelection()));
+				super.widgetSelected(e);
+			}	
+		});
+		lblDensityValue = new Label(grpSettings, SWT.NONE);
+		lblDensityValue.setText(String.valueOf( sliderDensity.getSelection()));
 		
 		Label lblInfected = new Label(grpSettings, SWT.NONE);
 		lblInfected.setText("Infected:");
 		
-		Slider slider_1 = new Slider(grpSettings, SWT.NONE);
-		slider_1.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
+		sliderInfections = new Slider(grpSettings, SWT.NONE);
+		sliderInfections.setSelection(10);
+		sliderInfections.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
+		sliderInfections.addSelectionListener( new SelectionAdapter() {
+			private static final long serialVersionUID = 1L;
+
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				Slider slider = (Slider) e.widget;
+				lblInfectionsValue.setText(String.valueOf( slider.getSelection()));
+				super.widgetSelected(e);
+			}	
+		});
 		
-		Label lblInfectedValue = new Label(grpSettings, SWT.NONE);
-		lblInfectedValue.setText("0");
-		
-				Group grpControls = new Group(this, SWT.NONE);
-				grpControls.setLayoutData(new GridData(SWT.RIGHT, SWT.FILL, true, false, 1, 1));
-				grpControls.setLayout(new GridLayout(3, false));
-				grpControls.setText("Controls");
-				new Label(grpControls, SWT.NONE);
-				
-				Button btnNewButton = new Button(grpControls, SWT.NONE);
-				btnNewButton.addSelectionListener(new SelectionAdapter() {
-					@Override
-					public void widgetSelected(SelectionEvent e) {
-					}
-				});
-				btnNewButton.setText("^");
-				new Label(grpControls, SWT.NONE);
-				
-				Button button_1 = new Button(grpControls, SWT.NONE);
-				button_1.setText("<-");
-				new Label(grpControls, SWT.NONE);
-				
-				Button button = new Button(grpControls, SWT.NONE);
-				button.setText("->");
-				new Label(grpControls, SWT.NONE);
-				
-				Button btnV = new Button(grpControls, SWT.NONE);
-				btnV.setText("V");
-				new Label(grpControls, SWT.NONE);
-	}
-	
-	protected void createPage( Composite parent, int style ) {
-		super.setLayout(new GridLayout(1, true));
-		setLayout(new GridLayout(3, false));
-		grpIndication = new Group(this, SWT.BORDER);
-		grpIndication.setLayout(new FillLayout(SWT.HORIZONTAL));
-		grpIndication.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 3, 1));
-		grpIndication.setText("Surroundings");
-		
-		canvas = new Canvas(grpIndication, SWT.NONE);
-		canvas.addPaintListener(listener);
+		lblInfectionsValue = new Label(grpSettings, SWT.NONE);
+		lblInfectionsValue.setText(String.valueOf( sliderInfections.getSelection()));
+
+		Group grpControls = new Group(this, SWT.NONE);
+		grpControls.setLayoutData(new GridData(SWT.RIGHT, SWT.FILL, true, false, 1, 1));
+		grpControls.setLayout(new GridLayout(3, false));
+		grpControls.setText("Controls");
+		new Label(grpControls, SWT.NONE);
+
+		Button btnNewButton = new Button(grpControls, SWT.NONE);
+		btnNewButton.addSelectionListener(new SelectionAdapter() {
+			private static final long serialVersionUID = 1L;
+
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+			}
+		});
+		btnNewButton.setText("^");
+		new Label(grpControls, SWT.NONE);
+
+		Button button_1 = new Button(grpControls, SWT.NONE);
+		button_1.setText("<-");
+		new Label(grpControls, SWT.NONE);
+
+		Button button = new Button(grpControls, SWT.NONE);
+		button.setText("->");
+		new Label(grpControls, SWT.NONE);
+
+		Button btnV = new Button(grpControls, SWT.NONE);
+		btnV.setText("V");
+		new Label(grpControls, SWT.NONE);
+
 	}
 
 	public void setInput( AuthenticationData data ) {

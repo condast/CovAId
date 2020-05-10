@@ -7,11 +7,11 @@ import java.util.Map;
 
 import org.condast.commons.strings.StringUtils;
 
-public class StoredNode {
+public class StoredNode<T extends Object> {
 
-	private StoredData root;
+	private StoredData<T> root;
 	
-	private Map<StoredData, Float> connections;
+	private Map<StoredData<T>, Float> connections;
 	
 	private Date timestamp;
 
@@ -21,30 +21,30 @@ public class StoredNode {
 		this.timestamp = Calendar.getInstance().getTime();
 	}
 
-	public StoredNode(StoredData root) {
+	public StoredNode(StoredData<T> root) {
 		this();
 		this.root = root;
 	}
 
-	public StoredNode(StoredData root, Map<StoredData, Float> data) {
+	public StoredNode(StoredData<T> root, Map<StoredData<T>, Float> data) {
 		this();
 		this.root = root;
 		this.connections = data;
 	}
 
 	public StoredNode( String identifier) {
-		this( new StoredData( identifier ));
+		this( new StoredData<T>( identifier ));
 	}
 
-	public StoredData getRoot() {
+	public StoredData<T> getRoot() {
 		return root;
 	}
 	
-	public void addChild( StoredData data, float distance ) {
+	public void addChild( StoredData<T> data, float distance ) {
 		this.connections.put(data, distance);
 	}
 
-	public float getDistance( StoredData data ) {
+	public float getDistance( StoredData<T> data ) {
 		return this.connections.get(data);
 	}
 
@@ -52,17 +52,18 @@ public class StoredNode {
 		return timestamp;
 	}
 
-	public StoredData get( String identifier ) {
+	public StoredData<T> get( String identifier ) {
 		if( StringUtils.isEmpty(identifier))
 			return null;
-		for( StoredData data: this.connections.keySet()) {
+		for( StoredData<T> data: this.connections.keySet()) {
 			if( data.getIdentifier().equals(identifier))
 				return data;
 		}
 		return null;
 	}
 
-	public StoredData[] getConnections() {
+	@SuppressWarnings("unchecked")
+	public StoredData<T>[] getConnections() {
 		return this.connections.values().toArray( new StoredData[ this.connections.size()]);
 	}
 }

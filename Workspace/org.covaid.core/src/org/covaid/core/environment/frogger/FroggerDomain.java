@@ -2,6 +2,8 @@ package org.covaid.core.environment.frogger;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
 import java.util.TreeMap;
 
@@ -10,10 +12,13 @@ import org.covaid.core.def.IContagion.SupportedContagion;
 import org.covaid.core.def.IEnvironment;
 import org.covaid.core.def.IHub;
 import org.covaid.core.def.IPerson;
+import org.covaid.core.def.IPoint;
 import org.covaid.core.environment.AbstractDomain;
 import org.covaid.core.environment.IDomain;
 import org.covaid.core.model.Contagion;
+import org.covaid.core.model.Hub;
 import org.covaid.core.model.Person;
+import org.covaid.core.model.Point;
 
 public class FroggerDomain extends AbstractDomain<Integer> implements IDomain<Integer>{
 
@@ -23,12 +28,11 @@ public class FroggerDomain extends AbstractDomain<Integer> implements IDomain<In
 	public static final String S_ERR_INVALID_HUB = "An invalid hub was encountered; the position must be smaller than the width: ";
 
 	private TreeMap<Integer,DayData> days;
-	private Collection<IPerson> persons;
+	private Collection<IPerson<Integer>> persons;
 	private int time;
 	private int maxTime;
 
 	private int width;
-	private int density;
 	private int infected;
 	
 	private String contagion;
@@ -68,28 +72,15 @@ public class FroggerDomain extends AbstractDomain<Integer> implements IDomain<In
 	 * @param population
 	 * @param infected
 	 */
-	public void init(int width, int density, int infected ) {
+	public void init(int width, int infected ) {
 		this.width = width;
-		this.density = density;
 		this.infected = infected;
 		int population = super.getPopulation(); 
 		this.init(population);
 	}
-
-	public boolean addDay( int width, Collection<IHub> hubs ) {
-		DayData data = new DayData(width);
-		days.put(time, data);
-		boolean result = true;
-		for( IHub hub: hubs ) {
-			if( hub.getLocation().getXpos() >= width )
-				return false;
-			result &= data.addHub(hub);
-		}
-		return result;
-	}
 	
-	public boolean update( int width, Collection<IHub> hubs ) {
-		boolean result = addDay(width, hubs);
+	public boolean update( int width, Collection<IHub<Integer>> hubs ) {
+		boolean result = false;//addDay(width, hubs);
 		if( !result )
 			throw new IllegalArgumentException( S_ERR_INVALID_HUB); 
 		time++;
@@ -97,46 +88,75 @@ public class FroggerDomain extends AbstractDomain<Integer> implements IDomain<In
 		return result;
 	}
 	
-	private class DayData{
-		
-		private int width;
-		
-		private Collection<IHub> hubs;
-
-		public DayData(int width) {
-			super();
-			this.width = width;
-			hubs = new ArrayList<>();
-		}
-		
-		public int getWidth() {
-			return width;
-		}
-
-
-		public boolean addHub( IHub hub ) {
-			return this.hubs.add(hub);
-		}
-	}
-
 	@Override
 	public void movePerson(Integer timeStep) {
+		
+		//first advance the population by creating a new set of hubs at timestamp and 
+		//moving the persons one place
+		DayData data = new DayData();
+		this.days.put(timeStep, data);
+		for( int i=timeStep-1; i>0; i-- ) {
+			DayData current = days.get(timeStep-1);
+			for( IPoint point: current.hubs.keySet()) {
+				IHub<Integer> source = current.hubs.get(point);
+				IHub<Integer> target = data.hubs.get(point);
+				for( IPerson<Integer> person: source.getPersons().values())
+					target.encounter(person, i);
+				data = current;
+			}
+		}
+
 		//Create a row of new persons
+		data = days.get(0);
 		for( int i=0; i< super.getPopulation(); i++) {
 			int x = (int) (width * Math.random());
 			double safety = 100* Math.random();
-			double contagion = 100*Math.random();
 			String identifier = "["+ timeStep + ":" + i + "]";
-			IPerson person = ( contagion < infected )? new Person( identifier, x, 0, safety, new Contagion( this.contagion, 100d )): new Person( identifier, x, 0, safety );
+			IPerson<Integer> person = new Person( identifier, x, 0, safety );
 			persons.add(person);
-			days.put(timeStep, new DayData( width));
+			data.addHub(0, person);
 		}
-		
+		//Then set the infections
+		for( IPerson<Integer> person: this.persons) {
+			double contagion = 100*Math.random();
+			if( contagion < infected )
+				person.setContagion( timeStep, new Contagion( this.contagion, 100));
+		}
+	}
+
+	public Map<Integer, Map<Point, Hub>> getUpdate(){
+		Map<Integer, Map<Point,Hub>> results = new HashMap<>();
+		Iterator<Map.Entry<Integer, DayData>> iterator = this.days.entrySet().iterator();
+		while( iterator.hasNext()) {
+			Map.Entry<Integer, DayData> entry = iterator.next();
+			results.put(entry.getKey(), entry.getValue().hubs);
+		}
+		return results;
 	}
 
 	@Override
 	public void update(Integer date) {
-		// TODO Auto-generated method stub
+		// TODO Auto-generated method stub	
+	}
+
+	private class DayData{
+		
+		private Map<Point, Hub> hubs;
+
+		public DayData() {
+			super();
+			hubs = new HashMap<>();
+		}
+		
+		public IHub<Integer> addHub( int timeStep, IPerson<Integer> person ) {
+			IHub<Integer> hub = hubs.get( person.getLocation());
+			if( hub == null ) {
+				hub = new Hub( person);
+				this.hubs.put( (Point) person.getLocation(), (Hub) hub );
+			}else
+				hub.encounter(person, timeStep);
+			return hub;
+		}
 		
 	}
 }

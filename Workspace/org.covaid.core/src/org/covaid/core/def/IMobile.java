@@ -1,10 +1,6 @@
 package org.covaid.core.def;
 
-import java.util.Date;
-
-import org.covaid.core.data.SharedData;
-
-public interface IMobile {
+public interface IMobile<T extends Object> {
 
 	public enum Risks{
 		DONT_CARE(0),
@@ -38,9 +34,9 @@ public interface IMobile {
 
 	void setLocation(IPoint location);
 
-	void alert(Date date, ILocation location, IContagion contagion);
+	void alert(T date, ILocation<T> location, IContagion<T> contagion);
 
-	IHistory getHistory();
+	IHistory<T> getHistory();
 
 	/**
 	 * Returns true if the risk assessment shows that the owner is healthy
@@ -48,11 +44,9 @@ public interface IMobile {
 	 */
 	boolean isHealthy();
 
-	boolean addContact(SharedData data);
-
 	void setIdentifier(String identifier);
 
-	Date getTimestamp();
+	T getTimestamp();
 
 	String getEmail();
 

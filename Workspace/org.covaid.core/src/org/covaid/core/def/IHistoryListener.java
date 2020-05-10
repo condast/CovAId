@@ -1,7 +1,7 @@
 package org.covaid.core.def;
 
 @FunctionalInterface
-public interface IHistoryListener {
+public interface IHistoryListener<T extends Object> {
 
-	public void notifyContagionChanged( HistoryEvent event );
+	public void notifyContagionChanged( HistoryEvent<T> event );
 }

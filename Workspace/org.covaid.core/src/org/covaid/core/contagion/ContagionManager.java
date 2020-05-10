@@ -3,7 +3,7 @@ package org.covaid.core.contagion;
 import java.util.Date;
 import org.condast.commons.date.DateUtils;
 import org.covaid.core.def.IContagion;
-import org.covaid.core.model.Contagion;
+import org.covaid.core.model.date.DateContagion;
 
 public class ContagionManager implements IContagionManager {
 
@@ -12,7 +12,7 @@ public class ContagionManager implements IContagionManager {
 	public static final int DEFAULT_COVID_UNSAFE_TIME = 14;
 	public static final int DEFAULT_COVID_SAFE_TIME = 30;
 	
-	public double calculateContagiousness( Contagion.SupportedContagion identifier, double detectedContagion, double distance ) {
+	public double calculateContagiousness( DateContagion.SupportedContagion identifier, double detectedContagion, double distance ) {
 		double contagion = 0f;
 		switch( identifier ) {
 		case COVID_19:
@@ -33,7 +33,7 @@ public class ContagionManager implements IContagionManager {
 	}
 
 	
-	public double calculateContagiousness( Contagion.SupportedContagion identifier, Date previous, Date current ) {
+	public double calculateContagiousness( DateContagion.SupportedContagion identifier, Date previous, Date current ) {
 		double contagion = 0f;
 		long diff = DateUtils.getDifferenceDays(current, previous);
 		switch( identifier ) {

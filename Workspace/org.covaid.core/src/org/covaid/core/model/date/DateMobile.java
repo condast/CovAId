@@ -1,30 +1,42 @@
-package org.covaid.core.model;
+package org.covaid.core.model.date;
 
-import org.covaid.core.data.StoredNode;
+import java.util.Calendar;
+import java.util.Date;
+
+import org.condast.commons.data.plane.IField;
 import org.covaid.core.def.IContagion;
-import org.covaid.core.def.IHistory;
+import org.covaid.core.def.IHistoryListener;
 import org.covaid.core.def.ILocation;
 import org.covaid.core.def.IMobile;
 import org.covaid.core.def.IPoint;
+import org.covaid.core.field.FieldChangeEvent;
+import org.covaid.core.field.IFieldListener;
+import org.covaid.core.model.Point;
 
-public class Mobile<T extends Object> implements IMobile<T> {
+public class DateMobile implements IMobile<Date>, IFieldListener {
 
 		
-	//An anonymous id used for communication with the server
+	//An anonymous id used for communication with the serrver
 	
 	private String identifier;
 	
 	private double health, safety;
 	private String email;//doctor email
-	private transient StoredNode<T> node;
 	private IPoint location;
 
-	private IHistory<T> history;
+	private DateHistory history;
 	
-	private T timestamp;
+	private Date timestamp;
 	
-	public Mobile() {
+	private transient IField field;
+
+	private transient IHistoryListener<Date> listener = (e)->{
+		//history.alert(e.getDate(), e.getLocation(), e.getContagion());
+	};
+
+	public DateMobile() {
 		super();
+		this.timestamp = Calendar.getInstance().getTime();
 	}
 
 	/**
@@ -35,14 +47,27 @@ public class Mobile<T extends Object> implements IMobile<T> {
 	 * @param risk (0-100)
 	 * @param location
 	 */
-	public Mobile( String identifier, double safety, double health, IPoint location, IHistory<T> history) {
+	public DateMobile( String identifier, IField field) {
+		this( identifier, 50, 50, new Point((int)field.getLength()/2, (int)field.getWidth()/2 ));
+		this.field = field;
+	}
+
+	/**
+	 * The Safety is the extent in which the bubble should protect you, e.g. for vulnerable people
+	 * The Risk is the amount of risk you are willing to take
+	 * @param id
+	 * @param safety (0-100)
+	 * @param risk (0-100)
+	 * @param location
+	 */
+	public DateMobile( String identifier, double safety, double health, IPoint location) {
 		super();
 		this.identifier = identifier;
 		this.safety = safety;
 		this.health = health;
-		this.node = new StoredNode<T>(identifier );
 		this.location = location;
-		this.history = history;
+		this.history = new DateHistory();
+		this.history.addListener(listener);
 	}
 
 	@Override
@@ -63,6 +88,14 @@ public class Mobile<T extends Object> implements IMobile<T> {
 	@Override
 	public void setEmail(String email) {
 		this.email = email;
+	}
+
+	public IField getField() {
+		return field;
+	}
+
+	public void setField(IField field) {
+		this.field = field;
 	}
 
 	@Override
@@ -98,12 +131,12 @@ public class Mobile<T extends Object> implements IMobile<T> {
 	}
 
 	@Override
-	public void alert( T date, ILocation<T> location, IContagion<T> contagion ) {
+	public void alert( Date date, ILocation<Date> location, IContagion<Date> contagion ) {
 		this.history.alert( date, location, contagion);
 	}
 
 	@Override
-	public IHistory<T> getHistory() {
+	public DateHistory getHistory() {
 		return this.history;
 	}
 
@@ -116,16 +149,18 @@ public class Mobile<T extends Object> implements IMobile<T> {
 		return this.history.isEmpty();
 	}
 
-	public StoredNode<T> getNode() {
-		return node;
-	}
-	
 	@Override
-	public T getTimestamp() {
+	public Date getTimestamp() {
 		return timestamp;
 	}
 
-	public void setTimestamp(T timestamp) {
+	public void setTimestamp(Date timestamp) {
 		this.timestamp = timestamp;
 	}
+
+	@Override
+	public void notifyFieldChange(FieldChangeEvent event) {
+		// TODO Auto-generated method stub
+		
+	}	
 }

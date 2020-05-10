@@ -1,13 +1,11 @@
 package org.covaid.core.def;
 
-import java.util.Date;
-
 import org.condast.commons.data.util.Vector;
 import org.condast.commons.strings.StringStyler;
 import org.condast.commons.strings.StringUtils;
-import org.covaid.core.model.Contagion;
+import org.covaid.core.model.date.DateContagion;
 
-public interface IContagion extends Comparable<IContagion>{
+public interface IContagion<T extends Object> extends Comparable<IContagion<T>>{
 
 	int DAY = 24 * 3600 * 1000;//msec
 	int DEFAULT_CONTAGION = 14;//two weeks
@@ -22,8 +20,8 @@ public interface IContagion extends Comparable<IContagion>{
 		SEASONAL,
 		EXPLOSION;
 		
-		public Contagion getContagion() {
-			return new Contagion(this, 100f);
+		public DateContagion getContagion() {
+			return new DateContagion(this, 100f);
 		}
 
 		@Override
@@ -49,7 +47,7 @@ public interface IContagion extends Comparable<IContagion>{
 			return results;
 		}
 
-		public static Contagion getContagion( String str ) {
+		public static DateContagion getContagion( String str ) {
 			if( !isSupported(str))
 				return SupportedContagion.OTHER.getContagion();
 			return SupportedContagion.valueOf(str).getContagion();
@@ -84,7 +82,7 @@ public interface IContagion extends Comparable<IContagion>{
 
 	double getDispersion();
 
-	Date getTimestamp();
+	T getTimestamp();
 
 	double getContagiousnessInTime(long days);
 
@@ -107,20 +105,20 @@ public interface IContagion extends Comparable<IContagion>{
 	 * @param distance
 	 * @return
 	 */
-	Vector<Double, Double> getContagion(Date date);
+	Vector<Double, Double> getContagion(T date);
 
 	/**
 	 * Returns true if the this contagiousness is larger than the given one
 	 * @param contagion
 	 * @return
 	 */
-	boolean isLarger(IContagion contagion);
+	boolean isLarger(IContagion<T> contagion);
 
 	boolean isContagious(long days);
 
-	boolean isContagious(Date date);
+	boolean isContagious(T date);
 
-	int compareTo(IContagion o);
+	int compareTo(IContagion<T> o);
 
 	double getThreshold();
 

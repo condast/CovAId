@@ -1,22 +1,22 @@
 package org.covaid.core.def;
 
-import java.util.Date;
+import java.util.Map;
 
-public interface IHub {
+public interface IHub<T extends Object> extends Cloneable{
 
 	/**
 	 * Respond to an encounter with a person
 	 * @param person
 	 * @return
 	 */
-	boolean encounter(IPerson person, Date date);
+	boolean encounter(IPerson<T> person, T step);
 
 	/**
 	 * Respond to an encounter with a person. Returns true if the snapshot has become worse
 	 * @param person
 	 * @return
 	 */
-	boolean alert(IPerson person, Date date);
+	boolean alert(IPerson<T> person, T step);
 
 	/**
 	 * A snap shot is a representation of the current state of this location, with respect to
@@ -25,15 +25,17 @@ public interface IHub {
 	 * 
 	 * @return
 	 */
-	ILocation createSnapShot(Date date );
+	ILocation<T> createSnapShot(T step );
 
 	/**
 	 * Update the hub and return a new snapshot
 	 * @param date
 	 * @return
 	 */
-	ILocation update(Date date);
+	ILocation<T> update(T step);
 
-	ILocation getLocation();
+	ILocation<T> getLocation();
+
+	Map<T, IPerson<T>> getPersons();
 
 }

@@ -5,12 +5,12 @@ import java.util.EventObject;
 public class EnvironmentEvent<T extends Object> extends EventObject {
 	private static final long serialVersionUID = 1L;
 	
-	private IPerson person;
+	private IPerson<T> person;
 	private int days;
 	
 	private IEnvironment.Events event;
 	
-	public EnvironmentEvent( IEnvironment<T> source, IPerson person, int days ) {
+	public EnvironmentEvent( IEnvironment<T> source, IPerson<T> person, int days ) {
 		this(source, days);
 		this.person = person;
 		event = IEnvironment.Events.ACTIVITY;
@@ -39,7 +39,7 @@ public class EnvironmentEvent<T extends Object> extends EventObject {
 		return days;
 	}
 
-	public IPerson getPerson() {
+	public IPerson<T> getPerson() {
 		return person;
 	}
 }

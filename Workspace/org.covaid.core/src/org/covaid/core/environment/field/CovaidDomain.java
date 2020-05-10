@@ -10,9 +10,9 @@ import org.covaid.core.def.IHub;
 import org.covaid.core.def.IPerson;
 import org.covaid.core.def.IPoint;
 import org.covaid.core.environment.AbstractFieldDomain;
-import org.covaid.core.model.Contagion;
-import org.covaid.core.model.Hub;
 import org.covaid.core.model.Point;
+import org.covaid.core.model.date.DateContagion;
+import org.covaid.core.model.date.DateHub;
 
 public class CovaidDomain extends AbstractFieldDomain{
 
@@ -45,7 +45,7 @@ public class CovaidDomain extends AbstractFieldDomain{
 	@Override
 	protected void onCreatePerson( IFieldDomain domain, IPerson person) {
 		IFieldEnvironment env = (IFieldEnvironment) super.getEnvironment();
-		Contagion contagion = IContagion.SupportedContagion.valueOf( env.getContagion()).getContagion();
+		DateContagion contagion = IContagion.SupportedContagion.valueOf( env.getContagion()).getContagion();
 		if( index == 0 ) {
 			person.setPosition((int)domain.getField().getLength()/2, (int)domain.getField().getWidth()/2);
 			person.setContagion( env.getTimeStep(), contagion);
@@ -61,7 +61,7 @@ public class CovaidDomain extends AbstractFieldDomain{
 	protected void onMovePerson( IFieldDomain domain, Date date, IPerson person) {
 		//analyseHub(date, person);//Create a new hub if the person has a risk of contagion
 		IFieldEnvironment env = (IFieldEnvironment) super.getEnvironment();
-		Contagion contagion = IContagion.SupportedContagion.getContagion( env.getContagion());
+		DateContagion contagion = IContagion.SupportedContagion.getContagion( env.getContagion());
 		Collection<IPerson> persons = domain.getPersons();
 		double distance = 0;
 		if( person.getContagiousness(contagion) > 10 ){
@@ -106,7 +106,7 @@ public class CovaidDomain extends AbstractFieldDomain{
 		Map<String, IHub> hubs = domain.getHubs();
 		IHub hub = hubs.get(location.getIdentifier());
 		if( hub == null ) {
-			hub = new Hub( person );
+			hub = new DateHub( person );
 			hubs.put( location.getIdentifier(), hub );
 		}else {
 			hub.encounter(person, date);

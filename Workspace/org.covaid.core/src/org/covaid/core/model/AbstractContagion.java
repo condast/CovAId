@@ -1,14 +1,10 @@
 package org.covaid.core.model;
 
-import java.util.Calendar;
-import java.util.Date;
-
 import org.condast.commons.data.util.Vector;
-import org.condast.commons.date.DateUtils;
 import org.condast.commons.number.NumberUtils;
 import org.covaid.core.def.IContagion;
 
-public class Contagion implements IContagion{
+public abstract class AbstractContagion<T extends Object> implements IContagion<T>{
 
 	private String identifier;
 
@@ -24,21 +20,21 @@ public class Contagion implements IContagion{
 	
 	private double threshold;//percent
 	
-	private Date timestamp;
+	private T timestamp;
 	
-	public Contagion( String identifier, double contagiousness) {
+	protected AbstractContagion( String identifier, double contagiousness) {
 		this( identifier, contagiousness, DEFAULT_DISTANCE, DEFAULT_CONTAGION );
 	}
 
-	public Contagion( SupportedContagion identifier, double contagiousness) {
+	protected AbstractContagion( SupportedContagion identifier, double contagiousness) {
 		this( identifier.toString(), contagiousness, DEFAULT_DISTANCE, DEFAULT_CONTAGION );
 	}
 
-	public Contagion(String identifier, double contagiousness, int distance, int maxDays ) {
+	protected AbstractContagion(String identifier, double contagiousness, int distance, int maxDays ) {
 		this( identifier, contagiousness, THRESHOLD, distance, maxDays, DEFAULT_HALFTIME, DEFAULT_DISPERSION, false );
 	}
 	
-	public Contagion(String identifier, double contagiousness, double threshold, int distance, int maxDays, int halftime, double dispersion, boolean monitored ) {
+	protected AbstractContagion(String identifier, double contagiousness, double threshold, int distance, int maxDays, int halftime, double dispersion, boolean monitored ) {
 		super();
 		this.identifier = identifier;
 		this.contagiousness = contagiousness;
@@ -48,7 +44,6 @@ public class Contagion implements IContagion{
 		this.maxDays = maxDays;
 		this.halfTime= halftime;
 		this.dispersion = dispersion;
-		this.timestamp = Calendar.getInstance().getTime();
 	}
 
 	@Override
@@ -97,7 +92,7 @@ public class Contagion implements IContagion{
 	}
 
 	@Override
-	public Date getTimestamp() {
+	public T getTimestamp() {
 		return timestamp;
 	}
 
@@ -148,18 +143,20 @@ public class Contagion implements IContagion{
 		return Math.max(time, dist);
 	}
 
+	protected abstract long getDifference( T first, T last );
+
 	/**
 	 * Get the contagion as it spreads in the seconds after contact
 	 * <contagion, radius>
 	 * 
 	 * @param contagion
-	 * @param date
+	 * @param step
 	 * @param distance
 	 * @return
 	 */
 	@Override
-	public Vector<Double,Double> getContagion( Date date) {
-		long diff = Math.abs( this.timestamp.getTime()- date.getTime());
+	public Vector<Double,Double> getContagion( T step) {
+		long diff = Math.abs( getDifference( this.timestamp, step ));
 		double newContagion = NumberUtils.clipRange(0, 100, this.contagiousness * this.halfTime * DAY/diff);
 		double radius = this.maxDistance + this.dispersion* diff*1000;
 		return new Vector<Double, Double>(newContagion, radius );	
@@ -171,7 +168,7 @@ public class Contagion implements IContagion{
 	 * @return
 	 */
 	@Override
-	public boolean isLarger( IContagion contagion ) {
+	public boolean isLarger( IContagion<T> contagion ) {
 		return contagion.getContagiousness() < this.contagiousness;
 	}
 
@@ -180,12 +177,7 @@ public class Contagion implements IContagion{
 		return days < this.maxDays;
 	}
 
-	@Override
-	public boolean isContagious( Date date) {
-		return this.isContagious( DateUtils.getDifferenceDays( date, getTimestamp()));
-	}
-
-	public void update( Date date ) {
+	public void update( T date ) {
 		this.timestamp = date;		
 	}
 	
@@ -198,14 +190,14 @@ public class Contagion implements IContagion{
 	public boolean equals(Object obj) {
 		if( super.equals(obj))
 			return true;
-		if(!( obj instanceof Contagion ))
+		if(!( obj instanceof AbstractContagion ))
 			return false;
-		IContagion test = (IContagion) obj;
+		IContagion<?> test = (IContagion<?>) obj;
 		return this.identifier.equals(test.getIdentifier());
 	}
 
 	@Override
-	public int compareTo( IContagion o) {
+	public int compareTo( IContagion<T> o) {
 		return this.identifier.compareTo(o.getIdentifier());
 	}
 

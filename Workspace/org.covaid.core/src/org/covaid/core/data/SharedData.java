@@ -10,9 +10,8 @@ import java.util.Map;
 import org.condast.commons.data.latlng.LatLng;
 import org.condast.commons.strings.StringStyler;
 import org.covaid.core.def.IContagion;
-import org.covaid.core.model.Contagion;
 
-public class SharedData{
+public class SharedData<T extends Object>{
 
 	public enum Attributes{
 		IDENTIFIER,
@@ -28,17 +27,17 @@ public class SharedData{
 	}
 	
 	private String identifier;
-	private Collection<IContagion> contagion;
+	private Collection<IContagion<T>> contagion;
 	private float distance;
 	
 	private LatLng latlng;
 
-	public SharedData(String identifier, IContagion disease, float distance, LatLng latlng) {
-		this( identifier, new ArrayList<IContagion>(), distance, latlng );
+	public SharedData(String identifier, IContagion<T> disease, float distance, LatLng latlng) {
+		this( identifier, new ArrayList<IContagion<T>>(), distance, latlng );
 		this.contagion.add(disease);
 	}
 
-	public SharedData(String identifier, Collection<IContagion> contagion, float distance, LatLng latlng) {
+	public SharedData(String identifier, Collection<IContagion<T>> contagion, float distance, LatLng latlng) {
 		super();
 		this.identifier = identifier;
 		this.contagion = contagion;
@@ -50,8 +49,9 @@ public class SharedData{
 		return this.identifier;
 	}
 
-	public Contagion[] getContagion() {
-		return contagion.toArray( new Contagion[ this.contagion.size()] );
+	@SuppressWarnings("unchecked")
+	public IContagion<T>[] getContagion() {
+		return contagion.toArray( new IContagion[ this.contagion.size()] );
 	}
 
 	
@@ -74,13 +74,13 @@ public class SharedData{
 			return true;
 		if(!( obj instanceof SharedData))
 			return false;
-		SharedData data = (SharedData) obj;
+		SharedData<?> data = (SharedData<?>) obj;
 		return data.getIdentifier().equals(identifier);
 	}
 	
-	public static Map<IContagion, Date> toTimeStamped( SharedData data ){
-		Map<IContagion, Date> results = new HashMap<>();
-		for( IContagion cd: data.contagion )
+	public static Map<IContagion<Date>, Date> toTimeStamped( SharedData<Date> data ){
+		Map<IContagion<Date>, Date> results = new HashMap<>();
+		for( IContagion<Date> cd: data.contagion )
 			results.put(cd, Calendar.getInstance().getTime());
 		return results;
 	}

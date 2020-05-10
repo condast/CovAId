@@ -5,6 +5,7 @@ import com.google.gson.Gson;
 import java.text.DateFormat;
 import java.util.Calendar;
 import java.util.Collection;
+import java.util.Date;
 import java.util.logging.Logger;
 
 import javax.ws.rs.Consumes;
@@ -19,7 +20,7 @@ import org.condast.commons.Utils;
 import org.condast.commons.messaging.http.IHttpRequest.HttpStatus;
 import org.covaid.core.def.ILocation;
 import org.covaid.core.def.IMobile;
-import org.covaid.core.model.Mobile;
+import org.covaid.core.model.date.DateMobile;
 import org.covaid.mobile.core.Dispatcher;
 import org.covaid.mobile.service.MobileService;
 import org.covaid.mobile.service.SnapshotService;
@@ -52,7 +53,7 @@ public class MobileResource {
 		try{
 			service = new MobileService(dispatcher);
 			service.open();
-			IMobile mobile = service.create( DateFormat.getTimeInstance().format( Calendar.getInstance().getTime()), dispatcher.getField());
+			IMobile<Date> mobile = service.create( DateFormat.getTimeInstance().format( Calendar.getInstance().getTime()), dispatcher.getField());
 			Gson gson = new Gson();
 			String str = gson.toJson( new CreateMobileData(mobile), CreateMobileData.class);
 			result = Response.ok( str ).build();
@@ -124,12 +125,12 @@ public class MobileResource {
 		try{
 			service = new MobileService(dispatcher);
 			service.open();
-			Collection<IMobile> results = service.find(identifier);
+			Collection<IMobile<Date>> results = service.find(identifier);
 			if( Utils.assertNull( results ))
 				return Response.noContent().build();
-			IMobile mobile = results.iterator().next();
+			IMobile<Date> mobile = results.iterator().next();
 			Gson gson = new Gson();
-			String str = gson.toJson(mobile, Mobile.class);
+			String str = gson.toJson(mobile, DateMobile.class);
 			result = Response.ok( str ).build();
 		}
 		catch( Exception ex ){
@@ -164,10 +165,10 @@ public class MobileResource {
 		try{
 			service = new MobileService(dispatcher);
 			service.open();
-			Collection<IMobile> results = service.find(identifier);
+			Collection<IMobile<Date>> results = service.find(identifier);
 			if( Utils.assertNull( results ))
 				return Response.noContent().build();
-			IMobile mobile = results.iterator().next();
+			IMobile<Date> mobile = results.iterator().next();
 			mobile.setHealth(health);
 			service.update(mobile);
 			result = Response.ok().build();
@@ -204,10 +205,10 @@ public class MobileResource {
 		try{
 			service = new MobileService(dispatcher);
 			service.open();
-			Collection<IMobile> results = service.find(identifier);
+			Collection<IMobile<Date>> results = service.find(identifier);
 			if( Utils.assertNull( results ))
 				return Response.noContent().build();
-			IMobile mobile = results.iterator().next();
+			IMobile<Date> mobile = results.iterator().next();
 			mobile.setSafety( safety );
 			service.update(mobile);
 			result = Response.ok().build();
@@ -244,10 +245,10 @@ public class MobileResource {
 		try{
 			service = new MobileService(dispatcher);
 			service.open();
-			Collection<IMobile> results = service.find(identifier);
+			Collection<IMobile<Date>> results = service.find(identifier);
 			if( Utils.assertNull( results ))
 				return Response.noContent().build();
-			IMobile mobile = results.iterator().next();
+			IMobile<Date> mobile = results.iterator().next();
 			mobile.setEmail( email );
 			service.update(mobile);
 			result = Response.ok().build();
@@ -288,7 +289,7 @@ public class MobileResource {
 				result = Response.status( HttpStatus.UNAUTHORISED.getStatus() ).build();
 			service = new SnapshotService(dispatcher);
 			service.open();
-			ILocation notification = service.create( identifier, x, y);
+			ILocation<Date> notification = service.create( identifier, x, y);
 			result = Response.ok().build();
 		}
 		catch( Exception ex ){
@@ -308,7 +309,7 @@ public class MobileResource {
 		private long id;
 		private long token;
 		private String identifier;
-		public CreateMobileData( IMobile mobile) {
+		public CreateMobileData( IMobile<Date> mobile) {
 			super();
 			this.identifier = mobile.getIdentifier();
 			this.id = mobile.hashCode();

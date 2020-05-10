@@ -27,4 +27,5 @@ Export-Package: org.covaid.core.contagion,
  org.covaid.core.field,
  org.covaid.core.mobile,
  org.covaid.core.model,
+ org.covaid.core.model.date,
  org.covaid.core.user

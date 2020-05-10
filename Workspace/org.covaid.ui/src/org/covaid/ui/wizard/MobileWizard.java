@@ -4,6 +4,7 @@ import com.google.gson.Gson;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.logging.Logger;
@@ -18,7 +19,7 @@ import org.condast.js.commons.wizard.AbstractHtmlParser;
 import org.covaid.core.def.IMobile;
 import org.covaid.core.mobile.IMobileRegistration;
 import org.covaid.core.mobile.RegistrationEvent;
-import org.covaid.core.model.Mobile;
+import org.covaid.core.model.date.DateMobile;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.browser.Browser;
 import org.eclipse.swt.browser.BrowserFunction;
@@ -91,7 +92,7 @@ public class MobileWizard extends Composite {
 		
 	private CanvasController controller;
 	
-	private IMobile mobile;
+	private IMobile<Date> mobile;
 	private AuthenticationData authData;
 	
 	private Collection<IMobileRegistration> listeners;
@@ -263,7 +264,6 @@ public class MobileWizard extends Composite {
 						break;
 					}
 				} catch (Exception e) {
-					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
 				return result;
@@ -340,10 +340,10 @@ public class MobileWizard extends Composite {
 			Gson gson = new Gson();
 			switch( event.getRequest()) {
 			case CREATE://is usually not called, but done directly from html
-				mobile = gson.fromJson( event.getResponse(), Mobile.class );
+				mobile = gson.fromJson( event.getResponse(), DateMobile.class );
 				break;
 			case GET:
-				IMobile newMobile = gson.fromJson( event.getResponse(), Mobile.class );
+				IMobile<Date> newMobile = gson.fromJson( event.getResponse(), DateMobile.class );
 				if(( mobile == null ) || !mobile.getIdentifier().equals( newMobile.getIdentifier()))
 					notifyRegistrationEvent( new RegistrationEvent(browser, IMobileRegistration.RegistrationTypes.REGISTER, authData, mobile));
 				canvas.redraw();

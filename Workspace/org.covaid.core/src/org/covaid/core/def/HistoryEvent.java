@@ -1,31 +1,31 @@
 package org.covaid.core.def;
 
-import java.util.Date;
 import java.util.EventObject;
 
-public class HistoryEvent extends EventObject {
+public class HistoryEvent<T extends Object> extends EventObject {
 	private static final long serialVersionUID = 1L;
 
-	private Date date;
+	private T date;
 	private IPoint location;
-	private IContagion contagion;
+	private IContagion<T> contagion;
 
-	public HistoryEvent( IHistory source, Date date, IPoint location) {
+	public HistoryEvent( IHistory<T> source, T date, IPoint location) {
 		this( source, date, location, null );
 	}
 	
-	public HistoryEvent( IHistory source, Date date, IPoint location, IContagion contagion) {
+	public HistoryEvent( IHistory<T> source, T date, IPoint location, IContagion<T> contagion) {
 		super(source);
 		this.date = date;
 		this.location = location;
 		this.contagion = contagion;
 	}
 
-	public IHistory getHistory( ) {
-		return (IHistory) getSource();
+	@SuppressWarnings("unchecked")
+	public IHistory<T> getHistory( ) {
+		return (IHistory<T>) getSource();
 	}
 
-	public Date getDate() {
+	public T getStep() {
 		return date;
 	}
 
@@ -33,7 +33,7 @@ public class HistoryEvent extends EventObject {
 		return location;
 	}
 
-	public IContagion getContagion() {
+	public IContagion<T> getContagion() {
 		return contagion;
 	}
 }

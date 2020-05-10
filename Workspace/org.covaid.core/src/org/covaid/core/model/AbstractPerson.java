@@ -1,10 +1,7 @@
 package org.covaid.core.model;
 
-import java.util.Calendar;
-import java.util.Date;
 import java.util.Map;
 
-import org.condast.commons.date.DateUtils;
 import org.condast.commons.number.NumberUtils;
 import org.covaid.core.def.IContagion;
 import org.covaid.core.def.IHistory;
@@ -13,38 +10,20 @@ import org.covaid.core.def.IMobile;
 import org.covaid.core.def.IPerson;
 import org.covaid.core.def.IPoint;
 
-public class Person implements IPerson{
+public abstract class AbstractPerson<T extends Object> implements IPerson<T>{
 
 	private States state;
-	private IContagion monitor;
+	private IContagion<T> monitor;
 	
 	private IPoint location;
 	
-	private IMobile mobile;
-
-	public Person( Point point, double safety, double health) {
-		this( point.getIdentifier(), point.getXpos(), point.getYpos(), safety, health );
-	}
-
-	public Person( String identifier, int xpos, int ypos, double safety) {
-		this( identifier, xpos, ypos, safety, 100 );
-	}
+	private IMobile<T> mobile;
 	
-	public Person( String identifier, int xpos, int ypos, double safety, double health) {
+	protected AbstractPerson( String identifier, int xpos, int ypos, IMobile<T> mobile) {
 		location = new Point( identifier, xpos, ypos);
-		mobile = new Mobile(identifier, safety, health, location);
+		this.mobile = mobile;
 		this.state = States.HEALTHY;
 		this.monitor = null;
-	}
-
-	public Person( String identifier, int xpos, int ypos, double safety, Contagion contagion) {
-		this( identifier, xpos, ypos, safety, 100 - contagion.getContagiousness() );
-		setContagion( Calendar.getInstance().getTime(), contagion );
-	}
-
-	public Person( String identifier, int xpos, int ypos, double safety, Date date, Contagion contagion) {
-		this( identifier, xpos, ypos, safety, 100 - contagion.getContagiousness() );
-		setContagion( date, contagion );
 	}
 
 	@Override
@@ -86,12 +65,12 @@ public class Person implements IPerson{
 	}
 
 	@Override
-	public IContagion getMonitor() {
+	public IContagion<T> getMonitor() {
 		return monitor;
 	}
 
 	@Override
-	public Date getCurrent() {
+	public T getCurrent() {
 		return this.getHistory().getCurrent();
 	}
 	
@@ -100,9 +79,15 @@ public class Person implements IPerson{
 		return this.mobile.isHealthy();
 	}
 
+	protected abstract long getDifference( T first, T last );
+
+	protected abstract IContagion<T> createContagion( String identifier, double safety );
+
+	protected abstract ILocation<T> createLocation( String identifier, IPoint point );
+
 	@Override
-	public void setContagion( Date date, IContagion contagion) {
-		Location loc = new Location( location );
+	public void setContagion( T date, IContagion<T> contagion) {
+		ILocation<T> loc = createLocation( location.getIdentifier(),  location );
 		loc.addContagion(contagion);
 		this.monitor = contagion;
 		if( contagion.getContagiousness() > DEFAULT_ILL_THRESHOLD) {
@@ -112,31 +97,31 @@ public class Person implements IPerson{
 	}
 	
 	@Override
-	public void setIll( Date date ) {
+	public void setIll( T date ) {
 		setState(States.FEEL_ILL);		
-		ILocation loc = createSnapshot();
+		ILocation<T> loc = createSnapshot();
 		loc.addContagion(monitor);
 		this.mobile.getHistory().alert(date, loc, monitor);
 	}
 	
 	@Override
-	public void setIll( Date date, String identifier ) {
+	public void setIll( T date, String identifier ) {
 		setState(States.FEEL_ILL);
-		monitor = new Contagion( identifier, 100 );
+		monitor = this.createContagion( identifier, 100 );
 	}
 	
 	@Override
-	public IHistory getHistory() {
+	public IHistory<T> getHistory() {
 		return this.mobile.getHistory();
 	}
 
 	@Override
-	public ILocation get(Date date) {
+	public ILocation<T> get(T date) {
 		return this.getHistory().get(date);
 	}
 
 	@Override
-	public void alert( Date date, ILocation point ) {
+	public void alert( T date, ILocation<T> point ) {
 		this.location = point;
 		this.mobile.alert( date, point, monitor);
 	}
@@ -146,23 +131,23 @@ public class Person implements IPerson{
 	 * @return
 	 */
 	@Override
-	public ILocation createSnapshot() {
+	public ILocation<T> createSnapshot() {
 		return getHistory().createSnapShot(getCurrent(), location);
 	}
 
 	@Override
-	public double getContagiousness( IContagion contagion ) {
-		ILocation location = createSnapshot();
+	public double getContagiousness( IContagion<T> contagion ) {
+		ILocation<T> location = createSnapshot();
 		return location.getContagion(contagion);
 	}
 
 	@Override
-	public double getContagiousness( IContagion contagion, Date date, Map.Entry<Date, ILocation> entry ) {
+	public double getContagiousness( IContagion<T> contagion, T step, Map.Entry<T, ILocation<T>> entry ) {
 		if( entry == null )
 			return 0;
 		double distance = location.getDistance( entry.getValue());
 		double caldist = contagion.getContagiousnessDistance(distance);
-		double calctime = contagion.getContagiousnessInTime( DateUtils.getDifferenceDays( date, entry.getKey()));
+		double calctime = contagion.getContagiousnessInTime( getDifference( step, entry.getKey()));
 		return Math.max(caldist, calctime);
 	}
 
@@ -171,11 +156,11 @@ public class Person implements IPerson{
 	 * @return
 	 */
 	@Override
-	public double getSafetyBubble( IContagion contagion, Date date ) {
-		Map.Entry<Date, ILocation> contagiousness = mobile.getHistory().getMaxContagiousness(contagion);
+	public double getSafetyBubble( IContagion<T> contagion, T step ) {
+		Map.Entry<T, ILocation<T>> contagiousness = mobile.getHistory().getMaxContagiousness(contagion);
 		double maxContagion = 100;
 		if( contagiousness != null )
-			maxContagion = getContagiousness(contagion, date, contagiousness);
+			maxContagion = getContagiousness(contagion, step, contagiousness);
 		return contagion.getDistance() * mobile.getSafety()/ maxContagion;
 	}
 
@@ -184,7 +169,7 @@ public class Person implements IPerson{
 	 * @return
 	 */
 	@Override
-	public double getRiskBubble( IContagion contagion ) {
+	public double getRiskBubble( IContagion<T> contagion ) {
 		double radius = contagion.getDistance() * (100 - mobile.getHealth())/100;
 		return NumberUtils.clipRange(0, 100, radius );
 	}
@@ -199,8 +184,8 @@ public class Person implements IPerson{
 	 * @param date
 	 */
 	@Override
-	public void updatePerson( Date date ) {
-		IHistory history = mobile.getHistory();
+	public void updatePerson( T date ) {
+		IHistory<T> history = mobile.getHistory();
 		if( !history.isEmpty() ) {
 			history.clean(date);
 		}
@@ -211,18 +196,19 @@ public class Person implements IPerson{
 		return toString().hashCode();
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
 	public boolean equals(Object obj) {
 		if( super.equals(obj))
 			return true;
-		if(!( obj instanceof Person))
+		if(!( obj instanceof AbstractPerson))
 			return false;
-		IPerson test = (IPerson) obj;
+		IPerson<T> test = (IPerson<T>) obj;
 		return location.equals(test.getLocation());
 	}
 
 	@Override
-	public int compareTo(IPerson o) {
+	public int compareTo(IPerson<T> o) {
 		return this.location.compareTo(o.getLocation());
 	}
 

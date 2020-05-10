@@ -1,6 +1,5 @@
 package org.covaid.core.data;
 
-import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
@@ -8,7 +7,7 @@ import java.util.Map;
 import org.condast.commons.strings.StringStyler;
 import org.covaid.core.def.IContagion;
 
-public class StoredData {
+public class StoredData<T extends Object> {
 
 	public enum Attributes{
 		ID,
@@ -24,20 +23,16 @@ public class StoredData {
 	
 	private String id;
 	private String identifier;
-	private Map<IContagion, Date> contagiousness;
+	private Map<IContagion<T>, T> contagiousness;
 	
-	public StoredData(String identifier, Map<IContagion, Date> contagiousness ) {
+	public StoredData(String identifier, Map<IContagion<T>, T> contagiousness ) {
 		super();
 		this.identifier = identifier;
 		this.contagiousness = contagiousness;
 	}
 	
 	public StoredData(String identifier ) {
-		this( identifier, new HashMap<IContagion, Date>());
-	}
-
-	public StoredData(SharedData shared ) {
-		this( shared.getIdentifier(), SharedData.toTimeStamped( shared ));
+		this( identifier, new HashMap<IContagion<T>, T>());
 	}
 
 	public String getId() {
@@ -52,21 +47,21 @@ public class StoredData {
 		return this.identifier;
 	}
 
-	public IContagion getContagiousness( String identifier ) {
-		Iterator<Map.Entry<IContagion, Date>> iterator = contagiousness.entrySet().iterator();
+	public IContagion<T> getContagiousness( String identifier ) {
+		Iterator<Map.Entry<IContagion<T>, T>> iterator = contagiousness.entrySet().iterator();
 		while( iterator.hasNext()) {
-			Map.Entry<IContagion, Date> entry = iterator.next();
+			Map.Entry<IContagion<T>, T> entry = iterator.next();
 			if( entry.getKey().getIdentifier().equals(identifier))
 				return entry.getKey();
 		}
 		return null;
 	}
 
-	public Map<IContagion, Date> getContagiousness() {
+	public Map<IContagion<T>, T> getContagiousness() {
 		return contagiousness;
 	}
 
-	public void addContagion( IContagion data, Date timestamp ) {
+	public void addContagion( IContagion<T> data, T timestamp ) {
 		if( !this.contagiousness.containsKey(data))
 			this.contagiousness.put(data, timestamp);
 		else
@@ -84,7 +79,7 @@ public class StoredData {
 			return true;
 		if(!( obj instanceof StoredData))
 			return false;
-		StoredData data = (StoredData) obj;
+		StoredData<?> data = (StoredData<?>) obj;
 		if( data.getId().equals(getId()))
 			return true;
 		return data.getIdentifier().equals(identifier);

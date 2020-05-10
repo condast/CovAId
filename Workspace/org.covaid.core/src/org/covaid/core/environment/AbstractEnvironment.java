@@ -47,7 +47,8 @@ public abstract class AbstractEnvironment<T extends Object> implements IEnvironm
 				}		
 				notifyListeners( new EnvironmentEvent<T>(env, Events.ACTIVITY, days));
 				index++;
-				index %= activity;
+				if( activity > 1 )
+					index %= activity;
 					
 				if( index != 0 )
 					return;

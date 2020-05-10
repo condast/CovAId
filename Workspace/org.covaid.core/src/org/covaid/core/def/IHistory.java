@@ -1,33 +1,32 @@
 package org.covaid.core.def;
 
-import java.util.Date;
 import java.util.Map;
 
 import org.condast.commons.data.util.Vector;
 
-public interface IHistory {
+public interface IHistory<T extends Object> {
 
-	void addListener(IHistoryListener listener);
+	void addListener(IHistoryListener<T> listener);
 
-	void removeListener(IHistoryListener listener);
-
-	/**
-	 * Alert of a new contagion. 
-	 * @param date
-	 * @param location
-	 */
-	void alert(Date date, IPoint location, IContagion contagion);
+	void removeListener(IHistoryListener<T> listener);
 
 	/**
 	 * Alert of a new contagion. 
 	 * @param date
 	 * @param location
 	 */
-	void putHistory(Date date, ILocation location);
+	void alert(T date, IPoint location, IContagion<T> contagion);
 
-	Map<Date, ILocation> get();
+	/**
+	 * Alert of a new contagion. 
+	 * @param date
+	 * @param location
+	 */
+	void putHistory(T date, ILocation<T> location);
 
-	Date getCurrent();
+	Map<T, ILocation<T>> get();
+
+	T getCurrent();
 
 	boolean isEmpty();
 
@@ -35,7 +34,7 @@ public interface IHistory {
 	 * Get the most recent history object
 	 * @return
 	 */
-	ILocation getRecent();
+	ILocation<T> getRecent();
 
 	/**
 	 * A snap shot is a representation of the current state of this location, with respect to
@@ -44,30 +43,30 @@ public interface IHistory {
 	 * 
 	 * @return
 	 */
-	ILocation createSnapShot(Date date, IPoint point);
+	ILocation<T> createSnapShot(T date, IPoint point);
 
 	boolean isContagious(long days);
 
-	boolean isContagious(Date date);
+	boolean isContagious(T date);
 
 	/**
 	 * Get the history with the maximum contagiousness
 	 * @param contagion
 	 * @return
 	 */
-	IContagion getMonitor();
+	IContagion<T> getMonitor();
 
 	/**
 	 * Get the history with the maximum contagiousness
 	 * @param contagion
 	 * @return
 	 */
-	Vector<Date, ILocation> getMaxContagiousness(IContagion contagion);
+	Vector<T, ILocation<T>> getMaxContagiousness(IContagion<T> contagion);
 
-	void clean(Date date);
+	void clean(T date);
 
-	boolean update(Date date, ILocation location);
+	boolean update(T date, ILocation<T> location);
 
-	ILocation get(Date date);
+	ILocation<T> get(T date);
 
 }

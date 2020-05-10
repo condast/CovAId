@@ -1,9 +1,8 @@
 package org.covaid.core.def;
 
-import java.util.Date;
 import java.util.Map;
 
-public interface IPerson extends Comparable<IPerson>{
+public interface IPerson<T extends Object> extends Comparable<IPerson<T>>{
 
 	int DEFAULT_ILL_THRESHOLD = 75;//%
 
@@ -24,53 +23,53 @@ public interface IPerson extends Comparable<IPerson>{
 
 	void setState(States state);
 
-	IContagion getMonitor();
+	IContagion<T> getMonitor();
 
-	Date getCurrent();
+	T getCurrent();
 
 	boolean isHealthy();
 
-	void setContagion(Date date, IContagion contagion);
+	void setContagion(T date, IContagion<T> contagion);
 
-	void setIll(Date date);
+	void setIll(T date);
 
-	void setIll(Date date, String identifier);
+	void setIll(T date, String identifier);
 
-	IHistory getHistory();
+	IHistory<T> getHistory();
 
-	void alert(Date date, ILocation point);
+	void alert(T date, ILocation<T> point);
 
 	/**
 	 * Create a snapshot of the current risk of contagiousness
 	 * @return
 	 */
-	ILocation createSnapshot();
+	ILocation<T> createSnapshot();
 
-	double getContagiousness(IContagion contagion);
+	double getContagiousness(IContagion<T> contagion);
 
-	double getContagiousness(IContagion contagion, Date date, Map.Entry<Date, ILocation> entry);
+	double getContagiousness(IContagion<T> contagion, T date, Map.Entry<T, ILocation<T>> entry);
 
 	/**
 	 * This is the measure in which you want to protect others
 	 * @return
 	 */
-	double getSafetyBubble(IContagion contagion, Date date);
+	double getSafetyBubble(IContagion<T> contagion, T date);
 
 	/**
 	 * This is the measure in which are willing to take a risk
 	 * @return
 	 */
-	double getRiskBubble(IContagion contagion);
+	double getRiskBubble(IContagion<T> contagion);
 
 	/**
 	 * Update the person in normal circumstances
 	 * @param date
 	 */
-	void updatePerson(Date date);
+	void updatePerson(T date);
 
-	int compareTo(IPerson o);
+	int compareTo(IPerson<T> o);
 
-	ILocation get(Date date);
+	ILocation<T> get(T date);
 
 	void move(IPoint point);
 

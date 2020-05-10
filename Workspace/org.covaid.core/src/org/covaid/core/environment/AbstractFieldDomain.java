@@ -15,7 +15,7 @@ import org.covaid.core.def.IFieldEnvironment;
 import org.covaid.core.def.IHub;
 import org.covaid.core.def.IPerson;
 import org.covaid.core.environment.field.IFieldDomain;
-import org.covaid.core.model.Person;
+import org.covaid.core.model.date.DatePerson;
 
 public abstract class AbstractFieldDomain implements IFieldDomain{
 
@@ -43,7 +43,7 @@ public abstract class AbstractFieldDomain implements IFieldDomain{
 	public void init( int population ) {
 		this.population = population;
 		while( persons.size() < population ) {
-			Person person = createPerson();
+			DatePerson person = createPerson();
 			onCreatePerson(this, person);
 			persons.add(person);
 		}
@@ -117,7 +117,7 @@ public abstract class AbstractFieldDomain implements IFieldDomain{
 	}
 	public void updatePerson() {
 		while( persons.size() < population ) {
-			Person person = createPerson();
+			DatePerson person = createPerson();
 			onCreatePerson( this, person);
 			persons.add(person);
 		}
@@ -144,15 +144,15 @@ public abstract class AbstractFieldDomain implements IFieldDomain{
 	 * Population is amount of people per square kilometre(!)
 	 * @param population
 	 */
-	protected Person createPerson() {
-		Person person = null;
+	protected DatePerson createPerson() {
+		DatePerson person = null;
 		do {
 			int x = (int)( field.getWidth() * Math.random());
 			int y = (int)( field.getLength() * Math.random());
 			double risk = 100*Math.random();
 			double safety = 100*Math.random();
 			String identifier = "id("+ x + "," + y + "):{" + risk + ", " + safety + "}";  
-			person = new Person(identifier, x, y, safety, risk );
+			person = new DatePerson(identifier, x, y, safety, risk );
 		}
 		while(persons.contains(person));
 		return person;
