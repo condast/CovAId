@@ -16,6 +16,7 @@ public class DateContagion extends AbstractContagion<Date>{
 		super(identifier, contagiousness, distance, maxDays);
 	}
 
+	
 	public DateContagion(String identifier, double contagiousness) {
 		super(identifier, contagiousness);
 	}

@@ -7,16 +7,23 @@ import java.util.Timer;
 import java.util.TimerTask;
 import java.util.logging.Logger;
 
+import org.condast.commons.Utils;
 import org.condast.commons.auth.AuthenticationData;
 import org.condast.commons.messaging.http.AbstractHttpRequest;
+import org.condast.commons.messaging.http.IHttpClientListener;
 import org.condast.commons.messaging.http.ResponseEvent;
 import org.condast.commons.strings.StringStyler;
+import org.condast.commons.ui.session.AbstractSessionHandler;
+import org.condast.commons.ui.session.SessionEvent;
+import org.covaid.core.def.IPoint;
+import org.covaid.core.model.frogger.HubData;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.PaintListener;
 import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.layout.GridData;
@@ -34,6 +41,7 @@ public class FroggerComposite extends Composite {
 	//public static final String S_PATH = "http://www.condast.com:8080/covaid/mobile/rest";
 
 	public static final int DEFAULT_WIDTH = 100;//metres
+	public static final int DEFAULT_HISTORY = 14;//day, looking ahead of what is coming
 
 	private enum Requests{
 
@@ -73,6 +81,7 @@ public class FroggerComposite extends Composite {
 	private Button btnPause;
 
 	private AuthenticationData data;
+	private HubData[] hubs;
 	
 	private boolean started;
 	
@@ -85,14 +94,17 @@ public class FroggerComposite extends Composite {
 				if(!started || ( data == null ))
 					return;
 				WebClient client = new WebClient();
+				client.addListener(session);
 				Map<String, String> params = data.toMap();
 				client.sendGet(Requests.UPDATE, params);
+				client.removeListener(session);
 			} catch (Exception e1) {
 				e1.printStackTrace();
 			}
 		}
-		
 	};
+	
+	private SessionHandler session;
 	
 	private Logger logger = Logger.getLogger(this.getClass().getName());
 	
@@ -113,16 +125,36 @@ public class FroggerComposite extends Composite {
 		
 		//Road
 		int half = rect.width/2;
-		int offset_bottom = rect.width/2;
-		int offset_top = rect.width/30;
+		double offset_bottom = rect.width/2;
+		double offset_top = rect.width/30;
 		gc.setBackground(getDisplay().getSystemColor(SWT.COLOR_YELLOW));
-		int[] pg = { half-offset_top, horizon, half-offset_bottom, rect.height, half+offset_bottom, rect.height, half+offset_top, horizon};
+		int[] pg = { (int) (half-offset_top), horizon, (int) (half-offset_bottom), rect.height, (int) (half+offset_bottom), rect.height, (int) (half+offset_top), horizon};
 		gc.fillPolygon(pg);
-		gc.setForeground(getDisplay().getSystemColor(SWT.COLOR_DARK_YELLOW));
-		gc.drawLine(half-offset_top, horizon, half-offset_bottom, rect.height);
-		gc.drawLine(half+offset_top, horizon, half+offset_bottom, rect.height);
+		gc.setBackground(getDisplay().getSystemColor(SWT.COLOR_DARK_YELLOW));
+		gc.drawLine((int)(half-offset_top), horizon, (int)(half-offset_bottom), rect.height);
+		gc.drawLine((int)(half+offset_top), horizon, (int)(half+offset_bottom), rect.height);
 		//gc.setLineStyle(SWT.LINE_DOT);
-		gc.setForeground(getDisplay().getSystemColor(SWT.COLOR_WHITE));
+		
+		//Fill in the hubs
+		double scaleX = (offset_bottom - offset_top)/(rect.height - horizon);
+		double scaleY = (rect.height - horizon)/14;
+		int population = (int)((double)DEFAULT_WIDTH*sliderDensity.getSelection()/100);
+		//gc.setForeground(getDisplay().getSystemColor(SWT.COLOR_BLACK));
+		StringBuilder builder = new StringBuilder();
+		if( !Utils.assertNull(hubs)) {
+			for( HubData hub: hubs ) {
+				IPoint location = hub.getLocation().getPoint();
+				double width = 2 * ( offset_top + scaleX*location.getYpos() );
+				double xStart = half - 0.5 * width; 
+				double xpos = xStart + 2 * DEFAULT_WIDTH * location.getXpos()/width;
+				double ypos = horizon + scaleY * location.getYpos();
+				if( location.getYpos() < 2)
+					builder.append( location.toString() + "=> {" + xpos + ", " + ypos + "}");
+				gc.fillOval((int)xpos, (int)ypos, 10,10);
+			}
+		}
+		builder.append("\n\n");
+		logger.info( builder.toString());
 		gc.dispose();
 		requestLayout();
 	};
@@ -136,6 +168,7 @@ public class FroggerComposite extends Composite {
 		super(parent, style | SWT.NO_SCROLL);
 		createPage(parent, style | SWT.NO_SCROLL);
 		this.started = false;
+		session = new SessionHandler(getDisplay());
 	    this.timer = new Timer(true);
 	    timer.scheduleAtFixedRate(timerTask, 0, 1000);
 	}
@@ -209,7 +242,7 @@ public class FroggerComposite extends Composite {
 		lblDensity.setText("Density:");
 		
 		sliderDensity = new Slider(grpSettings, SWT.NONE);
-		sliderDensity.setSelection(50);
+		sliderDensity.setSelection(1);
 		sliderDensity.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
 		sliderDensity.addSelectionListener( new SelectionAdapter() {
 			private static final long serialVersionUID = 1L;
@@ -287,6 +320,7 @@ public class FroggerComposite extends Composite {
 	}
 	
 	public void dispose() {
+		session.dispose();
 		super.dispose();
 	}
 	
@@ -321,13 +355,35 @@ public class FroggerComposite extends Composite {
 				started = false;
 				btnStart.setText(Requests.START.toString());
 				break;
+			case UPDATE:
+				hubs = gson.fromJson(event.getResponse(), HubData[].class);
+				break;
 			case GET_DAY:
 				break;
 			default:
 				break;
 			}
-			canvas.redraw();
 			return null;
 		}
+	}
+	
+	private class SessionHandler extends AbstractSessionHandler<ResponseEvent<Requests, StringBuilder>> implements IHttpClientListener<Requests, StringBuilder>{
+
+		protected SessionHandler(Display display) {
+			super(display);
+		}
+
+		@Override
+		protected void onHandleSession(SessionEvent<ResponseEvent<Requests, StringBuilder>> sevent) {
+			if( sevent.getData() == null )
+				return;
+			canvas.redraw();	
+		}
+
+		@Override
+		public void notifyResponse(ResponseEvent<Requests, StringBuilder> event) {
+			addData(event);
+		}
+		
 	}
 }

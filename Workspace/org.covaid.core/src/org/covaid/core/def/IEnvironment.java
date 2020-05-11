@@ -44,5 +44,5 @@ public interface IEnvironment<T extends Object> {
 
 	void removeListener(IEnvironmentListener<T> listener);
 
-	T getTimeStep();
+	T getTimeStep( long days );
 }

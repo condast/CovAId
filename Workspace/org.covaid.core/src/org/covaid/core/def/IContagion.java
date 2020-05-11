@@ -20,10 +20,6 @@ public interface IContagion<T extends Object> extends Comparable<IContagion<T>>{
 		SEASONAL,
 		EXPLOSION;
 		
-		public DateContagion getContagion() {
-			return new DateContagion(this, 100f);
-		}
-
 		@Override
 		public String toString() {
 			return super.toString();
@@ -46,13 +42,6 @@ public interface IContagion<T extends Object> extends Comparable<IContagion<T>>{
 			}
 			return results;
 		}
-
-		public static DateContagion getContagion( String str ) {
-			if( !isSupported(str))
-				return SupportedContagion.OTHER.getContagion();
-			return SupportedContagion.valueOf(str).getContagion();
-		}
-
 	}
 
 	public enum Attributes{

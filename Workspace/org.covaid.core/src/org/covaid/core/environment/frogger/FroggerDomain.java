@@ -3,9 +3,10 @@ package org.covaid.core.environment.frogger;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
-import java.util.TreeMap;
+import java.util.logging.Logger;
 
 import org.covaid.core.def.IContagion;
 import org.covaid.core.def.IContagion.SupportedContagion;
@@ -27,15 +28,16 @@ public class FroggerDomain extends AbstractDomain<Integer> implements IDomain<In
 
 	public static final String S_ERR_INVALID_HUB = "An invalid hub was encountered; the position must be smaller than the width: ";
 
-	private TreeMap<Integer,DayData> days;
 	private Collection<IPerson<Integer>> persons;
-	private int time;
+	private Map<IPoint, Hub> hubs;
 	private int maxTime;
 
 	private int width;
 	private int infected;
 	
 	private String contagion;
+	
+	private Logger logger = Logger.getLogger(this.getClass().getName());
 	
 	public FroggerDomain( String name, IEnvironment<Integer> environment ) {
 		this( name, environment, SupportedContagion.COVID_19, DEFAULT_MAX_TIME );
@@ -44,17 +46,16 @@ public class FroggerDomain extends AbstractDomain<Integer> implements IDomain<In
 	public FroggerDomain( String name, IEnvironment<Integer> environment, IContagion.SupportedContagion supported, int maxTime ) {
 		super( name );
 		this.contagion = supported.name();
-		days = new TreeMap<>();
-		time = 0;
-		this.persons = new ArrayList<>();
+		persons = new ArrayList<>();
+		hubs = new HashMap<>();
 	}
 
-	public Map<Integer, DayData> getDays() {
-		return days;
+	public Point getField() {
+		return new Point( width, hubs.size() );
 	}
 
-	public int getTime() {
-		return time;
+	public Collection<Hub> getHubs() {
+		return hubs.values();
 	}
 
 	public int getMaxTime() {
@@ -63,8 +64,8 @@ public class FroggerDomain extends AbstractDomain<Integer> implements IDomain<In
 
 	@Override
 	public void clear() {
-		this.time = 0;
-		this.days.clear();
+		this.persons.clear();
+		this.hubs.clear();
 	}
 
 	/**
@@ -79,84 +80,70 @@ public class FroggerDomain extends AbstractDomain<Integer> implements IDomain<In
 		this.init(population);
 	}
 	
-	public boolean update( int width, Collection<IHub<Integer>> hubs ) {
-		boolean result = false;//addDay(width, hubs);
-		if( !result )
-			throw new IllegalArgumentException( S_ERR_INVALID_HUB); 
-		time++;
-		days.tailMap(time);
-		return result;
-	}
-	
 	@Override
-	public void movePerson(Integer timeStep) {
-		
-		//first advance the population by creating a new set of hubs at timestamp and 
-		//moving the persons one place
-		DayData data = new DayData();
-		this.days.put(timeStep, data);
-		for( int i=timeStep-1; i>0; i-- ) {
-			DayData current = days.get(timeStep-1);
-			for( IPoint point: current.hubs.keySet()) {
-				IHub<Integer> source = current.hubs.get(point);
-				IHub<Integer> target = data.hubs.get(point);
-				for( IPerson<Integer> person: source.getPersons().values())
-					target.encounter(person, i);
-				data = current;
-			}
-		}
+	public synchronized void movePerson(Integer timeStep) {
 
-		//Create a row of new persons
-		data = days.get(0);
+		//first advance the population by moving the persons one place
+		//logger.info( "TIMESTEP: " + timeStep +", " + this.hubs.size());
+		//StringBuilder builder = new StringBuilder();
+		//builder.append("Persons moved: ");
+		for( IPerson<Integer> person: this.persons ) {
+			int xpos = moveX( person );
+			int ypos = person.getLocation().getYpos();
+			person.setPosition(xpos, ypos+1 );
+			encounter( person, timeStep );
+			//builder.append( person.getIdentifier() + " => " + person.getLocation());
+			//builder.append(", ");
+		}
+		//logger.info(builder.toString() + "\n\n");
+		
+		//Then create a new population
 		for( int i=0; i< super.getPopulation(); i++) {
 			int x = (int) (width * Math.random());
 			double safety = 100* Math.random();
-			String identifier = "["+ timeStep + ":" + i + "]";
+			String identifier = "["+ x + ":" + i + "]";
 			IPerson<Integer> person = new Person( identifier, x, 0, safety );
 			persons.add(person);
-			data.addHub(0, person);
+			encounter( person, timeStep );
 		}
 		//Then set the infections
-		for( IPerson<Integer> person: this.persons) {
+		for( IPerson<Integer> person: persons) {
 			double contagion = 100*Math.random();
 			if( contagion < infected )
 				person.setContagion( timeStep, new Contagion( this.contagion, 100));
 		}
+		
+		//Last clear old values
+		hubs.entrySet().removeIf(entry -> entry.getKey().getYpos() > DEFAULT_MAX_TIME);
+		//logger.info("Hubs: " + this.hubs.size());
 	}
 
-	public Map<Integer, Map<Point, Hub>> getUpdate(){
-		Map<Integer, Map<Point,Hub>> results = new HashMap<>();
-		Iterator<Map.Entry<Integer, DayData>> iterator = this.days.entrySet().iterator();
-		while( iterator.hasNext()) {
-			Map.Entry<Integer, DayData> entry = iterator.next();
-			results.put(entry.getKey(), entry.getValue().hubs);
+	protected void encounter( IPerson<Integer> person, int step ) {
+		Hub hub = this.hubs.get(person.getLocation());
+		if( hub == null ) {
+			hub = new Hub( person );
+			this.hubs.put(hub.getLocation(), hub);
 		}
-		return results;
+		hub.encounter(person, step);
+		
+	}
+	protected int moveX( IPerson<Integer> person ) {
+		int xpos = person.getLocation().getXpos();
+		double movement = 2;
+		if(( xpos>1 ) && ( xpos <= width-1 ))
+			movement +=1;
+		if( xpos>1 )
+			xpos -= 1; 
+		xpos += movement * Math.random();
+		return xpos;
+	}
+	public synchronized Hub[] getUpdate(){
+		List<Hub> results = new ArrayList<Hub>( this.hubs.values());
+		return results.toArray( new Hub[ results.size()]);
 	}
 
 	@Override
 	public void update(Integer date) {
 		// TODO Auto-generated method stub	
-	}
-
-	private class DayData{
-		
-		private Map<Point, Hub> hubs;
-
-		public DayData() {
-			super();
-			hubs = new HashMap<>();
-		}
-		
-		public IHub<Integer> addHub( int timeStep, IPerson<Integer> person ) {
-			IHub<Integer> hub = hubs.get( person.getLocation());
-			if( hub == null ) {
-				hub = new Hub( person);
-				this.hubs.put( (Point) person.getLocation(), (Hub) hub );
-			}else
-				hub.encounter(person, timeStep);
-			return hub;
-		}
-		
 	}
 }

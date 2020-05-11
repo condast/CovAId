@@ -11,9 +11,9 @@ import org.covaid.core.environment.IDomain;
 
 public interface IFieldDomain extends IDomain<Date>{
 
-	Collection<IPerson> getPersons();
+	Collection<IPerson<Date>> getPersons();
 
-	Map<String, IHub> getHubs();
+	Map<String, IHub<Date>> getHubs();
 
 	IField getField();
 

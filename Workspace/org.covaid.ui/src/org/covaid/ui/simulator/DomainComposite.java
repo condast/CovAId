@@ -26,6 +26,7 @@ import org.covaid.core.def.IPoint;
 import org.covaid.core.environment.DomainEvent;
 import org.covaid.core.environment.IDomain;
 import org.covaid.core.environment.field.IFieldDomain;
+import org.covaid.core.model.date.DateContagion;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.PaintListener;
 import org.eclipse.swt.graphics.Color;
@@ -90,7 +91,7 @@ public class DomainComposite extends Composite {
 
 	protected void updateCanvas( GC gc ) {
 		try {
-			for( IPerson person: domain.getPersons())
+			for( IPerson<Date> person: domain.getPersons())
 				updatePerson(gc, person);
 			gc.dispose();
 		}
@@ -99,18 +100,18 @@ public class DomainComposite extends Composite {
 		}
 	}
 
-	protected void updatePerson( GC gc, IPerson person ) {
+	protected void updatePerson( GC gc, IPerson<Date> person ) {
 		try {
 			IFieldEnvironment env = (IFieldEnvironment) domain.getEnvironment();
-			IContagion contagion = IContagion.SupportedContagion.getContagion( env.getContagion());
-			Date date = env.getTimeStep();
+			IContagion<Date> contagion = new DateContagion( IContagion.SupportedContagion.valueOf( env.getContagion()), 100);
+			Date date = env.getTimeStep( env.getDays());
 
 			double safety = person.getSafetyBubble(contagion, Calendar.getInstance().getTime());
 
-			Map<Date, ILocation> history = person.getHistory().get();
-			Iterator<Map.Entry<Date, ILocation>> iterator = new ArrayList<Map.Entry<Date, ILocation>>( history.entrySet()).iterator();
+			Map<Date, ILocation<Date>> history = person.getHistory().get();
+			Iterator<Map.Entry<Date, ILocation<Date>>> iterator = new ArrayList<Map.Entry<Date, ILocation<Date>>>( history.entrySet()).iterator();
 			while( iterator.hasNext() ) {
-				Map.Entry<Date, ILocation> entry = iterator.next();
+				Map.Entry<Date, ILocation<Date>> entry = iterator.next();
 				Vector<Double,Double> vector = contagion.getContagion(date);
 				gc.setBackground( getColour( vector.getKey().doubleValue() ));
 				//drawPerson( gc, entry.getValue(), vector.getValue().doubleValue());
@@ -171,15 +172,15 @@ public class DomainComposite extends Composite {
 		this.handler.dispose();
 	}
 	
-	private class SessionHandler extends AbstractSessionHandler<DomainEvent> 
-	implements IDomainListener{
+	private class SessionHandler extends AbstractSessionHandler<DomainEvent<Date>> 
+	implements IDomainListener<Date>{
 
 		protected SessionHandler(Display display) {
 			super(display);
 		}
 
 		@Override
-		public void notifyPersonChanged(DomainEvent event) {
+		public void notifyPersonChanged(DomainEvent<Date> event) {
 			if( getDisplay().isDisposed())
 				return;
 			
@@ -190,7 +191,7 @@ public class DomainComposite extends Composite {
 		}
 
 		@Override
-		protected void onHandleSession(SessionEvent<DomainEvent> sevent) {
+		protected void onHandleSession(SessionEvent<DomainEvent<Date>> sevent) {
 			try {
 				canvas.redraw();
 			}
@@ -198,7 +199,6 @@ public class DomainComposite extends Composite {
 				ex.printStackTrace();
 			}
 			requestLayout();
-
 		}
 		
 	}

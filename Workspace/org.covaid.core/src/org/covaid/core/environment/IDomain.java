@@ -17,9 +17,9 @@ public interface IDomain<T extends Object> {
 
 	void setEnvironment(IEnvironment<T> abstractEnvironment);
 
-	void addListener(IDomainListener listener);
+	void addListener(IDomainListener<T> listener);
 
-	void removeListener(IDomainListener listener);
+	void removeListener(IDomainListener<T> listener);
 
 	void clear();
 	

@@ -43,12 +43,13 @@ public class CovaidDomain extends AbstractFieldDomain{
 	}
 	
 	@Override
-	protected void onCreatePerson( IFieldDomain domain, IPerson person) {
+	protected void onCreatePerson( IFieldDomain domain, IPerson<Date> person) {
 		IFieldEnvironment env = (IFieldEnvironment) super.getEnvironment();
-		DateContagion contagion = IContagion.SupportedContagion.valueOf( env.getContagion()).getContagion();
+		
+		DateContagion contagion = new DateContagion( IContagion.SupportedContagion.valueOf( env.getContagion()), 100 );
 		if( index == 0 ) {
 			person.setPosition((int)domain.getField().getLength()/2, (int)domain.getField().getWidth()/2);
-			person.setContagion( env.getTimeStep(), contagion);
+			person.setContagion( env.getTimeStep(env.getDays()), contagion);
 		}
 		index++;
 	}
@@ -58,19 +59,19 @@ public class CovaidDomain extends AbstractFieldDomain{
 	 * @param population
 	 */
 	@Override
-	protected void onMovePerson( IFieldDomain domain, Date date, IPerson person) {
+	protected void onMovePerson( IFieldDomain domain, Date date, IPerson<Date> person) {
 		//analyseHub(date, person);//Create a new hub if the person has a risk of contagion
 		IFieldEnvironment env = (IFieldEnvironment) super.getEnvironment();
-		DateContagion contagion = IContagion.SupportedContagion.getContagion( env.getContagion());
-		Collection<IPerson> persons = domain.getPersons();
+		DateContagion contagion = new DateContagion( IContagion.SupportedContagion.valueOf( env.getContagion()), 100 );
+		Collection<IPerson<Date>> persons = domain.getPersons();
 		double distance = 0;
 		if( person.getContagiousness(contagion) > 10 ){
-			for( IPerson other: persons) {
+			for( IPerson<Date> other: persons) {
 				distance = person.getLocation().getDistance(other.getLocation());
 				if( contagion.getDistance() < distance)
 					continue;
 				if( other.getContagiousness(contagion) < person.getContagiousness(contagion))
-					other.setContagion( env.getTimeStep(), contagion);
+					other.setContagion( env.getTimeStep( env.getDays()), contagion);
 			}
 		}
 		persons.remove(person);
@@ -84,13 +85,13 @@ public class CovaidDomain extends AbstractFieldDomain{
 		
 		x = person.getLocation().getXpos() + (int)( radius * (Math.random() - 0.5f));
 		y = person.getLocation().getYpos() + (int)( radius * (Math.random() - 0.5f));
-		for( IPerson other: persons ){
+		for( IPerson<Date> other: persons ){
 			distance = person.getLocation().getDistance(other.getLocation());
 			if( distance > bestdistance ) {
 				bestdistance = distance;
 				bestLocation = new Point( x, y);
 			}
-			safety = other.getSafetyBubble(contagion, env.getTimeStep());
+			safety = other.getSafetyBubble(contagion, env.getTimeStep( env.getDays()));
 			okay &= ( distance > safety ) && ( distance > risk );
 			if( okay )
 				bestLocation = new Point( x, y);
@@ -99,12 +100,12 @@ public class CovaidDomain extends AbstractFieldDomain{
 		person.move( bestLocation);
 	}
 	
-	private IHub analyseHub( IFieldDomain domain, Date date, IPerson person ) {
+	private IHub<Date> analyseHub( IFieldDomain domain, Date date, IPerson<Date> person ) {
 		IPoint location = person.getLocation();
 		if( person.isHealthy())
 			return null;
-		Map<String, IHub> hubs = domain.getHubs();
-		IHub hub = hubs.get(location.getIdentifier());
+		Map<String, IHub<Date>> hubs = domain.getHubs();
+		IHub<Date> hub = hubs.get(location.getIdentifier());
 		if( hub == null ) {
 			hub = new DateHub( person );
 			hubs.put( location.getIdentifier(), hub );

@@ -41,14 +41,13 @@ public abstract class AbstractEnvironment<T extends Object> implements IEnvironm
 			if(!started || pause )
 				return;
 			try {
-				T step = getTimeStep();
+				T step = getTimeStep( days );
 				for( IDomain<T> domain: domains ) {
 					domain.movePerson( step );
 				}		
 				notifyListeners( new EnvironmentEvent<T>(env, Events.ACTIVITY, days));
 				index++;
-				if( activity > 1 )
-					index %= activity;
+				index = ( activity > 1 )?index %= activity: 0;
 					
 				if( index != 0 )
 					return;

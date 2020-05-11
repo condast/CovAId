@@ -18,9 +18,9 @@ import org.covaid.core.def.IContagion;
 import org.covaid.core.def.IFieldEnvironment;
 import org.covaid.core.def.IDomainListener;
 import org.covaid.core.def.IPerson;
-import org.covaid.core.environment.AbstractDomain;
 import org.covaid.core.environment.IDomain.DomainEvents;
 import org.covaid.core.environment.field.IFieldDomain;
+import org.covaid.core.model.date.DateContagion;
 import org.covaid.core.environment.DomainEvent;
 import org.covaid.core.environment.IDomain;
 import org.eclipse.swt.SWT;
@@ -39,7 +39,7 @@ public class GraphCanvas extends Canvas {
 
 	protected Logger logger = Logger.getLogger(this.getClass().getName());
 
-	private IDomainListener listener = (e)->{
+	private IDomainListener<Date> listener = (e)->{
 		if( getDisplay().isDisposed() || DomainEvents.UPDATE_PERSON.equals(e.getEvent()))
 			return;
 		IFieldDomain domain = (IFieldDomain) e.getSource();
@@ -47,8 +47,8 @@ public class GraphCanvas extends Canvas {
 		List<Data> list = domains.get( domain );
 		Data data = list.get(list.size()-1);
 		int infected = 0;
-		IContagion contagion = IContagion.SupportedContagion.getContagion(env.getContagion());
-		for( IPerson person: domain.getPersons() ) {
+		IContagion<Date> contagion = new DateContagion( IContagion.SupportedContagion.valueOf( env.getContagion()), 100);
+		for( IPerson<Date> person: domain.getPersons() ) {
 			if( person.getContagiousness( contagion ) > 10 )
 				infected++;
 		}

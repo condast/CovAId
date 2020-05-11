@@ -19,11 +19,11 @@ public abstract class AbstractPerson<T extends Object> implements IPerson<T>{
 	
 	private IMobile<T> mobile;
 	
-	protected AbstractPerson( String identifier, int xpos, int ypos, IMobile<T> mobile) {
-		location = new Point( identifier, xpos, ypos);
+	protected AbstractPerson( int xpos, int ypos, IContagion<T> contagion, IMobile<T> mobile) {
+		location = new Point( mobile.getIdentifier(), xpos, ypos);
 		this.mobile = mobile;
 		this.state = States.HEALTHY;
-		this.monitor = null;
+		this.monitor = contagion;
 	}
 
 	@Override

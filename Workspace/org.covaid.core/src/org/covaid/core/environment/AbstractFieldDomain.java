@@ -23,13 +23,13 @@ public abstract class AbstractFieldDomain implements IFieldDomain{
 
 	private String name;
 	private int population;
-	private Collection<IPerson> persons;
-	private Map<String, IHub> hubs;
+	private Collection<IPerson<Date>> persons;
+	private Map<String, IHub<Date>> hubs;
 	//private int index;
 	private IField field;
 	private IFieldEnvironment environment;
 	
-	private Collection<IDomainListener> listeners;
+	private Collection<IDomainListener<Date>> listeners;
 
 	public AbstractFieldDomain( String name ) {
 		super();
@@ -55,7 +55,7 @@ public abstract class AbstractFieldDomain implements IFieldDomain{
 	}
 
 	@Override
-	public Collection<IPerson> getPersons() {
+	public Collection<IPerson<Date>> getPersons() {
 		return persons;
 	}
 
@@ -83,37 +83,37 @@ public abstract class AbstractFieldDomain implements IFieldDomain{
 	}
 
 	@Override
-	public Map<String, IHub> getHubs() {
+	public Map<String, IHub<Date>> getHubs() {
 		return hubs;
 	}
 
 	@Override
-	public void addListener( IDomainListener listener ) {
+	public void addListener( IDomainListener<Date> listener ) {
 		this.listeners.add(listener);
 	}
 
 	@Override
-	public void removeListener( IDomainListener listener ) {
+	public void removeListener( IDomainListener<Date> listener ) {
 		this.listeners.remove(listener);
 	}
 
-	void notifyListeners( DomainEvent event ) {
-		for( IDomainListener listener: this.listeners )
+	void notifyListeners( DomainEvent<Date> event ) {
+		for( IDomainListener<Date> listener: this.listeners )
 			listener.notifyPersonChanged(event);
 	}
 
-	protected abstract void onCreatePerson( IFieldDomain domain, IPerson person );
+	protected abstract void onCreatePerson( IFieldDomain domain, IPerson<Date> person );
 
-	protected abstract void onMovePerson( IFieldDomain domain, Date date, IPerson person );
+	protected abstract void onMovePerson( IFieldDomain domain, Date date, IPerson<Date> person );
 	
 
 	public void movePerson( Date date ) {
-		Collection<IPerson> temp = new ArrayList<IPerson>(persons);
-		for( IPerson person: temp ) {
+		Collection<IPerson<Date>> temp = new ArrayList<IPerson<Date>>(persons);
+		for( IPerson<Date> person: temp ) {
 			onMovePerson( this, date, person);
-			notifyListeners( new DomainEvent( this, DomainEvents.UPDATE_PERSON ));
+			notifyListeners( new DomainEvent<Date>( this, DomainEvents.UPDATE_PERSON ));
 		}
-		notifyListeners( new DomainEvent( this, DomainEvents.PERSONS_MOVED ));
+		notifyListeners( new DomainEvent<Date>( this, DomainEvents.PERSONS_MOVED ));
 	}
 	public void updatePerson() {
 		while( persons.size() < population ) {
@@ -125,13 +125,13 @@ public abstract class AbstractFieldDomain implements IFieldDomain{
 	}
 	
 	public void update( Date date ) {
-		for( IHub hub: hubs.values())
+		for( IHub<Date> hub: hubs.values())
 			hub.update(date);
-		Collection<IPerson> temp = new ArrayList<IPerson>(persons);
-		for( IPerson person: temp ) {
+		Collection<IPerson<Date>> temp = new ArrayList<IPerson<Date>>(persons);
+		for( IPerson<Date> person: temp ) {
 			person.updatePerson(date);
 		}
-		notifyListeners( new DomainEvent( this, DomainEvents.UPDATE ));
+		notifyListeners( new DomainEvent<Date>( this, DomainEvents.UPDATE ));
 	}
 	
 	@Override

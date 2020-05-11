@@ -3,12 +3,9 @@ package org.covaid.rest.core;
 import java.util.Map;
 import java.util.TreeMap;
 import org.covaid.core.def.IEnvironment;
-import org.covaid.core.def.IHub;
-import org.covaid.core.def.IPoint;
 import org.covaid.core.environment.AbstractEnvironment;
 import org.covaid.core.environment.frogger.FroggerDomain;
 import org.covaid.core.model.Hub;
-import org.covaid.core.model.Point;
 import org.covaid.orientdb.object.AbstractPersistenceService;
 
 import com.orientechnologies.orient.core.entity.OEntityManager;
@@ -67,12 +64,11 @@ public class Dispatcher extends AbstractPersistenceService {
 		return result.pause();
 	}
 
-	public Map<Integer, Map<Point,Hub>> getUpdate(String identifier) {
-		Environment result = (Environment) this.environments.get( identifier);
-		if( result == null )
+	public Hub[] getUpdate(String identifier) {
+		Environment env = (Environment) this.environments.get( identifier);
+		if( env == null )
 			return null;
-		
-		return result.getUpdate();
+		return env.getUpdate();
 	}
 
 	@Override
@@ -109,11 +105,11 @@ public class Dispatcher extends AbstractPersistenceService {
 		}
 
 		@Override
-		public Integer getTimeStep() {
-			return super.getDays();
+		public Integer getTimeStep( long days ) {
+			return (int) days % Integer.MAX_VALUE;
 		}
 		
-		public Map<Integer, Map<Point, Hub>> getUpdate(){
+		public Hub[] getUpdate(){
 			return domain.getUpdate();
 		}
 	}

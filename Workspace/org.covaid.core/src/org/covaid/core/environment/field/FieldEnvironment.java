@@ -57,11 +57,11 @@ public class FieldEnvironment extends AbstractEnvironment<Date> implements IFiel
 	}
 
 
-	public Collection<IPerson> getPersons( IFieldDomain domain ) {
+	public Collection<IPerson<Date>> getPersons( IFieldDomain domain ) {
 		return domain.getPersons();
 	}
 
-	protected Map<String, IHub> getHubs( IFieldDomain domain ) {
+	protected Map<String, IHub<Date>> getHubs( IFieldDomain domain ) {
 		return domain.getHubs();
 	}
 
@@ -117,9 +117,9 @@ public class FieldEnvironment extends AbstractEnvironment<Date> implements IFiel
 	 * @return
 	 */
 	@Override
-	public Date getTimeStep() {
+	public Date getTimeStep( long days ) {
 		Calendar calendar = Calendar.getInstance();
-		long time = start.getTime() + super.getDays() + (long)( 24*3600*1000*index/super.getActivity());
+		long time = start.getTime() + days + (long)( 24*3600*1000*index/super.getActivity());
 		calendar.setTimeInMillis( time);
 		return calendar.getTime();
 	}

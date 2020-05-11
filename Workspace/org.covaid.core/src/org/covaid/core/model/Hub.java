@@ -34,7 +34,7 @@ public class Hub extends AbstractHub<Integer> {
 	 */
 	@Override
 	public boolean encounter( IPerson<Integer> person, Integer step ) {
-		if( person.isHealthy() || !person.getLocation().getIdentifier().equals( super.getIdentifier()))
+		if( !person.getLocation().getIdentifier().equals( super.getIdentifier()))
 			return false;
 		ILocation<Integer> check = person.createSnapshot();
 
