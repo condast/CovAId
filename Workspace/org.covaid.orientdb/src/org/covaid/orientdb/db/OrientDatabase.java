@@ -70,7 +70,7 @@ public class OrientDatabase {
 		this.listeners.remove(listener);
 	}
 	
-	protected void notifyListeners( DatabaseEvent<StoredNode> event ) {
+	protected void notifyListeners( DatabaseEvent<StoredNode<Date>> event ) {
 		for( IDatabaseListener listener: listeners )
 			listener.notifyChange(event);
 	}
@@ -82,7 +82,7 @@ public class OrientDatabase {
 		}
 	}
 	
-	public boolean add(StoredNode node) {
+	public boolean add(StoredNode<Date> node) {
 		Vertex root = fromTree(node);
 		return ( root != null );
 	}
@@ -104,7 +104,7 @@ public class OrientDatabase {
 		return false;
 	}
 
-	public StoredNode get( String id ) {
+	public StoredNode<Date> get( String id ) {
 		service.open();
 		Vertex root = null;
 		try {
@@ -121,8 +121,8 @@ public class OrientDatabase {
 		return null;
 	}
 
-	public Collection<StoredNode> search( String attribute, String wildcard) {
-		Collection<StoredNode> results = new ArrayList<>();
+	public Collection<StoredNode<Date>> search( String attribute, String wildcard) {
+		Collection<StoredNode<Date>> results = new ArrayList<>();
 		service.open();
 		try {
 			OrientGraph graph = service.getGraph();
@@ -147,7 +147,7 @@ public class OrientDatabase {
 		return null;
 	}
 
-	public boolean remove(StoredNode node) {
+	public boolean remove(StoredNode<Date> node) {
 		try {
 			OrientGraph graph = service.getGraph();
 			Vertex vertex = graph.getVertex( node.getRoot().getId() );
@@ -166,7 +166,7 @@ public class OrientDatabase {
 		return false;
 	}
 
-	public boolean update(StoredNode node) {
+	public boolean update(StoredNode<Date> node) {
 		Vertex root = fromTree(node);
 		return ( root != null );
 	}
@@ -175,15 +175,15 @@ public class OrientDatabase {
 		service.close();
 	}	
 
-	protected static StoredNode toNode( Vertex root) {
-		StoredNode node = null;
+	protected static StoredNode<Date> toNode( Vertex root) {
+		StoredNode<Date> node = null;
 		service.open();
 		try {
-			node = new StoredNode( fill( root ));
+			node = new StoredNode<Date>( fill( root ));
 			Iterator<Edge> iterator = root.getEdges(Direction.OUT, Types.STORED.name()).iterator();
 			while( iterator.hasNext()) {
 				Edge edge = iterator.next();
-				StoredData data = fill( edge.getVertex(Direction.OUT));
+				StoredData<Date> data = fill( edge.getVertex(Direction.OUT));
 				node.addChild(data, Float.parseFloat( edge.getLabel()));
 			}
 		}
@@ -196,7 +196,7 @@ public class OrientDatabase {
 		return node;
 	}
 
-	public static Vertex fromTree( StoredNode node) {
+	public static Vertex fromTree( StoredNode<Date> node) {
 		service.open();
 		Vertex root = null;
 		try {
@@ -207,7 +207,7 @@ public class OrientDatabase {
 				node.getRoot().setId(root.getId().toString());
 				fill( root, node.getRoot());
 			}
-			for( StoredData child: node.getConnections()) {
+			for( StoredData<Date> child: node.getConnections()) {
 				Vertex vc = graph.getVertex(child.getId());
 				if( vc == null ) {
 					vc = graph.addVertex(Types.STORED.name());
@@ -228,10 +228,10 @@ public class OrientDatabase {
 	
 	protected static void fill( Vertex vertex, StoredData data ) {
 		vertex.setProperty( StoredData.Attributes.IDENTIFIER.name(), data.getIdentifier());
-		Iterator<Map.Entry<IContagion, Date>> iterator = data.getContagiousness().entrySet().iterator();
+		Iterator<Map.Entry<IContagion<Date>, Date>> iterator = data.getContagiousness().entrySet().iterator();
 		OrientGraph graph = service.getGraph();
 		while( iterator.hasNext()) {
-			Map.Entry<IContagion, Date> entry = iterator.next();
+			Map.Entry<IContagion<Date>, Date> entry = iterator.next();
 			Vertex vc = graph.addVertex( Types.CONTAGION.toString() );
 			vc.setProperty( IContagion.Attributes.IDENTIFIER.name(), entry.getKey().getIdentifier());
 			vc.setProperty( IContagion.Attributes.CONTAGIOUSNESS.name(), String.valueOf( entry.getKey().getContagiousness()));
@@ -239,11 +239,11 @@ public class OrientDatabase {
 		}
 	}
 
-	protected static StoredData fill( Vertex vertex ) {
+	protected static StoredData<Date> fill( Vertex vertex ) {
 		String id = vertex.getId().toString();
 		String identifier = vertex.getProperty( StoredData.Attributes.IDENTIFIER.name());
 		Iterator<Edge> iterator = vertex.getEdges(Direction.OUT, Types.CONTAGION.toString()).iterator();
-		StoredData result = new StoredData( identifier );
+		StoredData<Date> result = new StoredData<Date>( identifier );
 		while( iterator.hasNext() ) {
 			Edge edge = iterator.next();
 			Vertex vc = edge.getVertex(Direction.OUT);

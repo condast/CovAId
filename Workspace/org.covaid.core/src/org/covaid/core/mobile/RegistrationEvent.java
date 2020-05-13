@@ -4,14 +4,14 @@ import java.util.EventObject;
 import org.condast.commons.auth.AuthenticationData;
 import org.covaid.core.def.IMobile;
 
-public class RegistrationEvent extends EventObject {
+public class RegistrationEvent<T extends Object> extends EventObject {
 	private static final long serialVersionUID = 1L;
 
 	private IMobileRegistration.RegistrationTypes type;
-	private IMobile mobile;
+	private IMobile<T> mobile;
 	private AuthenticationData auth;
 	
-	public RegistrationEvent(Object source, IMobileRegistration.RegistrationTypes type, AuthenticationData auth, IMobile mobile ) {
+	public RegistrationEvent(Object source, IMobileRegistration.RegistrationTypes type, AuthenticationData auth, IMobile<T> mobile ) {
 		super(source);
 		this.type = type;
 		this.auth = auth;
@@ -26,7 +26,7 @@ public class RegistrationEvent extends EventObject {
 		return auth;
 	}
 
-	protected IMobile getMobile() {
+	protected IMobile<T> getMobile() {
 		return mobile;
 	}
 }

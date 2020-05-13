@@ -108,16 +108,16 @@ public class DomainComposite extends Composite {
 
 			double safety = person.getSafetyBubble(contagion, Calendar.getInstance().getTime());
 
-			Map<Date, ILocation<Date>> history = person.getHistory().get();
-			Iterator<Map.Entry<Date, ILocation<Date>>> iterator = new ArrayList<Map.Entry<Date, ILocation<Date>>>( history.entrySet()).iterator();
-			while( iterator.hasNext() ) {
-				Map.Entry<Date, ILocation<Date>> entry = iterator.next();
-				Vector<Double,Double> vector = contagion.getContagion(date);
-				gc.setBackground( getColour( vector.getKey().doubleValue() ));
-				//drawPerson( gc, entry.getValue(), vector.getValue().doubleValue());
-			}
+			//Map<Date, ILocation<Date>> history = person.getHistory().get();
+			//Iterator<Map.Entry<Date, ILocation<Date>>> iterator = new ArrayList<Map.Entry<Date, ILocation<Date>>>( history.entrySet()).iterator();
+			//while( iterator.hasNext() ) {
+			//	Map.Entry<Date, ILocation<Date>> entry = iterator.next();
+			//	Vector<Double,Double> vector = contagion.getContagion(date);
+			//	gc.setBackground( getColour( vector.getKey().doubleValue() ));
+			//	//drawPerson( gc, entry.getValue(), vector.getValue().doubleValue());
+			//}
 
-			gc.setBackground( getColour( person.getContagiousness(contagion)));
+			gc.setBackground( getColour( person.getContagiousness(contagion, date)));
 			drawPerson( gc, person.getLocation(), safety );
 		}
 		catch( Exception ex ) {

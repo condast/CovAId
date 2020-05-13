@@ -44,12 +44,14 @@ public class GraphCanvas extends Canvas {
 			return;
 		IFieldDomain domain = (IFieldDomain) e.getSource();
 		IFieldEnvironment env = (IFieldEnvironment) domain.getEnvironment();
+		Date date = env.getTimeStep( env.getDays());
+
 		List<Data> list = domains.get( domain );
 		Data data = list.get(list.size()-1);
 		int infected = 0;
 		IContagion<Date> contagion = new DateContagion( IContagion.SupportedContagion.valueOf( env.getContagion()), 100);
 		for( IPerson<Date> person: domain.getPersons() ) {
-			if( person.getContagiousness( contagion ) > 10 )
+			if( person.getContagiousness( contagion, date ) > 10 )
 				infected++;
 		}
 

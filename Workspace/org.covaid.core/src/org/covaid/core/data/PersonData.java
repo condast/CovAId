@@ -1,4 +1,4 @@
-package org.covaid.core.model.frogger;
+package org.covaid.core.data;
 
 import org.covaid.core.def.IPerson;
 import org.covaid.core.model.Contagion;
@@ -13,7 +13,7 @@ public class PersonData {
 	
 	private Point location;
 	
-	private Mobile mobile;
+	private Mobile<Integer> mobile;
 
 	public PersonData( IPerson<Integer> person ) {
 		this.state = person.getState();

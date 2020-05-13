@@ -2,6 +2,7 @@ package org.covaid.orientdb.db;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 
@@ -109,7 +110,7 @@ public class DatabaseService {
 		this.listeners.remove(listener);
 	}
 
-	protected final void notifyListeners( DatabaseEvent<StoredNode> event ){
+	protected final void notifyListeners( DatabaseEvent<StoredNode<Date>> event ){
 		for( IDatabaseListener listener: this.listeners )
 			listener.notifyChange(event);
 	}

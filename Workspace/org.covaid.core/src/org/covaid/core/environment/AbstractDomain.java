@@ -15,7 +15,7 @@ public abstract class AbstractDomain<T extends Object> implements IDomain<T>{
 	
 	private IEnvironment<T> environment;
 	
-	private Collection<IDomainListener> listeners;
+	private Collection<IDomainListener<T>> listeners;
 
 	public AbstractDomain( String name ) {
 		super();
@@ -48,17 +48,17 @@ public abstract class AbstractDomain<T extends Object> implements IDomain<T>{
 	}
 
 	@Override
-	public void addListener( IDomainListener listener ) {
+	public void addListener( IDomainListener<T> listener ) {
 		this.listeners.add(listener);
 	}
 
 	@Override
-	public void removeListener( IDomainListener listener ) {
+	public void removeListener( IDomainListener<T> listener ) {
 		this.listeners.remove(listener);
 	}
 
 	protected void notifyListeners( DomainEvent<T> event ) {
-		for( IDomainListener listener: this.listeners )
+		for( IDomainListener<T> listener: this.listeners )
 			listener.notifyPersonChanged(event);
 	}
 }

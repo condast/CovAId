@@ -1,5 +1,4 @@
 //ALWAYS call this method from localhost or https 
-//const SUBSCRIBE_URL = 'http://localhost:10080/moodle/push/subscribe';
 const SUBSCRIBE_URL = 'https://www.condast.com:8080/covaidresources/push/subscribe';
 	
 function registerServiceWorker(userid ) { 

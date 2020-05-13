@@ -65,12 +65,12 @@ public class CovaidDomain extends AbstractFieldDomain{
 		DateContagion contagion = new DateContagion( IContagion.SupportedContagion.valueOf( env.getContagion()), 100 );
 		Collection<IPerson<Date>> persons = domain.getPersons();
 		double distance = 0;
-		if( person.getContagiousness(contagion) > 10 ){
+		if( person.getContagiousness(contagion, date) > 10 ){
 			for( IPerson<Date> other: persons) {
 				distance = person.getLocation().getDistance(other.getLocation());
 				if( contagion.getDistance() < distance)
 					continue;
-				if( other.getContagiousness(contagion) < person.getContagiousness(contagion))
+				if( other.getContagiousness(contagion, date) < person.getContagiousness(contagion,date))
 					other.setContagion( env.getTimeStep( env.getDays()), contagion);
 			}
 		}

@@ -15,6 +15,15 @@ public class Person extends AbstractPerson<Integer>{
 		this( new Point( identifier, xpos, ypos ), safety, 100 );
 	}
 	
+	/**
+	 * The YPosition is a measure of the time
+	 * @param identifier
+	 * @param xpos
+	 * @param ypos
+	 * @param safety
+	 * @param health
+	 * @param contagion
+	 */
 	public Person( String identifier, int xpos, int ypos, double safety, double health, IContagion<Integer> contagion) {
 		super( xpos, ypos, contagion, new Mobile<Integer>(identifier, safety, health, new Point( identifier, xpos, ypos), new History()));
 	}

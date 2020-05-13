@@ -1,6 +1,6 @@
 package org.covaid.core.def;
 
-public interface IPoint extends Comparable<IPoint>{
+public interface IPoint extends Comparable<IPoint>, Cloneable{
 
 	String getIdentifier();
 
@@ -10,8 +10,7 @@ public interface IPoint extends Comparable<IPoint>{
 
 	double getDistance(IPoint point);
 
+	IPoint clone();
+
 	int compareTo(IPoint o);
-
-	void setPosition(int xpos, int ypos);
-
 }

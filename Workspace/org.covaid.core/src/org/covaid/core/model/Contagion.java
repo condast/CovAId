@@ -25,11 +25,10 @@ public class Contagion extends AbstractContagion<Integer>{
 
 	@Override
 	protected long getDifference(Integer first, Integer last) {
-		return first-last;
+		int f = ( first == null )?0: first;
+		int l = ( last == null )?0: last;
+		return f-l;
 	}
-
-	@Override
-	public boolean isContagious( Integer step) {
-		return this.isContagious(  step - getTimestamp());
-	}
+	
+	
 }

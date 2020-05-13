@@ -1,5 +1,8 @@
 package org.covaid.core.model;
 
+import java.util.Iterator;
+import java.util.Map;
+
 import org.covaid.core.def.IContagion;
 import org.covaid.core.def.ILocation;
 import org.covaid.core.def.IPoint;
@@ -27,21 +30,17 @@ public class Location extends AbstractLocation<Integer>{
 		return new Location( identifier, point );
 	}
 
-	/**
-	 * Create a new location from the reference by adding the highest contagions
-	 * from loc2
-	 * @param reference
-	 * @param loc2
-	 * @return
-	 */
-	public static ILocation<Integer> createWorseCase( ILocation<Integer> reference, ILocation<Integer> loc2 ) {
-		Location worst = new Location( reference );
-		for( IContagion<Integer> contagion: reference.getContagion() ) {
-			double test = loc2.getContagion(contagion);
-			if( contagion.getContagiousness() < test)
-				worst.addContagion(contagion);
+	
+	@Override
+	public ILocation<Integer> clone() {
+		IPoint point = super.clone();
+		ILocation<Integer> result = new Location( point );
+		Iterator<Map.Entry<IContagion<Integer>, Integer>> iterator = super.getContagions().entrySet().iterator();
+		while( iterator.hasNext() ) {
+			Map.Entry<IContagion<Integer>, Integer> entry = iterator.next();
+			result.addContagion(entry.getValue(), entry.getKey());
 		}
-		return worst;
+		return result;
 	}
 
 	/**

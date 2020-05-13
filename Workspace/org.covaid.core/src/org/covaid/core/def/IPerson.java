@@ -35,8 +35,6 @@ public interface IPerson<T extends Object> extends Comparable<IPerson<T>>{
 
 	void setIll(T date, String identifier);
 
-	IHistory<T> getHistory();
-
 	void alert(T date, ILocation<T> point);
 
 	/**
@@ -45,7 +43,13 @@ public interface IPerson<T extends Object> extends Comparable<IPerson<T>>{
 	 */
 	ILocation<T> createSnapshot();
 
-	double getContagiousness(IContagion<T> contagion);
+	/**
+	 * Get the contagiousness at the given time step
+	 * @param contagion
+	 * @param step
+	 * @return
+	 */
+	double getContagiousness(IContagion<T> contagion, T step);
 
 	double getContagiousness(IContagion<T> contagion, T date, Map.Entry<T, ILocation<T>> entry);
 
@@ -73,4 +77,7 @@ public interface IPerson<T extends Object> extends Comparable<IPerson<T>>{
 
 	void move(IPoint point);
 
+	void addListener(IPersonListener<T> listener);
+
+	void removeListener(IPersonListener<T> listener);
 }

@@ -4,6 +4,8 @@ import java.util.Map;
 
 public interface IHub<T extends Object> extends Cloneable{
 
+	public static final int DEFAULT_HISTORY = 60;//two months
+	
 	/**
 	 * Respond to an encounter with a person
 	 * @param person
@@ -25,17 +27,22 @@ public interface IHub<T extends Object> extends Cloneable{
 	 * 
 	 * @return
 	 */
-	ILocation<T> createSnapShot(T step );
+	ILocation<T> createSnapShot();
 
 	/**
 	 * Update the hub and return a new snapshot
 	 * @param date
 	 * @return
 	 */
-	ILocation<T> update(T step);
+	ILocation<T> update( T timeStep );
 
 	ILocation<T> getLocation();
 
 	Map<T, IPerson<T>> getPersons();
 
+	boolean addPrevious(IHub<T> point);
+
+	boolean removePrevious(IPoint point);
+
+	IPoint[] getPrevious();
 }

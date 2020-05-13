@@ -7,11 +7,11 @@ import org.covaid.core.def.IPerson;
 public class DomainEvent<T extends Object> extends EventObject {
 	private static final long serialVersionUID = 1L;
 	
-	private IPerson person;
+	private IPerson<T> person;
 	
 	private AbstractDomain.DomainEvents event;
 	
-	public DomainEvent( IDomain<T> source, IPerson person ) {
+	public DomainEvent( IDomain<T> source, IPerson<T> person ) {
 		this(source);
 		this.person = person;
 		event = IDomain.DomainEvents.UPDATE_PERSON;
@@ -35,7 +35,7 @@ public class DomainEvent<T extends Object> extends EventObject {
 		return event;
 	}
 
-	public IPerson getPerson() {
+	public IPerson<T> getPerson() {
 		return person;
 	}
 }

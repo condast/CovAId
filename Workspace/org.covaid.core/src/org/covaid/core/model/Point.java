@@ -40,7 +40,7 @@ public class Point implements IPoint{
 		this.ypos = ypos;
 	}
 
-	public void setPosition(int xpos, int ypos) {
+	protected void setPosition(int xpos, int ypos) {
 		this.xpos = xpos;
 		this.ypos = ypos;
 	}
@@ -63,6 +63,12 @@ public class Point implements IPoint{
 			return false;
 		IPoint test = (IPoint) obj;
 		return (( test.getXpos() - xpos == 0 ) && ( test.getYpos() - ypos == 0 ));
+	}
+
+	
+	@Override
+	public IPoint clone(){
+		return new Point( identifier, xpos, ypos );
 	}
 
 	@Override

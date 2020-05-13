@@ -99,7 +99,7 @@ public class Mobile<T extends Object> implements IMobile<T> {
 
 	@Override
 	public void alert( T date, ILocation<T> location, IContagion<T> contagion ) {
-		this.history.alert( date, location, contagion);
+		this.history.alert( date, location, contagion, 100);
 	}
 
 	@Override

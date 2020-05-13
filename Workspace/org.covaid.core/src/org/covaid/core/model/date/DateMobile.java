@@ -132,7 +132,7 @@ public class DateMobile implements IMobile<Date>, IFieldListener {
 
 	@Override
 	public void alert( Date date, ILocation<Date> location, IContagion<Date> contagion ) {
-		this.history.alert( date, location, contagion);
+		this.history.alert( date, location, contagion, 100);
 	}
 
 	@Override

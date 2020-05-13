@@ -1,4 +1,3 @@
-//const UPDATE_URL = 'http://localhost:10080/moodle/module/update';
 const UPDATE_URL = 'https://www.condast.com:8080/covaid/rest/module/update';
 
 /**

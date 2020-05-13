@@ -1,5 +1,7 @@
 package org.covaid.core.model;
 
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Map;
 
 import org.condast.commons.number.NumberUtils;
@@ -8,22 +10,27 @@ import org.covaid.core.def.IHistory;
 import org.covaid.core.def.ILocation;
 import org.covaid.core.def.IMobile;
 import org.covaid.core.def.IPerson;
+import org.covaid.core.def.IPersonListener;
 import org.covaid.core.def.IPoint;
+import org.covaid.core.def.PersonEvent;
 
 public abstract class AbstractPerson<T extends Object> implements IPerson<T>{
 
 	private States state;
 	private IContagion<T> monitor;
 	
-	private IPoint location;
+	private IPoint point;
 	
 	private IMobile<T> mobile;
 	
+	private Collection<IPersonListener<T>> listeners;
+	
 	protected AbstractPerson( int xpos, int ypos, IContagion<T> contagion, IMobile<T> mobile) {
-		location = new Point( mobile.getIdentifier(), xpos, ypos);
+		point = new Point( mobile.getIdentifier(), xpos, ypos);
 		this.mobile = mobile;
 		this.state = States.HEALTHY;
 		this.monitor = contagion;
+		listeners = new ArrayList<>();
 	}
 
 	@Override
@@ -33,12 +40,12 @@ public abstract class AbstractPerson<T extends Object> implements IPerson<T>{
 
 	@Override
 	public void setPosition(int xpos, int ypos) {
-		location.setPosition(xpos, ypos);
+		point = new Point( mobile.getIdentifier(), xpos, ypos);
 	}
 
 	@Override
 	public IPoint getLocation() {
-		return location;
+		return point;
 	}
 
 	@Override
@@ -79,6 +86,21 @@ public abstract class AbstractPerson<T extends Object> implements IPerson<T>{
 		return this.mobile.isHealthy();
 	}
 
+	@Override
+	public void addListener( IPersonListener<T> listener) {
+		this.listeners.add(listener);
+	}
+
+	@Override
+	public void removeListener( IPersonListener<T> listener) {
+		this.listeners.remove(listener);
+	}
+	
+	protected void notifyListeners( PersonEvent<T> event) {
+		for( IPersonListener<T> listener: this.listeners )
+			listener.notifyPersonChanged(event);
+	}
+
 	protected abstract long getDifference( T first, T last );
 
 	protected abstract IContagion<T> createContagion( String identifier, double safety );
@@ -86,22 +108,22 @@ public abstract class AbstractPerson<T extends Object> implements IPerson<T>{
 	protected abstract ILocation<T> createLocation( String identifier, IPoint point );
 
 	@Override
-	public void setContagion( T date, IContagion<T> contagion) {
-		ILocation<T> loc = createLocation( location.getIdentifier(),  location );
-		loc.addContagion(contagion);
+	public void setContagion( T step, IContagion<T> contagion) {
+		ILocation<T> loc = createLocation( point.getIdentifier(),  point );
+		loc.addContagion( step, contagion);
 		this.monitor = contagion;
 		if( contagion.getContagiousness() > DEFAULT_ILL_THRESHOLD) {
 			state = States.FEEL_ILL;
 		}
-		this.mobile.alert( date, loc, contagion );
+		this.alert( step, loc );
 	}
 	
 	@Override
-	public void setIll( T date ) {
+	public void setIll( T step ) {
 		setState(States.FEEL_ILL);		
 		ILocation<T> loc = createSnapshot();
-		loc.addContagion(monitor);
-		this.mobile.getHistory().alert(date, loc, monitor);
+		loc.addContagion( step, monitor);
+		this.mobile.getHistory().alert(step, loc, monitor, 100);
 	}
 	
 	@Override
@@ -110,8 +132,7 @@ public abstract class AbstractPerson<T extends Object> implements IPerson<T>{
 		monitor = this.createContagion( identifier, 100 );
 	}
 	
-	@Override
-	public IHistory<T> getHistory() {
+	protected IHistory<T> getHistory() {
 		return this.mobile.getHistory();
 	}
 
@@ -121,9 +142,10 @@ public abstract class AbstractPerson<T extends Object> implements IPerson<T>{
 	}
 
 	@Override
-	public void alert( T date, ILocation<T> point ) {
-		this.location = point;
-		this.mobile.alert( date, point, monitor);
+	public void alert( T date, ILocation<T> location ) {
+		this.point = location;
+		this.mobile.alert( date, location, monitor);
+		this.notifyListeners( new PersonEvent<T>( this, createSnapshot()));
 	}
 
 	/**
@@ -132,20 +154,20 @@ public abstract class AbstractPerson<T extends Object> implements IPerson<T>{
 	 */
 	@Override
 	public ILocation<T> createSnapshot() {
-		return getHistory().createSnapShot(getCurrent(), location);
+		return getHistory().createSnapShot(point);
 	}
 
 	@Override
-	public double getContagiousness( IContagion<T> contagion ) {
+	public double getContagiousness( IContagion<T> contagion, T step ) {
 		ILocation<T> location = createSnapshot();
-		return location.getContagion(contagion);
+		return location.getContagion(contagion, step);
 	}
 
 	@Override
 	public double getContagiousness( IContagion<T> contagion, T step, Map.Entry<T, ILocation<T>> entry ) {
 		if( entry == null )
 			return 0;
-		double distance = location.getDistance( entry.getValue());
+		double distance = point.getDistance( entry.getValue());
 		double caldist = contagion.getContagiousnessDistance(distance);
 		double calctime = contagion.getContagiousnessInTime( getDifference( step, entry.getKey()));
 		return Math.max(caldist, calctime);
@@ -176,7 +198,7 @@ public abstract class AbstractPerson<T extends Object> implements IPerson<T>{
 
 	@Override
 	public void move( IPoint point ) {
-		this.location = point;
+		this.point = point;
 	}
 
 	/**
@@ -204,16 +226,16 @@ public abstract class AbstractPerson<T extends Object> implements IPerson<T>{
 		if(!( obj instanceof AbstractPerson))
 			return false;
 		IPerson<T> test = (IPerson<T>) obj;
-		return location.equals(test.getLocation());
+		return point.equals(test.getLocation());
 	}
 
 	@Override
 	public int compareTo(IPerson<T> o) {
-		return this.location.compareTo(o.getLocation());
+		return this.point.compareTo(o.getLocation());
 	}
 
 	@Override
 	public String toString() {
-		return location.toString();
+		return point.toString();
 	}
 }

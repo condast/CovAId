@@ -23,6 +23,7 @@
       <import plugin="org.condast.commons.messaging"/>
       <import plugin="org.condast.commons"/>
       <import plugin="org.slf4j.api"/>
+      <import plugin="javassist"/>
       <import plugin="org.condast.commons.authentication"/>
       <import plugin="org.condast.commons.data"/>
       <import plugin="org.eclipse.equinox.preferences"/>
@@ -39,6 +40,7 @@
       <import plugin="org.eclipse.osgi"/>
       <import plugin="org.eclipse.osgi.services"/>
       <import plugin="com.orientechnologies.orientdb-core"/>
+      <import plugin="com.orientechnologies.orientdb-object"/>
       <import plugin="com.orientechnologies.orientdb-graphdb"/>
       <import plugin="javax.servlet"/>
       <import plugin="javax.ws.rs"/>
@@ -46,8 +48,6 @@
       <import plugin="org.glassfish.jersey.core.jersey-server"/>
       <import plugin="org.glassfish.jersey.containers.jersey-container-servlet-core"/>
       <import plugin="org.openlayer.map"/>
-      <import plugin="javassist"/>
-      <import plugin="com.orientechnologies.orientdb-object"/>
    </requires>
 
    <plugin
@@ -93,6 +93,13 @@
 
    <plugin
          id="org.covaid.mobile"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="org.covaid.rest"
          download-size="0"
          install-size="0"
          version="0.0.0"

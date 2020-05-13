@@ -29,6 +29,10 @@ public abstract class AbstractHistory<T extends Object> implements IHistory<T> {
 		this.listeners = new ArrayList<>();
 	}
 
+	protected Map<T, ILocation<T>> getHistory() {
+		return history;
+	}
+
 	@Override
 	public void addListener( IHistoryListener<T> listener ) {
 		this.listeners.add(listener);
@@ -46,15 +50,18 @@ public abstract class AbstractHistory<T extends Object> implements IHistory<T> {
 
 	/**
 	 * Alert of a new contagion. 
-	 * @param date
+	 * @param step
 	 * @param location
 	 */
 	@Override
-	public void alert( T date, IPoint location, IContagion<T> contagion ) {
+	public void alert( T step, IPoint location, IContagion<T> contagion, double contagiousness ) {
+		ILocation<T> current = createSnapShot(location);
 		ILocation<T> loc = createLocation(location.getIdentifier(), location );
-		loc.addContagion(contagion);
-		putHistory( date, loc);
-		notifyListeners( new HistoryEvent<T>( this, date, location, contagion ));
+		loc.addContagion(step, contagion);
+		putHistory( step, loc);
+		ILocation<T> next = createSnapShot(loc);
+		if( next.isWorse( current ))
+			notifyListeners( new HistoryEvent<T>( this, step, location, contagion ));
 	}
 
 	/**
@@ -102,7 +109,7 @@ public abstract class AbstractHistory<T extends Object> implements IHistory<T> {
 	
 	protected abstract long getDifference( T first, T last );
 
-	protected abstract IContagion<T> createContagion( String identifier, double safety );
+	protected abstract IContagion<T> createContagion( String identifier );
 
 	protected abstract ILocation<T> createLocation( String identifier, IPoint point );
 
@@ -114,47 +121,19 @@ public abstract class AbstractHistory<T extends Object> implements IHistory<T> {
 	 * @return
 	 */
 	@Override
-	public ILocation<T> createSnapShot( T step, IPoint point ) {
+	public ILocation<T> createSnapShot( IPoint point ) {
 		ILocation<T> current = createLocation( point.toString(), point);
 		Iterator<Map.Entry<T, ILocation<T>>> iterator = this.history.entrySet().iterator();
 		while( iterator.hasNext()) {
 			Map.Entry<T, ILocation<T>> entry = iterator.next();
-			long days = getDifference(entry.getKey(), step );			
-			for( IContagion<T> test: entry.getValue().getContagion()) {
-				double risk = test.getContagiousnessInTime(days);
-				double reference = current.getContagion(test);
-				if( reference < risk )
-					current.addContagion( this.createContagion(test.getIdentifier(), risk ));
-			}
+			ILocation<T> check = entry.getValue();
+			if( !point.equals( check ))
+				continue;
+			current = current.createWorst(check);
 		}
 		return current;
 	}
 	
-	@Override
-	public boolean isContagious( long days ) {
-		Iterator<Map.Entry<T, ILocation<T>>> iterator = this.history.entrySet().iterator();
-		while( iterator.hasNext()) {
-			Map.Entry<T, ILocation<T>> entry = iterator.next();
-			if( !entry.getValue().isContagious( days ))
-				this.history.remove(entry.getKey());
-			else
-				return true;
-		}
-		return false;
-	}
-
-	@Override
-	public boolean isContagious( T date ) {
-		Iterator<Map.Entry<T, ILocation<T>>> iterator = this.history.entrySet().iterator();
-		while( iterator.hasNext()) {
-			Map.Entry<T, ILocation<T>> entry = iterator.next();
-			if( entry.getValue().isContagious( date ))
-				return true;
-			this.history.remove(entry.getKey());
-		}
-		return false;
-	}
-
 	/**
 	 * Get the history with the maximum contagiousness
 	 * @param contagion
@@ -187,7 +166,7 @@ public abstract class AbstractHistory<T extends Object> implements IHistory<T> {
 		Vector<T, ILocation<T>> result = null;
 		while( iterator.hasNext()) {
 			Map.Entry<T, ILocation<T>> entry = iterator.next();
-			double cont = entry.getValue().getContagion( contagion );
+			double cont = entry.getValue().getContagion( contagion, current );
 			if( cont > probability) {
 				result = new Vector<T, ILocation<T>>( entry.getKey(), entry.getValue() );
 			}
@@ -207,12 +186,12 @@ public abstract class AbstractHistory<T extends Object> implements IHistory<T> {
 
 	/**
 	 * Update the history. Returns true if the contagion has gotten worse
-	 * @param date
+	 * @param step
 	 * @param location
 	 */
 	@Override
-	public boolean update( T date, ILocation<T> location ) {
-		ILocation<T> previous = this.history.get(date);
+	public boolean update( T step, ILocation<T> location ) {
+		ILocation<T> previous = this.history.get(step);
 		boolean result = false;
 		if( previous == null ) {
 			previous = location;
@@ -221,7 +200,7 @@ public abstract class AbstractHistory<T extends Object> implements IHistory<T> {
 			previous = previous.createWorst(location);
 			result = true;
 		}
-		this.history.put(date, previous);		
+		this.history.put(step, previous);		
 		return result;
 	}
 }

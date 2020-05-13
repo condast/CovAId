@@ -10,10 +10,10 @@ public class History extends AbstractHistory<Integer> {
 	protected long getDifference(Integer first, Integer last) {
 		return first-last;
 	}
-
+	
 	@Override
-	protected IContagion<Integer> createContagion(String identifier, double safety) {
-		return new Contagion( identifier, safety );
+	protected IContagion<Integer> createContagion(String identifier) {
+		return new Contagion( identifier, 100 );
 	}
 
 	@Override

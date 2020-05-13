@@ -1,4 +1,4 @@
-package org.covaid.core.model.frogger;
+package org.covaid.core.data.frogger;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -14,11 +14,11 @@ public class LocationData {
 	
 	private Point point;
 
-	public LocationData( ILocation<Integer> location ) {
+	public LocationData( ILocation<Integer> location, int step ) {
 		this.point = (Point) location.toPoint();
 		contagions = new HashMap<>();
 		for( IContagion<Integer> contagion: location.getContagion())
-			contagions.put((Contagion) contagion, location.getContagion(contagion));
+			contagions.put((Contagion) contagion, contagion.getContagiousness( location.getInfectionDate(contagion), step ));
 	}
 
 	public Map<Contagion, Double> getContagions() {

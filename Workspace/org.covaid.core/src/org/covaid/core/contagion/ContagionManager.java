@@ -5,7 +5,7 @@ import org.condast.commons.date.DateUtils;
 import org.covaid.core.def.IContagion;
 import org.covaid.core.model.date.DateContagion;
 
-public class ContagionManager implements IContagionManager {
+public class ContagionManager implements IContagionManager<Date> {
 
 	public static final int DEFAULT_COVID_UNSAFE_DISTANCE = 2;
 	public static final int DEFAULT_COVID_SAFE_DISTANCE = 10;
@@ -25,7 +25,7 @@ public class ContagionManager implements IContagionManager {
 		return contagion; 
 	}
 
-	public double calculateContagiousness( IContagion data, double detectedContagion, double distance ) {
+	public double calculateContagiousness( IContagion<Date> data, double detectedContagion, double distance ) {
 		double contagion = 0f;
 		if( IContagion.SupportedContagion.isSupported(data.getIdentifier()))
 			contagion = calculateContagiousness(IContagion.SupportedContagion.valueOf(data.getIdentifier()), detectedContagion, distance);
@@ -47,7 +47,7 @@ public class ContagionManager implements IContagionManager {
 	}
 
 	@Override
-	public double calculateContagiousness(IContagion data, Date previous, Date current) {
+	public double calculateContagiousness(IContagion<Date> data, Date previous, Date current) {
 		double contagion = 0f;
 		if( IContagion.SupportedContagion.isSupported(data.getIdentifier()))
 			contagion = calculateContagiousness(IContagion.SupportedContagion.valueOf(data.getIdentifier()), previous, current);

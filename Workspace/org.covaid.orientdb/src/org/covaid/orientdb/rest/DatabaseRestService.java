@@ -1,6 +1,7 @@
 package org.covaid.orientdb.rest;
 
 import java.util.Collection;
+import java.util.Date;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
@@ -32,13 +33,14 @@ public class DatabaseRestService{
 	
 	private Dispatcher dispatcher = Dispatcher.getInstance();
 
+	@SuppressWarnings("unchecked")
 	@POST
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
 	@Path("/add")
 	public Response addModel( @QueryParam("id") long id, @QueryParam("token") long token, 
 			String data ) {
-		StoredNode node = null;
+		StoredNode<Date> node = null;
 		if( !dispatcher.isRegistered(id, token))
 			return Response.status( Status.UNAUTHORIZED ).build();
 		Gson gson = new Gson();
@@ -67,7 +69,7 @@ public class DatabaseRestService{
 			return Response.status( Status.UNAUTHORIZED ).build();
 		OrientDatabase db = new OrientDatabase( S_IDENIFIER);
 		db.open();
-		Collection<StoredNode> result = null;
+		Collection<StoredNode<Date>> result = null;
 		try {
 			result = db.search( SharedData.Attributes.IDENTIFIER.name(), identifier);
 		}
@@ -89,7 +91,7 @@ public class DatabaseRestService{
 			return Response.status( Status.UNAUTHORIZED ).build();
 		OrientDatabase db = new OrientDatabase( S_IDENIFIER);
 		db.open();
-		Collection<StoredNode> result = null;
+		Collection<StoredNode<Date>> result = null;
 		try {
 			result = db.search( SharedData.Attributes.IDENTIFIER.name(), identifier);
 		}
@@ -113,7 +115,7 @@ public class DatabaseRestService{
 			return Response.status( Status.UNAUTHORIZED ).build();
 		OrientDatabase db = new OrientDatabase( S_IDENIFIER);
 		db.open();
-		Collection<StoredNode> result = null;
+		Collection<StoredNode<Date>> result = null;
 		try {
 			result = db.search( key, wildcard);
 		}
@@ -128,12 +130,13 @@ public class DatabaseRestService{
 		return Response.ok( str ).build();
 	}
 
+	@SuppressWarnings("unchecked")
 	@PUT
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.TEXT_PLAIN)
 	@Path("/update")
 	public Response update( @QueryParam("id") long id, @QueryParam("token") long token, String data) {
-		StoredNode node = null;
+		StoredNode<Date> node = null;
 		if( !dispatcher.isRegistered(id, token))
 			return Response.status( Status.UNAUTHORIZED ).build();
 		Gson gson = new Gson();
@@ -158,7 +161,7 @@ public class DatabaseRestService{
 	@Path("/remove")
 	public Response remove( @QueryParam("id") long id, @QueryParam("token") long token,
 			@QueryParam("domain") String domainstr, @QueryParam("model-id") String modelId) {
-		StoredNode node = null;
+		StoredNode<Date> node = null;
 		if( !dispatcher.isRegistered(id, token))
 			return Response.status( Status.UNAUTHORIZED ).build();
 		OrientDatabase db = new OrientDatabase( S_IDENIFIER);

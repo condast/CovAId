@@ -36,8 +36,8 @@ import org.eclipse.swt.widgets.Canvas;
 public class MobileWizard extends Composite {
 	private static final long serialVersionUID = 1L;
 
-	public static final String S_PATH = "http://localhost:10080/covaid/mobile/rest";
-	//public static final String S_PATH = "http://www.condast.com:8080/covaid/mobile/rest";
+	//public static final String S_PATH = "http://localhost:10080/covaid/mobile/rest";
+	public static final String S_PATH = "http://www.condast.com:8080/covaid/mobile/rest";
 
 	private enum Requests{
 

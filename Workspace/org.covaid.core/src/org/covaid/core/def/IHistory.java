@@ -15,7 +15,7 @@ public interface IHistory<T extends Object> {
 	 * @param date
 	 * @param location
 	 */
-	void alert(T date, IPoint location, IContagion<T> contagion);
+	void alert(T date, IPoint location, IContagion<T> contagion, double conatagiousness);
 
 	/**
 	 * Alert of a new contagion. 
@@ -43,11 +43,7 @@ public interface IHistory<T extends Object> {
 	 * 
 	 * @return
 	 */
-	ILocation<T> createSnapShot(T date, IPoint point);
-
-	boolean isContagious(long days);
-
-	boolean isContagious(T date);
+	ILocation<T> createSnapShot(IPoint point);
 
 	/**
 	 * Get the history with the maximum contagiousness

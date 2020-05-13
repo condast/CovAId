@@ -4,32 +4,23 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.Map;
-import java.util.TreeMap;
 import java.util.stream.Collectors;
 
 import org.condast.commons.Utils;
-import org.condast.commons.date.DateUtils;
 import org.covaid.core.def.IContagion;
 import org.covaid.core.def.IHub;
 import org.covaid.core.def.ILocation;
 import org.covaid.core.def.IPerson;
-import org.covaid.core.model.Point;
+import org.covaid.core.model.AbstractHub;
 
-public class DateHub extends Point implements IHub<Date> {
-
-	//A list of person identifiers and when they were present here
-	private Map<Date, IPerson<Date>> persons;
-	
-	private ILocation<Date> location;
+public class DateHub extends AbstractHub<Date> implements IHub<Date> {
 
 	public DateHub(String identifier, int xpos, int ypos) {
 		this(new DateLocation( identifier, xpos, ypos ));
 	}
 
 	public DateHub( ILocation<Date> location) {
-		super(location.getIdentifier(), location.getXpos(), location.getYpos());
-		this.persons = new TreeMap<>();
-		this.location = location;
+		super(location);
 	}
 
 	/**
@@ -40,11 +31,6 @@ public class DateHub extends Point implements IHub<Date> {
 		this( person.getLocation().getIdentifier(), person.getLocation().getXpos(), person.getLocation().getYpos());
 	}
 	
-	@Override
-	public ILocation<Date> getLocation() {
-		return location;
-	}
-
 	/**
 	 * Respond to an encounter with a person. This happens when a person enters the location of this hub
 	 * The snapshots of the person and the location are compared, and the person is alerted
@@ -58,8 +44,10 @@ public class DateHub extends Point implements IHub<Date> {
 			return false;
 		ILocation<Date> check = person.createSnapshot();
 
+		ILocation<Date> location = super.getLocation();
+		
 		//Determine the worst case situation for the encounter
-		ILocation<Date> worst = DateLocation.createWorseCase(this.location, check);
+		ILocation<Date> worst = location.createWorst( check);
 		
 		//Check if the person is worse off, and if so generate an alert		
 		IContagion<Date>[] worse = check.getWorse( worst );
@@ -68,16 +56,12 @@ public class DateHub extends Point implements IHub<Date> {
 		}
 		
 		//If the hub has deteriorated, then add the person 
-		worse = this.location.getWorse( worst );
+		worse = location.getWorse( worst );
 		if( Utils.assertNull(worse))
-			this.location = worst;
+			location = worst;
 			
-		persons.put( date, person );
+		super.getPersons().put( date, person );
 		return true;
-	}
-
-	public boolean isEmpty() {
-		return this.persons.isEmpty();
 	}
 	
 	/**
@@ -91,8 +75,8 @@ public class DateHub extends Point implements IHub<Date> {
 		if( person.isHealthy() || !person.getLocation().getIdentifier().equals( super.getIdentifier()))
 			return false;
 		
-		this.location = createSnapShot(date);
-		Iterator<Map.Entry<Date, IPerson<Date>>> iterator = this.persons.entrySet().stream()
+		super.setLocation( createSnapShot());
+		Iterator<Map.Entry<Date, IPerson<Date>>> iterator = super.getPersons().entrySet().stream()
 				.filter(item -> !item.getKey().after(date))
 				.collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue)).entrySet().iterator();
 		
@@ -115,47 +99,37 @@ public class DateHub extends Point implements IHub<Date> {
 	 * @return
 	 */
 	@Override
-	public ILocation<Date> createSnapShot( Date current ) {
-		Iterator<Map.Entry<Date, IPerson<Date>>> iterator = this.persons.entrySet().iterator();
-		ILocation<Date> result = new DateLocation( this.location.getIdentifier(), this );
+	public ILocation<Date> createSnapShot() {
+		Iterator<Map.Entry<Date, IPerson<Date>>> iterator = super.getPersons().entrySet().iterator();
+		ILocation<Date> result = new DateLocation( super.getLocation().getIdentifier(), this );
 		while( iterator.hasNext()) {
 			Map.Entry<Date, IPerson<Date>> entry = iterator.next();
-			long days = DateUtils.getDifferenceDays( current, entry.getKey());
-			ILocation<Date> snapshot = entry.getValue().getHistory().createSnapShot(current, this);
-			for( IContagion<Date> test: snapshot.getContagion()) {
-				double risk = test.getContagiousnessInTime(days);
-				double reference = result.getContagion(test);
-				if( reference < risk )
-					result.addContagion( new DateContagion(test.getIdentifier(), risk ));
-			}
+			ILocation<Date> snapshot = entry.getValue().createSnapshot();
+			result = result.createWorst(snapshot);
 		}
 		return result;
 	}
 
 	@Override
 	public ILocation<Date> update( Date current ) {	
-		this.location = createSnapShot(current);
+		super.setLocation( createSnapShot());
+		ILocation<Date> location = super.getLocation();
 		int days = (int) (2 * DateLocation.getMaxContagionTime(location));
 		Calendar calendar = Calendar.getInstance();
 		calendar.setTime(current);
 		calendar.add(Calendar.DAY_OF_YEAR, -days);
-		this.persons.entrySet().removeIf(entry -> entry.getKey().before(calendar.getTime()));
+		super.getPersons().entrySet().removeIf(entry -> entry.getKey().before(calendar.getTime()));
 		return location;
 	}
 
 	@Override
-	protected Object clone() throws CloneNotSupportedException {
-		DateHub hub = new DateHub( location );
-		Iterator<Map.Entry<Date, IPerson<Date>>> iterator = persons.entrySet().iterator();
+	public DateHub clone(){
+		DateHub hub = new DateHub( super.getLocation() );
+		Iterator<Map.Entry<Date, IPerson<Date>>> iterator = super.getPersons().entrySet().iterator();
 		while( iterator.hasNext()) {
 			Map.Entry<Date, IPerson<Date>> entry = iterator.next();
-			hub.persons.put(entry.getKey(), entry.getValue());
+			hub.getPersons().put(entry.getKey(), entry.getValue());
 		}
 		return hub;
-	}
-
-	@Override
-	public Map<Date, IPerson<Date>> getPersons() {
-		return this.persons;
-	}
+	}	
 }

@@ -8,7 +8,7 @@ public abstract class AbstractContagion<T extends Object> implements IContagion<
 
 	private String identifier;
 
-	private int maxDays;
+	private int incubation;
 	private int maxDistance;
 	
 	private int halfTime; //days
@@ -19,8 +19,6 @@ public abstract class AbstractContagion<T extends Object> implements IContagion<
 	private boolean monitored;
 	
 	private double threshold;//percent
-	
-	private T timestamp;
 	
 	protected AbstractContagion( String identifier, double contagiousness) {
 		this( identifier, contagiousness, DEFAULT_DISTANCE, DEFAULT_CONTAGION );
@@ -34,14 +32,14 @@ public abstract class AbstractContagion<T extends Object> implements IContagion<
 		this( identifier, contagiousness, THRESHOLD, distance, maxDays, DEFAULT_HALFTIME, DEFAULT_DISPERSION, false );
 	}
 	
-	protected AbstractContagion(String identifier, double contagiousness, double threshold, int distance, int maxDays, int halftime, double dispersion, boolean monitored ) {
+	protected AbstractContagion(String identifier, double contagiousness, double threshold, int distance, int incubation, int halftime, double dispersion, boolean monitored ) {
 		super();
 		this.identifier = identifier;
 		this.contagiousness = contagiousness;
 		this.monitored = monitored;
 		this.threshold = threshold;
 		this.maxDistance = distance;
-		this.maxDays = maxDays;
+		this.incubation = incubation;
 		this.halfTime= halftime;
 		this.dispersion = dispersion;
 	}
@@ -73,7 +71,7 @@ public abstract class AbstractContagion<T extends Object> implements IContagion<
 
 	@Override
 	public int getIncubation() {
-		return maxDays;
+		return incubation;
 	}
 
 	@Override
@@ -92,13 +90,8 @@ public abstract class AbstractContagion<T extends Object> implements IContagion<
 	}
 
 	@Override
-	public T getTimestamp() {
-		return timestamp;
-	}
-
-	@Override
 	public double getContagiousnessInTime( long days ) {
-		int half = (int)this.maxDays/2;
+		int half = (int)this.incubation/2;
 		long day = (days <= half)? 1: days - half;
 		double calculated = NumberUtils.clipRange(0, 100, this.contagiousness/day);
 		
@@ -137,7 +130,7 @@ public abstract class AbstractContagion<T extends Object> implements IContagion<
 	 * @return
 	 */
 	@Override
-	public double getContagiousness( long days, double distance ) {
+	public double getSpread( long days, double distance ) {
 		double time = getContagiousnessInTime(days);
 		double dist = getContagiousnessDistance(distance);
 		return Math.max(time, dist);
@@ -155,8 +148,8 @@ public abstract class AbstractContagion<T extends Object> implements IContagion<
 	 * @return
 	 */
 	@Override
-	public Vector<Double,Double> getContagion( T step) {
-		long diff = Math.abs( getDifference( this.timestamp, step ));
+	public Vector<Double,Double> getContagion( T init, T step) {
+		long diff = Math.abs( getDifference( init, step ));
 		double newContagion = NumberUtils.clipRange(0, 100, this.contagiousness * this.halfTime * DAY/diff);
 		double radius = this.maxDistance + this.dispersion* diff*1000;
 		return new Vector<Double, Double>(newContagion, radius );	
@@ -173,14 +166,17 @@ public abstract class AbstractContagion<T extends Object> implements IContagion<
 	}
 
 	@Override
-	public boolean isContagious( long days ) {
-		return days < this.maxDays;
+	public boolean isContagious(T step) {
+		double contagiousness = getContagiousness();
+		return ( contagiousness > this.threshold );
 	}
 
-	public void update( T date ) {
-		this.timestamp = date;		
+	@Override
+	public double getContagiousness( T init, T step) {
+		long diff = getDifference( step, init);
+		return 100*(( diff < this.incubation )? 1: (double)this.incubation/diff);
 	}
-	
+
 	@Override
 	public int hashCode() {
 		return this.identifier.hashCode();

@@ -8,13 +8,14 @@ import org.condast.commons.Utils;
 import org.covaid.core.def.IContagion;
 import org.covaid.core.def.ILocation;
 import org.covaid.core.def.IPerson;
+import org.covaid.core.def.IPoint;
 import org.covaid.core.model.AbstractHub;
 
 public class Hub extends AbstractHub<Integer> {
 
-
-	public Hub(ILocation<Integer> location) {
-		super(location);
+	
+	public Hub(IPoint location) {
+		super(new Location( location.getIdentifier(), location.getXpos(), location.getYpos()));
 	}
 
 	/**
@@ -22,7 +23,7 @@ public class Hub extends AbstractHub<Integer> {
 	 * @param person
 	 */
 	public Hub( IPerson<Integer> person ) {
-		this( new Location( person.getLocation().getIdentifier(), person.getLocation().getXpos(), person.getLocation().getYpos()));
+		this( new Location( person.getLocation().getXpos(), person.getLocation().getYpos()));
 	}
 	
 	/**
@@ -34,22 +35,22 @@ public class Hub extends AbstractHub<Integer> {
 	 */
 	@Override
 	public boolean encounter( IPerson<Integer> person, Integer step ) {
-		if( !person.getLocation().getIdentifier().equals( super.getIdentifier()))
+		if( !person.getLocation().equals( super.getLocation()))
 			return false;
 		ILocation<Integer> check = person.createSnapshot();
 
 		//Determine the worst case situation for the encounter
-		ILocation<Integer> worst = Location.createWorseCase( super.getLocation(), check);
+		ILocation<Integer> worst = check.createWorst( check );
 		
 		//Check if the person is worse off, and if so generate an alert		
 		IContagion<Integer>[] worse = check.getWorse( worst );
-		if( Utils.assertNull(worse)) {
+		if( !Utils.assertNull(worse)) {
 			person.alert( step, worst);
 		}
 		
 		//If the hub has deteriorated, then add the person 
 		worse = super.getLocation().getWorse( worst );
-		if( Utils.assertNull(worse))
+		if( !Utils.assertNull(worse))
 			super.setLocation( worst );
 			
 		super.put( step, person );
@@ -67,7 +68,7 @@ public class Hub extends AbstractHub<Integer> {
 		if( person.isHealthy() || !person.getLocation().getIdentifier().equals( super.getIdentifier()))
 			return false;
 		
-		super.setLocation( createSnapShot(step));
+		super.setLocation( createSnapShot());
 		Iterator<Map.Entry<Integer, IPerson<Integer>>> iterator = super.getPersons().entrySet().stream()
 				.filter(item -> item.getKey()<=step)
 				.collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue)).entrySet().iterator();
@@ -91,33 +92,29 @@ public class Hub extends AbstractHub<Integer> {
 	 * @return
 	 */
 	@Override
-	public ILocation<Integer> createSnapShot( Integer current ) {
+	public ILocation<Integer> createSnapShot() {
 		Iterator<Map.Entry<Integer, IPerson<Integer>>> iterator = super.getPersons().entrySet().iterator();
 		ILocation<Integer> result = new Location( super.getLocation().getIdentifier(), this );
 		while( iterator.hasNext()) {
 			Map.Entry<Integer, IPerson<Integer>> entry = iterator.next();
-			long days = current - entry.getKey();
-			ILocation<Integer> snapshot = entry.getValue().getHistory().createSnapShot(current, this);
-			for( IContagion<Integer> test: snapshot.getContagion()) {
-				double risk = test.getContagiousnessInTime(days);
-				double reference = result.getContagion(test);
-				if( reference < risk )
-					result.addContagion( new Contagion(test.getIdentifier(), risk ));
-			}
+			ILocation<Integer> snapshot = entry.getValue().createSnapshot();
+			ILocation<Integer> test = result.createWorst(snapshot);
+			if( test != null )
+				result = test;
 		}
 		return result;
 	}
 
 	@Override
-	public ILocation<Integer> update( Integer current ) {	
-		ILocation<Integer> location = createSnapShot(current);
-		int days = (int) (2 * Location.getMaxContagionTime( super.getLocation()));
-		super.getPersons().entrySet().removeIf(entry -> entry.getKey() > days );
+	public ILocation<Integer> update( Integer timeStep ) {	
+		ILocation<Integer> location = createSnapShot();
+		//int days = (int) (2 * Location.getMaxContagionTime( super.getLocation()));
+		super.getPersons().entrySet().removeIf(entry -> entry.getKey() > DEFAULT_HISTORY );
 		return location;
 	}
 
 	@Override
-	protected Object clone() throws CloneNotSupportedException {
+	public Hub clone(){
 		Hub hub = new Hub( super.getLocation() );
 		Iterator<Map.Entry<Integer, IPerson<Integer>>> iterator = super.getPersons().entrySet().iterator();
 		while( iterator.hasNext()) {

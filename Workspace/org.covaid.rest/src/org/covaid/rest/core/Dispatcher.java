@@ -1,11 +1,13 @@
 package org.covaid.rest.core;
 
+import java.util.Collection;
 import java.util.Map;
 import java.util.TreeMap;
+
+import org.covaid.core.data.frogger.HubData;
 import org.covaid.core.def.IEnvironment;
 import org.covaid.core.environment.AbstractEnvironment;
 import org.covaid.core.environment.frogger.FroggerDomain;
-import org.covaid.core.model.Hub;
 import org.covaid.orientdb.object.AbstractPersistenceService;
 
 import com.orientechnologies.orient.core.entity.OEntityManager;
@@ -57,6 +59,14 @@ public class Dispatcher extends AbstractPersistenceService {
 		return true;
 	}
 
+	public boolean clear(String identifier) {
+		IEnvironment<Integer> result = this.environments.get( identifier);
+		if( result == null )
+			return false;
+		result.clear();
+		return true;
+	}
+
 	public boolean pause(String identifier) {
 		IEnvironment<Integer> result = this.environments.get( identifier);
 		if( result == null )
@@ -64,11 +74,11 @@ public class Dispatcher extends AbstractPersistenceService {
 		return result.pause();
 	}
 
-	public Hub[] getUpdate(String identifier) {
+	public Collection<HubData> getUpdate(String identifier, int step ) {
 		Environment env = (Environment) this.environments.get( identifier);
 		if( env == null )
 			return null;
-		return env.getUpdate();
+		return env.getUpdate( step );
 	}
 
 	@Override
@@ -101,7 +111,7 @@ public class Dispatcher extends AbstractPersistenceService {
 		public void init(int width, int density, int infected) {
 			int population = (int)((double)width*density/100);
 			super.init(population);
-			domain.init(width, infected);
+			domain.init(width, infected, 10);
 		}
 
 		@Override
@@ -109,8 +119,8 @@ public class Dispatcher extends AbstractPersistenceService {
 			return (int) days % Integer.MAX_VALUE;
 		}
 		
-		public Hub[] getUpdate(){
-			return domain.getUpdate();
+		public Collection<HubData> getUpdate( int step ){
+			return domain.getUpdate( step );
 		}
 	}
 }
