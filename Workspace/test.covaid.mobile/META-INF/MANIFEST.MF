@@ -3,8 +3,7 @@ Bundle-ManifestVersion: 2
 Bundle-Name: Test mobile Packages
 Bundle-SymbolicName: test.covaid.mobile;singleton:=true
 Bundle-Version: 1.0.0.qualifier
-Bundle-ClassPath: .,
- test.covaid.core
+Bundle-ClassPath: .
 Bundle-Vendor: Condast
 Automatic-Module-Name: test.covaid.core
 Import-Package: org.condast.commons.data.latlng,

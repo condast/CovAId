@@ -29,11 +29,10 @@ public class Location extends AbstractLocation<Integer>{
 	protected ILocation<Integer> createLocation(String identifier, IPoint point) {
 		return new Location( identifier, point );
 	}
-
 	
 	@Override
 	public ILocation<Integer> clone() {
-		IPoint point = super.clone();
+		IPoint point = super.toPoint();
 		ILocation<Integer> result = new Location( point );
 		Iterator<Map.Entry<IContagion<Integer>, Integer>> iterator = super.getContagions().entrySet().iterator();
 		while( iterator.hasNext() ) {

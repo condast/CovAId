@@ -199,6 +199,8 @@ public abstract class AbstractLocation<T extends Object> extends Point implement
 		return (( test.getXpos() - getXpos() == 0 ) && ( test.getYpos() - getYpos() == 0 ));
 	}
 	
+	public abstract ILocation<T> clone();
+	
 	/**
 	 * Create a new location from the reference by adding the highest contagions
 	 * from loc2

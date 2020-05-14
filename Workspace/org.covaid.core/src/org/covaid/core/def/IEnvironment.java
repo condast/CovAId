@@ -14,7 +14,10 @@ public interface IEnvironment<T extends Object> {
 	int MILLION = 1000000;
 	int DEFAULT_ACTIVITY = 60 * 24;//minutes
 	int DEFAULT_RADIUS = 10;//metres, the maximum movement that a person can make during one step in activity
-	int DEFAULT_SPEED = 20;//metres, the maximum movement that a person can make during one step in activity
+	int DEFAULT_SPEED = 1100;//1.1 seconds
+
+	int DEFAULT_LENGTH  = 1000; //1 km
+	int DEFAULT_WIDTH  = 1000; //1 km
 
 	void init(int population);
 

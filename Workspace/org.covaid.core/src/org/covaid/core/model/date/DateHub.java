@@ -20,7 +20,11 @@ public class DateHub extends AbstractHub<Date> implements IHub<Date> {
 	}
 
 	public DateHub( ILocation<Date> location) {
-		super(location);
+		this(location, Calendar.getInstance().getTime(),  Calendar.getInstance().getTime() );
+	}
+
+	public DateHub( ILocation<Date> location, Date timeStep, Date history) {
+		super(location, timeStep, history );
 	}
 
 	/**
@@ -60,7 +64,7 @@ public class DateHub extends AbstractHub<Date> implements IHub<Date> {
 		if( Utils.assertNull(worse))
 			location = worst;
 			
-		super.getPersons().put( date, person );
+		super.getPersons().put( person, date );
 		return true;
 	}
 	
@@ -76,19 +80,24 @@ public class DateHub extends AbstractHub<Date> implements IHub<Date> {
 			return false;
 		
 		super.setLocation( createSnapShot());
-		Iterator<Map.Entry<Date, IPerson<Date>>> iterator = super.getPersons().entrySet().stream()
-				.filter(item -> !item.getKey().after(date))
+		Iterator<Map.Entry<IPerson<Date>, Date>> iterator = super.getPersons().entrySet().stream()
+				.filter(item -> !item.getValue().after(date))
 				.collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue)).entrySet().iterator();
 		
 		ILocation<Date> reference = person.get(date);
 		while( iterator.hasNext() ) {
-			Map.Entry<Date, IPerson<Date>> entry = iterator.next();
-			ILocation<Date> check = entry.getValue().get( date );
+			Map.Entry<IPerson<Date>, Date> entry = iterator.next();
+			ILocation<Date> check = entry.getKey().get( date );
 			IContagion<Date>[] contagion = reference.getWorse(check);
 			if( !Utils.assertNull(contagion))
-				entry.getValue().alert(date, check);
+				entry.getKey().alert(date, check);
 		}			
 		return true;
+	}
+
+	@Override
+	protected boolean onPersonAlert(IPerson<Date> person, Date moment, Date timeStep, Date history, Date encountered) {
+		return ( timeStep.getTime() - moment.getTime() )<history.getTime() ;
 	}
 
 	/**
@@ -100,11 +109,11 @@ public class DateHub extends AbstractHub<Date> implements IHub<Date> {
 	 */
 	@Override
 	public ILocation<Date> createSnapShot() {
-		Iterator<Map.Entry<Date, IPerson<Date>>> iterator = super.getPersons().entrySet().iterator();
+		Iterator<Map.Entry<IPerson<Date>, Date>> iterator = super.getPersons().entrySet().iterator();
 		ILocation<Date> result = new DateLocation( super.getLocation().getIdentifier(), this );
 		while( iterator.hasNext()) {
-			Map.Entry<Date, IPerson<Date>> entry = iterator.next();
-			ILocation<Date> snapshot = entry.getValue().createSnapshot();
+			Map.Entry<IPerson<Date>,Date> entry = iterator.next();
+			ILocation<Date> snapshot = entry.getKey().createSnapshot();
 			result = result.createWorst(snapshot);
 		}
 		return result;
@@ -118,18 +127,23 @@ public class DateHub extends AbstractHub<Date> implements IHub<Date> {
 		Calendar calendar = Calendar.getInstance();
 		calendar.setTime(current);
 		calendar.add(Calendar.DAY_OF_YEAR, -days);
-		super.getPersons().entrySet().removeIf(entry -> entry.getKey().before(calendar.getTime()));
+		super.getPersons().entrySet().removeIf(entry -> entry.getValue().before(calendar.getTime()));
 		return location;
 	}
 
 	@Override
 	public DateHub clone(){
 		DateHub hub = new DateHub( super.getLocation() );
-		Iterator<Map.Entry<Date, IPerson<Date>>> iterator = super.getPersons().entrySet().iterator();
+		Iterator<Map.Entry<IPerson<Date>, Date>> iterator = super.getPersons().entrySet().iterator();
 		while( iterator.hasNext()) {
-			Map.Entry<Date, IPerson<Date>> entry = iterator.next();
+			Map.Entry<IPerson<Date>, Date> entry = iterator.next();
 			hub.getPersons().put(entry.getKey(), entry.getValue());
 		}
 		return hub;
+	}
+
+	@Override
+	protected boolean onRemovePersons(IPerson<Date> person, Date timeStep, Date history, Date encountered) {
+		return ( timeStep.getTime() - encountered.getTime() ) > history.getTime();
 	}	
 }

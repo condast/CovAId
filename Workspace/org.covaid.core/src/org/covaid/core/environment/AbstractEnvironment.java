@@ -11,11 +11,6 @@ import org.covaid.core.def.IEnvironmentListener;
 
 public abstract class AbstractEnvironment<T extends Object> implements IEnvironment<T> {
 
-	protected static final double LONGITUDE = 4.00f;
-	protected static final double LATITUDE  = 52.000f;
-	protected static final int DEFAULT_LENGTH  = 1000; //1 km
-	protected static final int DEFAULT_WIDTH  = 1000; //1 km
-	
 	private int population;
 	private int days;
 	

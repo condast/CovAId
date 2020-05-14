@@ -6,6 +6,9 @@ import org.condast.commons.data.plane.IField;
 
 public interface IFieldEnvironment extends IEnvironment<Date>{
 
+	double LONGITUDE = 4.00f;
+	double LATITUDE  = 52.000f;
+
 	/**
 	 * Population is amount of people per square kilometre(!)
 	 * @param population

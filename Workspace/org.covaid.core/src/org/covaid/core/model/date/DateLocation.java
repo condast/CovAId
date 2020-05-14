@@ -1,7 +1,10 @@
 package org.covaid.core.model.date;
 
 import java.util.Date;
+import java.util.Iterator;
+import java.util.Map;
 
+import org.covaid.core.def.IContagion;
 import org.covaid.core.def.ILocation;
 import org.covaid.core.def.IPoint;
 import org.covaid.core.model.AbstractLocation;
@@ -36,4 +39,17 @@ public class DateLocation extends AbstractLocation<Date> implements ILocation<Da
 	protected ILocation<Date> createLocation(String identifier, IPoint point) {
 		return new DateLocation( identifier, point );
 	}
+	
+	@Override
+	public ILocation<Date> clone() {
+		IPoint point = super.toPoint();
+		ILocation<Date> result = new DateLocation( point );
+		Iterator<Map.Entry<IContagion<Date>, Date>> iterator = super.getContagions().entrySet().iterator();
+		while( iterator.hasNext() ) {
+			Map.Entry<IContagion<Date>, Date> entry = iterator.next();
+			result.addContagion(entry.getValue(), entry.getKey());
+		}
+		return result;
+	}
+
 }

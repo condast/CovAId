@@ -13,9 +13,12 @@ import org.covaid.core.model.AbstractHub;
 
 public class Hub extends AbstractHub<Integer> {
 
-	
 	public Hub(IPoint location) {
-		super(new Location( location.getIdentifier(), location.getXpos(), location.getYpos()));
+		this( location, 0, DEFAULT_HISTORY );
+	}
+	
+	public Hub(IPoint location, int timeStep, int history) {
+		super(new Location( location.getIdentifier(), location.getXpos(), location.getYpos()), timeStep, history );
 	}
 
 	/**
@@ -25,7 +28,15 @@ public class Hub extends AbstractHub<Integer> {
 	public Hub( IPerson<Integer> person ) {
 		this( new Location( person.getLocation().getXpos(), person.getLocation().getYpos()));
 	}
-	
+
+	/**
+	 * convenience method to 
+	 * @param person
+	 */
+	public Hub( IPerson<Integer> person, int timeStep, int history ) {
+		this( person.getLocation(), 0, history );
+	}
+
 	/**
 	 * Respond to an encounter with a person. This happens when a person enters the location of this hub
 	 * The snapshots of the person and the location are compared, and the person is alerted
@@ -53,7 +64,7 @@ public class Hub extends AbstractHub<Integer> {
 		if( !Utils.assertNull(worse))
 			super.setLocation( worst );
 			
-		super.put( step, person );
+		super.put( person, step );
 		return true;
 	}
 
@@ -69,19 +80,24 @@ public class Hub extends AbstractHub<Integer> {
 			return false;
 		
 		super.setLocation( createSnapShot());
-		Iterator<Map.Entry<Integer, IPerson<Integer>>> iterator = super.getPersons().entrySet().stream()
-				.filter(item -> item.getKey()<=step)
+		Iterator<Map.Entry<IPerson<Integer>, Integer>> iterator = super.getPersons().entrySet().stream()
+				.filter(item -> item.getValue()<=step)
 				.collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue)).entrySet().iterator();
 		
 		ILocation<Integer> reference = person.get(step);
 		while( iterator.hasNext() ) {
-			Map.Entry<Integer, IPerson<Integer>> entry = iterator.next();
-			ILocation<Integer> check = entry.getValue().get( step );
+			Map.Entry<IPerson<Integer>, Integer> entry = iterator.next();
+			ILocation<Integer> check = entry.getKey().get( step );
 			IContagion<Integer>[] contagion = reference.getWorse(check);
 			if( !Utils.assertNull(contagion))
-				entry.getValue().alert(step, check);
+				entry.getKey().alert(step, check);
 		}			
 		return true;
+	}
+	
+	@Override
+	protected boolean onPersonAlert(IPerson<Integer> person, Integer moment, Integer timeStep, Integer history, Integer encountered) {
+		return ( timeStep - moment )<history ;
 	}
 
 	/**
@@ -93,32 +109,29 @@ public class Hub extends AbstractHub<Integer> {
 	 */
 	@Override
 	public ILocation<Integer> createSnapShot() {
-		Iterator<Map.Entry<Integer, IPerson<Integer>>> iterator = super.getPersons().entrySet().iterator();
+		Iterator<Map.Entry<IPerson<Integer>, Integer>> iterator = super.getPersons().entrySet().iterator();
 		ILocation<Integer> result = new Location( super.getLocation().getIdentifier(), this );
 		while( iterator.hasNext()) {
-			Map.Entry<Integer, IPerson<Integer>> entry = iterator.next();
-			ILocation<Integer> snapshot = entry.getValue().createSnapshot();
+			Map.Entry<IPerson<Integer>, Integer> entry = iterator.next();
+			ILocation<Integer> snapshot = entry.getKey().createSnapshot();
 			ILocation<Integer> test = result.createWorst(snapshot);
 			if( test != null )
 				result = test;
 		}
 		return result;
 	}
-
+	
 	@Override
-	public ILocation<Integer> update( Integer timeStep ) {	
-		ILocation<Integer> location = createSnapShot();
-		//int days = (int) (2 * Location.getMaxContagionTime( super.getLocation()));
-		super.getPersons().entrySet().removeIf(entry -> entry.getKey() > DEFAULT_HISTORY );
-		return location;
+	protected boolean onRemovePersons(IPerson<Integer> person, Integer timeStep, Integer history, Integer encountered) {
+		return ( timeStep - encountered ) > history;
 	}
 
 	@Override
 	public Hub clone(){
 		Hub hub = new Hub( super.getLocation() );
-		Iterator<Map.Entry<Integer, IPerson<Integer>>> iterator = super.getPersons().entrySet().iterator();
+		Iterator<Map.Entry<IPerson<Integer>, Integer>> iterator = super.getPersons().entrySet().iterator();
 		while( iterator.hasNext()) {
-			Map.Entry<Integer, IPerson<Integer>> entry = iterator.next();
+			Map.Entry<IPerson<Integer>, Integer> entry = iterator.next();
 			hub.put(entry.getKey(), entry.getValue());
 		}
 		return hub;

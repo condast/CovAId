@@ -3,7 +3,6 @@ package org.covaid.rest.resources;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
-import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.concurrent.locks.Lock;
@@ -176,6 +175,67 @@ public class FroggerResource {
 				return Response.serverError().build();
 			boolean result = dispatcher.stop(identifier);
 			result &= dispatcher.clear(identifier);
+			response = Response.ok( result ).build();
+		}
+		catch( Exception ex ){
+			ex.printStackTrace();
+			return Response.serverError().build();
+		}
+		return response;
+	}
+
+	/**
+	 * Start the frogger environment
+	 * @param id
+	 * @param token
+	 * @param identifier
+	 * @param history
+	 * @return
+	 */
+	@GET
+	@Consumes(MediaType.APPLICATION_JSON)
+	@Produces(MediaType.TEXT_PLAIN)
+	@Path("/set-infected")
+	public Response setInfected( @QueryParam("id") long id, @QueryParam("token") long token, @QueryParam("identifier") String identifier,
+			@QueryParam("infected") int infected) {
+		logger.info( "Set infected environment " + identifier );
+		Dispatcher dispatcher = Dispatcher.getInstance();
+		Response response = null;
+		try{
+			if( StringUtils.isEmpty(identifier))
+				return Response.serverError().build();
+			boolean result = dispatcher.setInfected(identifier, infected);
+			result &= dispatcher.clear(identifier);
+			response = Response.ok( result ).build();
+		}
+		catch( Exception ex ){
+			ex.printStackTrace();
+			return Response.serverError().build();
+		}
+		return response;
+	}
+
+	/**
+	 * Start the frogger environment
+	 * @param id
+	 * @param token
+	 * @param identifier
+	 * @param history
+	 * @return
+	 */
+	@GET
+	@Consumes(MediaType.APPLICATION_JSON)
+	@Produces(MediaType.TEXT_PLAIN)
+	@Path("/dispose")
+	public Response dispose( @QueryParam("id") long id, @QueryParam("token") long token, @QueryParam("identifier") String identifier ) {
+		logger.info( "Clear environment " + identifier );
+		Dispatcher dispatcher = Dispatcher.getInstance();
+		Response response = null;
+		try{
+			if( StringUtils.isEmpty(identifier))
+				return Response.serverError().build();
+			boolean result = dispatcher.stop(identifier);
+			dispatcher.dispose( identifier );
 			response = Response.ok( result ).build();
 		}
 		catch( Exception ex ){

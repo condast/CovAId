@@ -142,10 +142,10 @@ public abstract class AbstractPerson<T extends Object> implements IPerson<T>{
 	}
 
 	@Override
-	public void alert( T date, ILocation<T> location ) {
+	public void alert( T step, ILocation<T> location ) {
 		this.point = location;
-		this.mobile.alert( date, location, monitor);
-		this.notifyListeners( new PersonEvent<T>( this, createSnapshot()));
+		this.mobile.alert( step, location, monitor);
+		this.notifyListeners( new PersonEvent<T>( this, step, createSnapshot()));
 	}
 
 	/**

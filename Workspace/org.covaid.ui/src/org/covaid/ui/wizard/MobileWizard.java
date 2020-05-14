@@ -11,6 +11,7 @@ import java.util.logging.Logger;
 
 import org.condast.commons.auth.AuthenticationData;
 import org.condast.commons.auth.AuthenticationData.Authentication;
+import org.condast.commons.config.Config;
 import org.condast.commons.messaging.http.AbstractHttpRequest;
 import org.condast.commons.messaging.http.ResponseEvent;
 import org.condast.js.commons.controller.AbstractJavascriptController;
@@ -37,7 +38,8 @@ public class MobileWizard extends Composite {
 	private static final long serialVersionUID = 1L;
 
 	//public static final String S_PATH = "http://localhost:10080/covaid/mobile/rest";
-	public static final String S_PATH = "http://www.condast.com:8080/covaid/mobile/rest";
+	//public static final String S_PATH = "http://www.condast.com:8080/covaid/mobile/rest";
+	public static final String S_COVAID_CONTEXT = "covaid/mobile/rest";
 
 	private enum Requests{
 
@@ -94,8 +96,9 @@ public class MobileWizard extends Composite {
 	
 	private IMobile<Date> mobile;
 	private AuthenticationData authData;
+	private Config config;
 	
-	private Collection<IMobileRegistration> listeners;
+	private Collection<IMobileRegistration<Date>> listeners;
 	
 	private Logger logger = Logger.getLogger(this.getClass().getName());
 	
@@ -120,7 +123,7 @@ public class MobileWizard extends Composite {
 	
 	private IEvaluationListener<Object> elistener = (event) ->{
 		try {
-			logger.info("CALLBACK");
+			logger.fine("CALLBACK");
 			if(!CanvasController.S_INITIALISTED_ID.equals(event.getId()) || ( this.authData == null ))
 				return;
 			
@@ -137,6 +140,7 @@ public class MobileWizard extends Composite {
 	 */
 	public MobileWizard(Composite parent, int style) {
 		super(parent, style | SWT.NO_SCROLL);
+		config = new Config();
 		this.link = Links.DOWNLOAD;
 		createPage(parent, style | SWT.NO_SCROLL);
 		this.controller = new CanvasController( this.browser );
@@ -169,6 +173,11 @@ public class MobileWizard extends Composite {
 		browser.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1));
 		browser.setBackground(getDisplay().getSystemColor(SWT.COLOR_BLACK));
 		wizard = new AbstractHtmlParser(browser, MobileWizard.class) {
+		
+			@Override
+			protected String onHandleContext(String context, String application, String service) {
+				return config.getServerContext() + S_COVAID_CONTEXT;
+			}
 
 			@Override
 			protected void onHandleLinks( String linkStr) {
@@ -284,16 +293,16 @@ public class MobileWizard extends Composite {
 		wizard.createPage( MobileWizard.class.getResourceAsStream( link.toFile()));	
 	}
 
-	public void addRegistrationListener( IMobileRegistration listener ) {
+	public void addRegistrationListener( IMobileRegistration<Date> listener ) {
 		this.listeners.add(listener);
 	}
 
-	public void removeRegistrationListener( IMobileRegistration listener ) {
+	public void removeRegistrationListener( IMobileRegistration<Date> listener ) {
 		this.listeners.remove(listener);
 	}
 	
-	protected void notifyRegistrationEvent( RegistrationEvent event ){
-		for( IMobileRegistration listener: this.listeners )
+	protected void notifyRegistrationEvent( RegistrationEvent<Date> event ){
+		for( IMobileRegistration<Date> listener: this.listeners )
 			listener.notifyMobileRegistration(event);
 	}
 
@@ -321,7 +330,8 @@ public class MobileWizard extends Composite {
 	private class WebClient extends AbstractHttpRequest<Requests, StringBuilder>{
 	
 		public WebClient() {
-			super( S_PATH );
+			super( S_COVAID_CONTEXT );
+			super.setContextPath( config.getServerContext() + S_COVAID_CONTEXT);
 		}
 
 		@Override
@@ -345,11 +355,11 @@ public class MobileWizard extends Composite {
 			case GET:
 				IMobile<Date> newMobile = gson.fromJson( event.getResponse(), DateMobile.class );
 				if(( mobile == null ) || !mobile.getIdentifier().equals( newMobile.getIdentifier()))
-					notifyRegistrationEvent( new RegistrationEvent(browser, IMobileRegistration.RegistrationTypes.REGISTER, authData, mobile));
+					notifyRegistrationEvent( new RegistrationEvent<Date>(browser, IMobileRegistration.RegistrationTypes.REGISTER, authData, mobile));
 				canvas.redraw();
 				break;
 			case REMOVE:
-				notifyRegistrationEvent( new RegistrationEvent(browser, IMobileRegistration.RegistrationTypes.UNREGISTER, authData, mobile));
+				notifyRegistrationEvent( new RegistrationEvent<Date>(browser, IMobileRegistration.RegistrationTypes.UNREGISTER, authData, mobile));
 				break;
 			default:
 				break;// TODO Auto-generated method stub

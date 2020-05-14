@@ -23,7 +23,7 @@ import org.covaid.core.model.Point;
 
 public class FroggerDomain extends AbstractDomain<Integer> implements IDomain<Integer>{
 
-	public static final int DEFAULT_MAX_TIME = 60;//days
+	public static final int DEFAULT_MAX_TIME = 30;//days
 	public static final int DEFAULT_WIDTH = 100;//meters
 	public static final int DEFAULT_HISTORY = 14;//days, the visible portion of the screen
 
@@ -31,7 +31,8 @@ public class FroggerDomain extends AbstractDomain<Integer> implements IDomain<In
 
 	private Collection<IPerson<Integer>> persons;
 	private Map<IPoint, Hub> hubs;
-	private int maxTime;
+	//private int window; // the window is the number of days that are in the future 
+	private int maxTime;//the maximum number of days that is registered
 
 	private int width;
 	private int infected;
@@ -68,6 +69,11 @@ public class FroggerDomain extends AbstractDomain<Integer> implements IDomain<In
 		return this.hubs.values();
 	}
 
+	@Override
+	public int getPopulation() {
+		return this.persons.size();
+	}
+
 	public int getMaxTime() {
 		return maxTime;
 	}
@@ -88,7 +94,11 @@ public class FroggerDomain extends AbstractDomain<Integer> implements IDomain<In
 		this.infected = infected;
 		this.init(population);
 	}
-	
+
+	public void setInfected(int infected) {
+		this.infected = infected;
+	}
+
 	@Override
 	public synchronized void movePerson(Integer timeStep) {
 
@@ -116,12 +126,12 @@ public class FroggerDomain extends AbstractDomain<Integer> implements IDomain<In
 		//Then set the infections
 		for( IPerson<Integer> person: persons) {
 			double contagion = 100*Math.random();
+			int moment = (int) (timeStep*Math.random());
 			if( contagion < this.infected )
-				person.setContagion( timeStep, new Contagion( this.contagion, 100));
+				person.setContagion( moment, new Contagion( SupportedContagion.valueOf( this.contagion)));
 		}
-
 		
-		//Last clear old values
+		//Last clear old values and update the hubs
 		Iterator<Map.Entry<IPoint, Hub>> iterator = this.hubs.entrySet().iterator();
 		Collection<IPoint> remove = new ArrayList<>();
 		while( iterator.hasNext() ) {
@@ -141,7 +151,7 @@ public class FroggerDomain extends AbstractDomain<Integer> implements IDomain<In
 	protected IHub<Integer> encounter( IPerson<Integer> person, int step ) {
 		Hub hub = this.hubs.get(person.getLocation());
 		if( hub == null ) {
-			hub = new Hub( person );
+			hub = new Hub( person, step, DEFAULT_MAX_TIME );
 			this.hubs.put(hub.getLocation(), hub);
 		}
 		hub.encounter(person, step);

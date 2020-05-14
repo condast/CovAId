@@ -62,4 +62,7 @@ public interface ILocation<T extends Object> extends IPoint{
 	 * @return
 	 */
 	boolean isInfected(IContagion<T> contagion);
+
+	@Override
+	ILocation<T> clone();	
 }

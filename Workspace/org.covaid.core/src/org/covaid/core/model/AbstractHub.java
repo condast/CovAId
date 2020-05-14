@@ -15,31 +15,51 @@ public abstract class AbstractHub<T extends Object> extends Point implements IHu
 
 	
 	//A list of person identifiers and when they were present here
-	private Map<T, IPerson<T>> persons;
+	private Map<IPerson<T>,T> persons;
 	
 	private ILocation<T> location;
+	
+	//The current time
+	private T timeStep;
+	
+	//The history is the maximum 'age' of the persons that are maintained) 
+	private T history;
 
 	//The previous hubs, that usually imply that a person had moved to this hub through the other
 	private Collection<Point> previous;
 
 	private IPersonListener<T> listener = (e)->{
 		ILocation<T> check = e.getSnapshot();
-		if(( !check.equals( this.location)) || check.isHealthy())
+		if(( !check.equals( this.location)) || 
+				check.isHealthy() || 
+				( location.isWorse(check)))
+			return;
+		if(!onPersonAlert(e.getPerson(), e.getMoment(), this.timeStep, history, persons.get(e.getPerson())))
 			return;
 		location = createSnapShot();
 		location = location.createWorst(check);
 	};
 
-	protected AbstractHub( ILocation<T> location) {
+	protected AbstractHub( ILocation<T> location, T initial, T history ) {
 		super(location.getXpos(), location.getYpos());
 		this.persons = new TreeMap<>();
 		this.location = location;
+		this.timeStep = initial;
+		this.history = history;
 		this.previous = new TreeSet<>();
 	}
 
 	@Override
 	public ILocation<T> getLocation() {
 		return location;
+	}
+
+	protected T getTimeStep() {
+		return timeStep;
+	}
+
+	protected T getHistory() {
+		return history;
 	}
 
 	protected void setLocation(ILocation<T> location) {
@@ -50,13 +70,13 @@ public abstract class AbstractHub<T extends Object> extends Point implements IHu
 		return this.persons.isEmpty();
 	}
 	
-	protected void put(T step, IPerson<T> person ) {
-		this.persons.put(step, person);
+	protected void put(IPerson<T> person, T step ) {
+		this.persons.put(person, step );
 		person.addListener(listener);
 	}
 
 	@Override
-	public Map<T, IPerson<T>> getPersons() {
+	public Map<IPerson<T>,T> getPersons() {
 		return persons;
 	}
 
@@ -77,6 +97,36 @@ public abstract class AbstractHub<T extends Object> extends Point implements IHu
 	@Override
 	public IPoint[] getPrevious() {
 		return previous.toArray( new IPoint[ previous.size()]);
+	}
+
+	/**
+	 * The conditions for removing a person:
+	 * @param person: the person to be tested for removal
+	 * @param moment is the moment of the alert, for instance hen an infection has been added in retrospect
+	 * @param timeStep is the current time
+	 * @param history: the time value given for removal
+	 * @param encountered: the moment when the person was added to the hub
+	 * @return true if action is required
+	 */
+	protected abstract boolean onPersonAlert( IPerson<T> person, T moment, T timeStep, T history, T encountered );
+
+	/**
+	 * The conditions for removing a person:
+	 * @param person: the person to be tested for removal
+	 * @param timeStep is the current time
+	 * @param history: the time value given for removal
+	 * @param encountered: the moment when the person was added to the hub
+	 * @return
+	 */
+	protected abstract boolean onRemovePersons( IPerson<T> person, T timeStep, T history, T encountered );
+	
+	@Override
+	public ILocation<T> update( T timeStep ) {	
+		this.timeStep = timeStep;
+		ILocation<T> location = createSnapShot();
+		//int days = (int) (2 * Location.getMaxContagionTime( super.getLocation()));
+		persons.entrySet().removeIf(entry -> onRemovePersons( entry.getKey(), timeStep, this.history, entry.getValue()));
+		return location;
 	}
 
 }

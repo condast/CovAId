@@ -9,10 +9,10 @@ import java.util.Map;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.TreeMap;
-import java.util.logging.Logger;
 
 import org.condast.commons.Utils;
 import org.condast.commons.auth.AuthenticationData;
+import org.condast.commons.config.Config;
 import org.condast.commons.messaging.http.AbstractHttpRequest;
 import org.condast.commons.messaging.http.IHttpClientListener;
 import org.condast.commons.messaging.http.ResponseEvent;
@@ -46,7 +46,8 @@ public class FroggerComposite extends Composite {
 	private static final long serialVersionUID = 1L;
 
 	//public static final String S_PATH = "http://localhost:10080/covaid/rest";
-	public static final String S_PATH = "http://www.condast.com:8080/covaid/mobile/rest";
+	//public static final String S_PATH = "http://www.condast.com:8080/covaid/rest";
+	public static final String S_COVAID_CONTEXT = "covaid/rest";
 
 	public static final int DEFAULT_WIDTH = 100;//metres
 	public static final int DEFAULT_HISTORY = 16;//day, looking ahead of what is coming
@@ -58,13 +59,14 @@ public class FroggerComposite extends Composite {
 		PAUSE,
 		STOP,
 		CLEAR,
+		SET_INFECTED,
 		GET_DAY,
 		GET_HUBS, 
 		UPDATE;
 		
 		@Override
 		public String toString() {
-			return StringStyler.prettyString( super.toString());
+			return StringStyler.xmlStyleString( super.toString());
 		}
 	}
 	
@@ -97,6 +99,8 @@ public class FroggerComposite extends Composite {
 	private boolean started;
 	private boolean paused;
 	
+	private Config config = new Config();
+	
 	private Timer timer;
 	private TimerTask timerTask = new TimerTask(){
 
@@ -118,8 +122,6 @@ public class FroggerComposite extends Composite {
 	};
 	
 	private SessionHandler session;
-	
-	private Logger logger = Logger.getLogger(this.getClass().getName());
 	
 	private PaintListener listener = (e)->{
 		Canvas canvas = (Canvas) e.getSource();
@@ -278,10 +280,10 @@ public class FroggerComposite extends Composite {
 		});
 		lblDensityValue = new Label(grpSettings, SWT.NONE);
 		lblDensityValue.setText(String.valueOf( sliderDensity.getSelection()));
-		
+
 		Label lblInfected = new Label(grpSettings, SWT.NONE);
 		lblInfected.setText("Infected:");
-		
+
 		sliderInfections = new Slider(grpSettings, SWT.NONE);
 		sliderInfections.setSelection(10);
 		sliderInfections.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
@@ -290,12 +292,19 @@ public class FroggerComposite extends Composite {
 
 			@Override
 			public void widgetSelected(SelectionEvent e) {
-				Slider slider = (Slider) e.widget;
-				lblInfectionsValue.setText(String.valueOf( slider.getSelection()));
+				try {
+					Slider slider = (Slider) e.widget;
+					WebClient client = new WebClient();
+					Map<String, String> params = data.toMap();
+					params.put(Attributes.INFECTED.toString(), String.valueOf( slider.getSelection()));
+					client.sendGet(Requests.SET_INFECTED, params);
+				} catch (Exception e1) {
+					e1.printStackTrace();
+				}
 				super.widgetSelected(e);
 			}	
 		});
-		
+
 		lblInfectionsValue = new Label(grpSettings, SWT.NONE);
 		lblInfectionsValue.setText(String.valueOf( sliderInfections.getSelection()));
 
@@ -345,6 +354,17 @@ public class FroggerComposite extends Composite {
 		return new Point((int) xpos, (int)ypos );	
 	}
 
+	/**
+	 * A yellow colour that is slightly darker than the road
+	 * @param colour
+	 * @param contagion
+	 * @param value
+	 * @return
+	 */
+	protected Color getBaseColour(  ) {
+		return new Color( getDisplay(), 227, 199, 0 );
+	}
+
 	protected Color getColour( Color colour, IContagion<?> contagion, double value ) {
 		double green = colour.getGreen() * (1f-value/100);
 		return new Color( getDisplay(), colour.getRed(), (int)(green), colour.getBlue() );
@@ -357,12 +377,11 @@ public class FroggerComposite extends Composite {
 		IPoint next = transform(hub.getLocation().getPoint(), half, offset_top, horizon, scaleX, scaleY);
 		
 		Iterator<Map.Entry<Contagion, Double>> iterator = previous.getLocation().getContagions().entrySet().iterator();
-		Color base = getDisplay().getSystemColor(SWT.COLOR_DARK_YELLOW);
+		Color base = getBaseColour();
 		Color colour = base;
 		gc.setForeground(colour);
 		while( iterator.hasNext() ) {
 			Map.Entry<Contagion, Double> entry = iterator.next();
-			double cont1 = entry.getValue();
 			double cont2 = hub.getLocation().getContagions().get( entry.getKey()).doubleValue();
 			colour = getColour( base, entry.getKey(), cont2);
 			gc.setForeground( colour);
@@ -378,12 +397,11 @@ public class FroggerComposite extends Composite {
 		IPoint next = transform(hub.getLocation().getPoint(), half, offset_top, horizon, scaleX, scaleY);
 		
 		Iterator<Map.Entry<Contagion, Double>> iterator = hub.getLocation().getContagions().entrySet().iterator();
-		Color base = getDisplay().getSystemColor(SWT.COLOR_DARK_YELLOW);
+		Color base = getBaseColour();
 		Color colour = base;
 		gc.setForeground(colour);
 		while( iterator.hasNext() ) {
 			Map.Entry<Contagion, Double> entry = iterator.next();
-			double cont1 = entry.getValue();
 			double cont2 = hub.getLocation().getContagions().get( entry.getKey()).doubleValue();
 			colour = getColour( base, entry.getKey(), cont2);
 			gc.setForeground( colour);
@@ -405,7 +423,7 @@ public class FroggerComposite extends Composite {
 	private class WebClient extends AbstractHttpRequest<Requests, StringBuilder>{
 	
 		public WebClient() {
-			super( S_PATH );
+			super( config.getServerContext() + S_COVAID_CONTEXT );
 		}
 
 		@Override
@@ -442,6 +460,9 @@ public class FroggerComposite extends Composite {
 				break;
 			case CLEAR:
 				btnClear.setEnabled(false);
+				break;
+			case SET_INFECTED:
+				lblInfectionsValue.setText(String.valueOf( sliderInfections.getSelection()));
 				break;
 			case UPDATE:
 				setHubs( gson.fromJson(event.getResponse(), HubData[].class));

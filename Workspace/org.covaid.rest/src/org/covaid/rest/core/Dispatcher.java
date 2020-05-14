@@ -74,6 +74,14 @@ public class Dispatcher extends AbstractPersistenceService {
 		return result.pause();
 	}
 
+	public boolean setInfected(String identifier, int infected) {
+		Environment result = this.environments.get( identifier);
+		if( result == null )
+			return false;
+		result.setinfected(infected);
+		return true;
+	}
+
 	public Collection<HubData> getUpdate(String identifier, int step ) {
 		Environment env = (Environment) this.environments.get( identifier);
 		if( env == null )
@@ -94,8 +102,12 @@ public class Dispatcher extends AbstractPersistenceService {
 	}
 
 	public void subscribe(long id, int i) {
-		// TODO Auto-generated method stub
-	
+		// TODO Auto-generated method stub	
+	}
+
+	public void dispose( String identifier ) {
+		Environment env = this.environments.remove( identifier);
+		env.dispose();
 	}
 
 	private class Environment extends AbstractEnvironment<Integer>{
@@ -114,6 +126,10 @@ public class Dispatcher extends AbstractPersistenceService {
 			domain.init(width, infected, 10);
 		}
 
+		public void setinfected( int infected ) {
+			domain.setInfected( infected );
+		}
+		
 		@Override
 		public Integer getTimeStep( long days ) {
 			return (int) days % Integer.MAX_VALUE;

@@ -38,7 +38,7 @@ public interface IHub<T extends Object> extends Cloneable{
 
 	ILocation<T> getLocation();
 
-	Map<T, IPerson<T>> getPersons();
+	Map<IPerson<T>,T> getPersons();
 
 	boolean addPrevious(IHub<T> point);
 
