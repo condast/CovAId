@@ -205,7 +205,6 @@ public class FroggerResource {
 			if( StringUtils.isEmpty(identifier))
 				return Response.serverError().build();
 			boolean result = dispatcher.setInfected(identifier, infected);
-			result &= dispatcher.clear(identifier);
 			response = Response.ok( result ).build();
 		}
 		catch( Exception ex ){

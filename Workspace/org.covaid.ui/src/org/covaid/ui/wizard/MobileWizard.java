@@ -57,6 +57,7 @@ public class MobileWizard extends Composite {
 	
 	public enum Links{
 		DOWNLOAD,
+		INSTALLING,
 		INDEX,
 		HEALTH,
 		DOCTOR,
@@ -209,6 +210,9 @@ public class MobileWizard extends Composite {
 				switch( link) {
 				case DOWNLOAD:
 					path = path.replace("mobile", "download" );
+					break;
+				case INSTALLING:
+					path = path.replace("mobile", "installing" );
 					break;
 				default:
 					break;

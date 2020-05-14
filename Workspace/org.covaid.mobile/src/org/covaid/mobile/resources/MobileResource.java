@@ -154,7 +154,7 @@ public class MobileResource {
 	 */
 	@GET
 	@Consumes(MediaType.APPLICATION_JSON)
-	@Produces(MediaType.APPLICATION_JSON)
+	@Produces(MediaType.TEXT_PLAIN)
 	@Path("/health")
 	public Response setHealth( @QueryParam("id") long id, @QueryParam("token") long token, @QueryParam("identifier") String identifier,
 			@QueryParam("health") int health) {
@@ -194,7 +194,7 @@ public class MobileResource {
 	 */
 	@GET
 	@Consumes(MediaType.APPLICATION_JSON)
-	@Produces(MediaType.APPLICATION_JSON)
+	@Produces(MediaType.TEXT_PLAIN)
 	@Path("/safety")
 	public Response setSafety( @QueryParam("id") long id, @QueryParam("token") long token, @QueryParam("identifier") String identifier,
 			@QueryParam("safety") int safety) {
@@ -234,7 +234,7 @@ public class MobileResource {
 	 */
 	@GET
 	@Consumes(MediaType.APPLICATION_JSON)
-	@Produces(MediaType.APPLICATION_JSON)
+	@Produces(MediaType.TEXT_PLAIN)
 	@Path("/email")
 	public Response setEmail( @QueryParam("id") long id, @QueryParam("token") long token, @QueryParam("identifier") String identifier,
 			@QueryParam("email") String email) {
@@ -274,8 +274,8 @@ public class MobileResource {
 	 * @return
 	 */
 	@POST
-	@Produces(MediaType.APPLICATION_JSON)
 	@Consumes(MediaType.APPLICATION_JSON)
+	@Produces(MediaType.TEXT_PLAIN)
 	@Path("/snapshot")
 	public Response shareSnapshot( @QueryParam("id") long id, @QueryParam("token") String token,  
 			@QueryParam("identifier") String identifier, @QueryParam("xpos") int x, @QueryParam("ypos") int y,

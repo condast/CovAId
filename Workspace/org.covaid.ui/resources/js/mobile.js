@@ -35,17 +35,8 @@ function updateHealth() {
 		},
 	}).then(response => {
 		if (!response.ok) {
-			return response.json()
-			.catch(() => {
-				// Couldn't parse the JSON
-				throw new Error(response.status);
-			})
-			.then(({message}) => {
-				// Got valid JSON with error response, use it
-				throw new Error(message || response.status);
-			});
+			return response.json();
 		}
-		// Successful response, parse the JSON and return the data
 		refreshCanvas( this.id, this.token, this.identifier);
 	});
 }
@@ -73,17 +64,8 @@ function updateSafety() {
 		},
 	}).then(response => {
 		if (!response.ok) {
-			return response.json()
-			.catch(() => {
-				// Couldn't parse the JSON
-				throw new Error(response.status);
-			})
-			.then(({message}) => {
-				// Got valid JSON with error response, use it
-				throw new Error(message || response.status);
-			});
+			return response.json());
 		}
-		// Successful response, parse the JSON and return the data
 		refreshCanvas( this.id, this.token, this.identifier);
 	});
 }
@@ -131,8 +113,7 @@ function setEmail( val){
 	("#email").value = val; 
 }
 
-function load(){
-	
+function load(){	
 	updateHealth();
 	updateSafety();
 }
