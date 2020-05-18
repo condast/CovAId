@@ -17,6 +17,10 @@ public class Location extends AbstractLocation<Integer>{
 		super(point);
 	}
 
+	public Location(IPoint point, Map<IContagion<Integer>, Integer> contagions) {
+		super(point, contagions);
+	}
+
 	public Location(String identifier, int xpos, int ypos) {
 		super(identifier, xpos, ypos);
 	}

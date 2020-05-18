@@ -20,7 +20,9 @@ import javax.ws.rs.core.Response;
 import org.condast.commons.Utils;
 import org.condast.commons.strings.StringUtils;
 import org.covaid.core.data.frogger.HubData;
-import org.covaid.core.def.IEnvironment;
+import org.covaid.core.data.frogger.LocationData;
+import org.covaid.core.environment.IEnvironment;
+import org.covaid.core.model.Point;
 import org.covaid.rest.core.Dispatcher;
 
 @Path("/")
@@ -286,6 +288,46 @@ public class FroggerResource {
 		return response;
 	}
 
+	/**
+	 * Get the updated information about the hubs
+	 * @param id
+	 * @param token
+	 * @param identifier
+	 * @param history
+	 * @return
+	 */
+	@GET
+	@Consumes(MediaType.APPLICATION_JSON)
+	@Produces(MediaType.APPLICATION_JSON)
+	@Path("/surroundings")
+	public synchronized Response getSurroundings( @QueryParam("id") long id, @QueryParam("token") long token, @QueryParam("identifier") String identifier,
+			@QueryParam("xpos") int xpos, @QueryParam("ypos") int ypos, @QueryParam("radius") int radius, @QueryParam("step") int step  ) {
+		logger.fine( "Get surroundings " + identifier );
+		Dispatcher dispatcher = Dispatcher.getInstance();
+		Response response = null;
+		try{
+			if( StringUtils.isEmpty(identifier))
+				return Response.serverError().build();
+			lock.lock();
+			try {
+				LocationData[] results = dispatcher.getSurroundings(identifier, new Point( xpos, ypos ), radius, step);
+				if( Utils.assertNull(results)) 
+					return Response.noContent().build();
+				GsonBuilder builder = new GsonBuilder();
+				Gson gson = builder.enableComplexMapKeySerialization().create();
+				String str = gson.toJson( results, HubData[].class);
+				response = Response.ok( str ).build();
+			}
+			finally {
+				lock.unlock();
+			}
+		}
+		catch( Exception ex ){
+			logger.warning(ex.getMessage());
+			return Response.serverError().build();
+		}
+		return response;
+	}
 	/**
 	 * Set the health of the owner
 	 * @param id

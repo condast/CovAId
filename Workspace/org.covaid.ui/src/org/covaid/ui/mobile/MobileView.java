@@ -30,7 +30,7 @@ public class MobileView extends AbstractView<MobileView.Commands>{
 	 * @param opacity
 	 * @return
 	 */
-	public String setHealthSlider( IMobile mobile ){
+	public String setHealthSlider( IMobile<?> mobile ){
 		String[] params = new String[1];
 		params[0] = String.valueOf( mobile.getHealth());
 		return perform( Commands.SET_HEALTH, Arrays.asList( params ));
@@ -43,7 +43,7 @@ public class MobileView extends AbstractView<MobileView.Commands>{
 	 * @param opacity
 	 * @return
 	 */
-	public String setSafetySlider( IMobile mobile ){
+	public String setSafetySlider( IMobile<?> mobile ){
 		String[] params = new String[1];
 		params[0] = String.valueOf( mobile.getHealth());
 		return perform( Commands.SET_SAFETY, Arrays.asList( params ));

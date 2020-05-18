@@ -20,6 +20,11 @@ public abstract class AbstractLocation<T extends Object> extends Point implement
 		this( point.getXpos(), point.getYpos());
 	}
 
+	protected AbstractLocation( IPoint point, Map<IContagion<T>, T> contagions) {
+		this( point.getXpos(), point.getYpos());
+		this.contagions = contagions;
+	}
+
 	protected AbstractLocation( String identifier, IPoint point) {
 		this( identifier, point.getXpos(), point.getYpos());
 	}
@@ -66,6 +71,13 @@ public abstract class AbstractLocation<T extends Object> extends Point implement
 				return false;
 		}
 		return true;
+	}
+
+	@Override
+	public boolean isHealthy( IContagion<T> contagion) {
+		if( this.contagions.isEmpty())
+			return true;
+		return !contagion.isContagious(this.contagions.get(contagion));
 	}
 
 	@Override
@@ -182,6 +194,16 @@ public abstract class AbstractLocation<T extends Object> extends Point implement
 	@Override
 	public IPoint toPoint() {
 		return new Point( this.getXpos(), this.getYpos());
+	}
+	
+	/**
+	 * move this location to the given point
+	 * @param point
+	 * @return
+	 */
+	@Override
+	public void move( IPoint point ) {
+		super.setPosition(point.getXpos(), point.getYpos());
 	}
 	
 	@Override

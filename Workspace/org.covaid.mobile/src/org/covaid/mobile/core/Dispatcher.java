@@ -10,7 +10,6 @@ import java.util.Map;
 import org.condast.commons.data.plane.IField;
 import org.condast.commons.project.ProjectFolderUtils;
 import org.covaid.core.def.IMobile;
-import org.covaid.core.def.IPerson;
 import org.covaid.core.field.IFieldListener;
 import org.covaid.core.field.IFieldProvider;
 import org.covaid.core.model.Point;
@@ -36,16 +35,29 @@ public class Dispatcher extends AbstractPersistenceService {
 
 	private static Dispatcher dispatcher = new Dispatcher();
 	
-	private IPerson<Date> person;
+	private Map<String, IMobile<Date>> mobiles;
 	
 	private IFieldProvider provider;
 	
 	private Dispatcher() {
 		super( S_COVAID_SERVICE_ID, S_COVAID_SERVICE );
+		mobiles = new HashMap<>();
 	}
 
 	public static Dispatcher getInstance() {
 		return dispatcher;
+	}
+	
+	public void addMobile( IMobile<Date> mobile ) {
+		this.mobiles.put(mobile.getIdentifier(), mobile);
+	}
+
+	public void removeMobile( String identifier ) {
+		this.mobiles.remove( identifier );
+	}
+
+	public IMobile<Date> getmobile( String identifier ){
+		return this.mobiles.get(identifier);
 	}
 	
 	@Override

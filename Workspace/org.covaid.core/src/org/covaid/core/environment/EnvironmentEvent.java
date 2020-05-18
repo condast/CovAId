@@ -1,6 +1,9 @@
-package org.covaid.core.def;
+package org.covaid.core.environment;
 
 import java.util.EventObject;
+
+import org.covaid.core.def.IFieldEnvironment;
+import org.covaid.core.def.IPerson;
 
 public class EnvironmentEvent<T extends Object> extends EventObject {
 	private static final long serialVersionUID = 1L;

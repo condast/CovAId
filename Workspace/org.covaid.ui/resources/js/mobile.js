@@ -1,6 +1,4 @@
-//const MOBILE_DEFAULT = 'http://127.0.0.1:10080/covaid/mobile/rest/';
-//const MOBILE_DEFAULT = 'http://www.condast.com:8080/covaid/mobile/rest/';
-const MOBILE_DEFAULT = ${context.covaid.mobile};//'http://www.condast.com:8080/covaid/mobile/rest/';
+const MOBILE_DEFAULT = '${context.covaid.mobile}';
 
 
 const MOBILE_CREATE_URL = MOBILE_DEFAULT + 'create';
@@ -30,15 +28,14 @@ function updateHealth() {
 	fetch( url, {
 		method: 'get',
 		headers: {
-			'Accept': 'application/json',
 			'Content-Type': 'application/json'
 		},
 	}).then(response => {
 		if (!response.ok) {
-			return response.json();
+			return;
 		}
-		refreshCanvas( this.id, this.token, this.identifier);
 	});
+	refreshCanvas( this.id, this.token, this.identifier);
 }
 
 function setHealth( val){
@@ -59,17 +56,15 @@ function updateSafety() {
 	fetch( url, {
 		method: 'get',
 		headers: {
-			'Accept': 'application/json',
 			'Content-Type': 'application/json'
 		},
 	}).then(response => {
 		if (!response.ok) {
-			return response.json());
+			return;
 		}
-		refreshCanvas( this.id, this.token, this.identifier);
 	});
+	refreshCanvas( this.id, this.token, this.identifier);
 }
-
 
 function setSafety( val){
 	("#safetyRange").value = val; 
@@ -89,20 +84,11 @@ function setEmail() {
 	fetch( url, {
 		method: 'get',
 		headers: {
-			'Accept': 'application/json',
 			'Content-Type': 'application/json'
 		},
 	}).then(response => {
 		if (!response.ok) {
-			return response.json()
-			.catch(() => {
-				// Couldn't parse the JSON
-				throw new Error(response.status);
-			})
-			.then(({message}) => {
-				// Got valid JSON with error response, use it
-				throw new Error(message || response.status);
-			});
+			return response.json();
 		}
 		// Successful response, parse the JSON and return the data
 		refreshCanvas( this.id, this.token, this.identifier);

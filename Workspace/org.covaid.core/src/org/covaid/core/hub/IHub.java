@@ -1,6 +1,11 @@
-package org.covaid.core.def;
+package org.covaid.core.hub;
 
 import java.util.Map;
+
+import org.covaid.core.def.IContagion;
+import org.covaid.core.def.ILocation;
+import org.covaid.core.def.IPerson;
+import org.covaid.core.def.IPoint;
 
 public interface IHub<T extends Object> extends Cloneable{
 
@@ -45,4 +50,10 @@ public interface IHub<T extends Object> extends Cloneable{
 	boolean removePrevious(IPoint point);
 
 	IPoint[] getPrevious();
+
+	void addListener(IHubListener<T> listener);
+
+	void removeListener(IHubListener<T> listener);
+
+	boolean isHealthy(IContagion<T> contagion);
 }

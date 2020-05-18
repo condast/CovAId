@@ -54,6 +54,7 @@ public class MobileResource {
 			service = new MobileService(dispatcher);
 			service.open();
 			IMobile<Date> mobile = service.create( DateFormat.getTimeInstance().format( Calendar.getInstance().getTime()), dispatcher.getField());
+			dispatcher.addMobile(mobile);
 			Gson gson = new Gson();
 			String str = gson.toJson( new CreateMobileData(mobile), CreateMobileData.class);
 			result = Response.ok( str ).build();
@@ -79,7 +80,6 @@ public class MobileResource {
 	 */
 	@GET
 	@Consumes(MediaType.APPLICATION_JSON)
-	@Produces(MediaType.APPLICATION_JSON)
 	@Path("/remove")
 	public Response remove( @QueryParam("id") long id, @QueryParam("token") long token, @QueryParam("identifier") String identifier ) {
 		logger.info( "Remove mobile " + identifier );
@@ -89,6 +89,7 @@ public class MobileResource {
 		try{
 			service = new MobileService(dispatcher);
 			service.open();
+			dispatcher.removeMobile(identifier);
 			boolean result = service.remove(identifier);
 			if( !result )
 				return Response.noContent().build();
@@ -123,12 +124,15 @@ public class MobileResource {
 		Response result = null;
 		MobileService service = null;
 		try{
-			service = new MobileService(dispatcher);
-			service.open();
-			Collection<IMobile<Date>> results = service.find(identifier);
-			if( Utils.assertNull( results ))
-				return Response.noContent().build();
-			IMobile<Date> mobile = results.iterator().next();
+			IMobile<Date> mobile = dispatcher.getmobile(identifier);
+			if( mobile == null ) {
+				service = new MobileService(dispatcher);
+				service.open();
+				Collection<IMobile<Date>> results = service.find(identifier);
+				if( Utils.assertNull( results ))
+					return Response.noContent().build();
+				mobile = results.iterator().next();
+			}
 			Gson gson = new Gson();
 			String str = gson.toJson(mobile, DateMobile.class);
 			result = Response.ok( str ).build();
@@ -154,7 +158,7 @@ public class MobileResource {
 	 */
 	@GET
 	@Consumes(MediaType.APPLICATION_JSON)
-	@Produces(MediaType.TEXT_PLAIN)
+	@Produces(MediaType.APPLICATION_JSON)
 	@Path("/health")
 	public Response setHealth( @QueryParam("id") long id, @QueryParam("token") long token, @QueryParam("identifier") String identifier,
 			@QueryParam("health") int health) {
@@ -171,7 +175,8 @@ public class MobileResource {
 			IMobile<Date> mobile = results.iterator().next();
 			mobile.setHealth(health);
 			service.update(mobile);
-			result = Response.ok().build();
+			dispatcher.addMobile(mobile);
+			result = Response.ok( "ok").build();
 		}
 		catch( Exception ex ){
 			ex.printStackTrace();
@@ -194,7 +199,7 @@ public class MobileResource {
 	 */
 	@GET
 	@Consumes(MediaType.APPLICATION_JSON)
-	@Produces(MediaType.TEXT_PLAIN)
+	@Produces(MediaType.APPLICATION_JSON)
 	@Path("/safety")
 	public Response setSafety( @QueryParam("id") long id, @QueryParam("token") long token, @QueryParam("identifier") String identifier,
 			@QueryParam("safety") int safety) {
@@ -211,7 +216,8 @@ public class MobileResource {
 			IMobile<Date> mobile = results.iterator().next();
 			mobile.setSafety( safety );
 			service.update(mobile);
-			result = Response.ok().build();
+			dispatcher.addMobile(mobile);
+			result = Response.ok("ok").build();
 		}
 		catch( Exception ex ){
 			ex.printStackTrace();
@@ -251,6 +257,7 @@ public class MobileResource {
 			IMobile<Date> mobile = results.iterator().next();
 			mobile.setEmail( email );
 			service.update(mobile);
+			dispatcher.addMobile(mobile);
 			result = Response.ok().build();
 		}
 		catch( Exception ex ){

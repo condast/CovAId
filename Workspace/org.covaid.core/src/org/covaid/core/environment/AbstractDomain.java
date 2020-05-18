@@ -3,7 +3,6 @@ package org.covaid.core.environment;
 import java.util.ArrayList;
 import java.util.Collection;
 
-import org.covaid.core.def.IEnvironment;
 import org.covaid.core.def.IDomainListener;
 
 public abstract class AbstractDomain<T extends Object> implements IDomain<T>{

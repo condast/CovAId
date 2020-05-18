@@ -5,10 +5,6 @@ import java.util.Collection;
 import java.util.Timer;
 import java.util.TimerTask;
 
-import org.covaid.core.def.EnvironmentEvent;
-import org.covaid.core.def.IEnvironment;
-import org.covaid.core.def.IEnvironmentListener;
-
 public abstract class AbstractEnvironment<T extends Object> implements IEnvironment<T> {
 
 	private int population;
@@ -167,6 +163,7 @@ public abstract class AbstractEnvironment<T extends Object> implements IEnvironm
 
 	@Override
 	public void clear() {
+		this.index = 0;
 		for( IDomain<T> domain: this.domains)
 			domain.clear();
 	}

@@ -1,4 +1,4 @@
-package org.covaid.core.def;
+package org.covaid.core.environment;
 
 @FunctionalInterface
 public interface IEnvironmentListener<T extends Object> {

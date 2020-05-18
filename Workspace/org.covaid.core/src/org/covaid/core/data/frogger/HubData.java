@@ -1,12 +1,11 @@
 package org.covaid.core.data.frogger;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
-import java.util.TreeSet;
 
-import org.covaid.core.def.IHub;
+import org.covaid.core.def.ILocation;
 import org.covaid.core.def.IPoint;
+import org.covaid.core.hub.IHub;
 import org.covaid.core.model.Hub;
 import org.covaid.core.model.Point;
 
@@ -14,12 +13,19 @@ public class HubData{
 
 	private LocationData location;
 		
+	private int moment;
+	
 	//The previous hubs, that usually imply that a person had moved to this hub through the other
 	private Collection<Point> previous;
 
 	public HubData( IHub<Integer> hub, int step) {
 		this.location = new LocationData( hub.getLocation(), step );
+		this.moment = step;
 		this.previous = new ArrayList<>();
+	}
+
+	public int getMoment() {
+		return moment;
 	}
 
 	public boolean addPrevious( IPoint point ) {
@@ -52,4 +58,17 @@ public class HubData{
 		}
 		return results.toArray( new HubData[ results.size()]);
 	}
+
+	public synchronized static LocationData[] getSurroundings( Collection<Hub> hubs, IPoint centre, int radius, int step ){
+		Collection<LocationData> results = new ArrayList<>();
+		for( IHub<Integer> hub: hubs ) {
+			IPoint relative = new Point( hub.getLocation().getXpos() - centre.getXpos(), hub.getLocation().getYpos() - centre.getYpos());
+			ILocation<Integer> location =hub.getLocation().clone();
+			location.move(relative);
+			LocationData loc = new LocationData( location, step );
+			results.add( loc );
+		}
+		return results.toArray( new LocationData[ results.size()]);
+	}
+
 }

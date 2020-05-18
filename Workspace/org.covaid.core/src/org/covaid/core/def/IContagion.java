@@ -6,13 +6,14 @@ import org.condast.commons.strings.StringUtils;
 
 public interface IContagion<T extends Object> extends Comparable<IContagion<T>>{
 
-	int DAY = 24 * 3600 * 1000;//msec
-	int DEFAULT_CONTAGION = 14;//two weeks
-	int DEFAULT_DISTANCE = 10;//10 meters
-	int DEFAULT_HALFTIME = 2;//two days
-	double DEFAULT_DISPERSION = 2;//2 metres/second
-	double THRESHOLD = 0.5;//0.5%
-
+	public static final int DAY = 24 * 3600 * 1000;//msec
+	public static final int DEFAULT_CONTAGION = 14;//two weeks
+	public static final int DEFAULT_DISTANCE = 10;//10 meters
+	public static final int DEFAULT_HALFTIME = 2;//two days
+	public static final double DEFAULT_DISPERSION = 2;//2 metres/second
+	public static final double THRESHOLD = 0.5;//0.5%
+	public static final int DEFAULT_ALERT_THRESHOLD = 80; 
+	
 	public enum SupportedContagion{
 		OTHER,
 		COVID_19,
@@ -61,6 +62,13 @@ public interface IContagion<T extends Object> extends Comparable<IContagion<T>>{
 	boolean isMonitored();
 
 	void setMonitored(boolean monitored);
+	
+	/**
+	 * If true, the infection should alert a practitioner if the contagion
+	 * exceeds a certain value;
+	 * @return
+	 */
+	boolean alert( double contagion);
 
 	int getIncubation();
 

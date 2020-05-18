@@ -9,12 +9,11 @@ import java.util.concurrent.ConcurrentSkipListSet;
 
 import org.condast.commons.data.plane.Field;
 import org.condast.commons.data.plane.IField;
-import org.covaid.core.def.IEnvironment;
 import org.covaid.core.def.IDomainListener;
 import org.covaid.core.def.IFieldEnvironment;
-import org.covaid.core.def.IHub;
 import org.covaid.core.def.IPerson;
 import org.covaid.core.environment.field.IFieldDomain;
+import org.covaid.core.hub.IHub;
 import org.covaid.core.model.date.DatePerson;
 
 public abstract class AbstractFieldDomain implements IFieldDomain{

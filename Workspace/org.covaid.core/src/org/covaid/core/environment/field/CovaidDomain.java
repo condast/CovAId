@@ -6,10 +6,10 @@ import java.util.Map;
 
 import org.covaid.core.def.IContagion;
 import org.covaid.core.def.IFieldEnvironment;
-import org.covaid.core.def.IHub;
 import org.covaid.core.def.IPerson;
 import org.covaid.core.def.IPoint;
 import org.covaid.core.environment.AbstractFieldDomain;
+import org.covaid.core.hub.IHub;
 import org.covaid.core.model.Point;
 import org.covaid.core.model.date.DateContagion;
 import org.covaid.core.model.date.DateHub;

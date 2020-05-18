@@ -10,9 +10,9 @@ import org.condast.commons.data.plane.Field;
 import org.condast.commons.data.plane.IField;
 import org.covaid.core.def.IContagion;
 import org.covaid.core.def.IFieldEnvironment;
-import org.covaid.core.def.IHub;
 import org.covaid.core.def.IPerson;
 import org.covaid.core.environment.AbstractEnvironment;
+import org.covaid.core.hub.IHub;
 
 public class FieldEnvironment extends AbstractEnvironment<Date> implements IFieldEnvironment{
 

@@ -6,8 +6,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.Map;
-import java.util.Timer;
-import java.util.TimerTask;
 import java.util.TreeMap;
 
 import org.condast.commons.Utils;
@@ -24,6 +22,8 @@ import org.covaid.core.def.IContagion;
 import org.covaid.core.def.IPoint;
 import org.covaid.core.model.Contagion;
 import org.covaid.core.model.Point;
+import org.covaid.ui.mobile.IUpdateListener;
+import org.covaid.ui.mobile.UpdateEvent;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.PaintListener;
 import org.eclipse.swt.graphics.Color;
@@ -52,6 +52,8 @@ public class FroggerComposite extends Composite {
 	public static final int DEFAULT_WIDTH = 100;//metres
 	public static final int DEFAULT_HISTORY = 16;//day, looking ahead of what is coming
 
+	public static final int DEFAULT_TEST_TIME = 1000;//seconds. After this the dimulation will stop
+
 	private enum Requests{
 
 		REGISTER,
@@ -71,7 +73,6 @@ public class FroggerComposite extends Composite {
 	}
 	
 	private enum Attributes{
-
 		WIDTH,
 		DENSITY,
 		INFECTED,
@@ -82,6 +83,7 @@ public class FroggerComposite extends Composite {
 			return StringStyler.xmlStyleString( super.toString());
 		}
 	}
+
 	private Group grpIndication;
 	private Canvas canvas;
 	private Slider sliderDensity;
@@ -96,30 +98,15 @@ public class FroggerComposite extends Composite {
 	private AuthenticationData data;
 	private Map<IPoint,HubData> hubs;
 	
+	private Collection<IUpdateListener> listeners;
+	
 	private boolean started;
 	private boolean paused;
-	
-	private Config config = new Config();
-	
-	private Timer timer;
-	private TimerTask timerTask = new TimerTask(){
 
-		@Override
-		public void run() {
-			try {
-				if(!started || ( data == null ))
-					return;
-				WebClient client = new WebClient();
-				client.addListener(session);
-				Map<String, String> params = data.toMap();
-				params.put(Attributes.STEP.toString(), String.valueOf( DEFAULT_HISTORY+1 ));
-				client.sendGet(Requests.UPDATE, params);
-				client.removeListener(session);
-			} catch (Exception e1) {
-				e1.printStackTrace();
-			}
-		}
-	};
+	private int timeStep;
+	
+	private Config config;
+	private WebClient client;
 	
 	private SessionHandler session;
 	
@@ -149,13 +136,24 @@ public class FroggerComposite extends Composite {
 		gc.drawLine((int)(half-offset_top), horizon, (int)(half-offset_bottom), rect.height);
 		gc.drawLine((int)(half+offset_top), horizon, (int)(half+offset_bottom), rect.height);
 		//gc.setLineStyle(SWT.LINE_DOT);
-		
-		//Fill in the hubs
+
+		int xpos = -10;
+		int span = 2;
 		double scaleX = (offset_bottom - offset_top)/(rect.height - horizon);
 		double scaleY = (rect.height - horizon)/( DEFAULT_HISTORY-1);
+		
+		//Hectometer signs
+		for( int i=0; i< DEFAULT_HISTORY/span; i++ ) {
+			String text = String.valueOf( DEFAULT_HISTORY - i*span ) + " days";
+			IPoint point = transformHect( new Point(text, xpos, i*span), half, offset_top, horizon, scaleX, scaleY); 
+			drawHectometerSign(gc, point, 70 );
+		}
+
+		//Fill in the hubs
 		if( !Utils.assertNull(hubs)) {
 			Collection<HubData> test = new ArrayList<HubData>( this.hubs.values());
 			for( HubData hub: test) {
+				timeStep = hub.getMoment();
 				for( IPoint previous: hub.getPrevious() ) {
 					draw(gc, hub, previous.clone(), 1, half, offset_top, horizon, scaleX, scaleY);
 				}
@@ -164,6 +162,8 @@ public class FroggerComposite extends Composite {
 		gc.dispose();
 		requestLayout();
 	};
+	private Label lblDays;
+	private Label lbldayValue;
 	
 	/**
 	 * Create the composite.
@@ -172,13 +172,16 @@ public class FroggerComposite extends Composite {
 	 */
 	public FroggerComposite(Composite parent, int style) {
 		super(parent, style | SWT.NO_SCROLL);
+		config = new Config();
 		createPage(parent, style | SWT.NO_SCROLL);
 		this.started = false;
 		this.paused = false;
+		this.timeStep = 0;
 		this.hubs = new TreeMap<>();
+		this.listeners = new ArrayList<>();
+		client = new WebClient();
 		session = new SessionHandler(getDisplay());
-	    this.timer = new Timer(true);
-	    timer.scheduleAtFixedRate(timerTask, 0, 1000);
+		client.addListener( session );
 	}
 
 	protected void createPage( Composite parent, int style ) {
@@ -193,7 +196,7 @@ public class FroggerComposite extends Composite {
 		canvas.addPaintListener(listener);
 
 		Group grpPlay = new Group(this, SWT.NONE);
-		grpPlay.setLayout(new GridLayout(4, false));
+		grpPlay.setLayout(new GridLayout(5, false));
 		grpPlay.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false, 1, 1));
 		grpPlay.setText("Play");
 		
@@ -206,7 +209,8 @@ public class FroggerComposite extends Composite {
 				try {
 					Requests request = started? Requests.STOP: Requests.START;
 					paused = false;
-					WebClient client = new WebClient();
+					if(!started)
+						timeStep = 0;
 					Map<String, String> params = data.toMap();
 					params.put( Attributes.DENSITY.toString(), String.valueOf( sliderDensity.getSelection()));
 					params.put( Attributes.INFECTED.toString(), String.valueOf( sliderInfections.getSelection()));
@@ -218,7 +222,7 @@ public class FroggerComposite extends Composite {
 			}
 		});
 		btnStart.setText(Requests.START.toString());
-		btnStart.setEnabled(this.data != null );
+		btnStart.setEnabled( this.data != null );
 		
 		btnPause = new Button(grpPlay, SWT.NONE);
 		btnPause.setText("Pause");
@@ -228,7 +232,6 @@ public class FroggerComposite extends Composite {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
 				try {
-					WebClient client = new WebClient();
 					Map<String, String> params = data.toMap();
 					client.sendGet(Requests.PAUSE, params);
 				} catch (Exception e1) {
@@ -246,7 +249,7 @@ public class FroggerComposite extends Composite {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
 				try {
-					WebClient client = new WebClient();
+					timeStep = 0;
 					Map<String, String> params = data.toMap();
 					client.sendGet(Requests.CLEAR, params);
 				} catch (Exception e1) {
@@ -255,7 +258,14 @@ public class FroggerComposite extends Composite {
 			}
 		});
 		btnClear.setEnabled(false);
-		new Label(grpPlay, SWT.NONE);
+		
+		lblDays = new Label(grpPlay, SWT.NONE);
+		lblDays.setLayoutData(new GridData(SWT.RIGHT, SWT.FILL, false, false, 1, 1));
+		lblDays.setText("Days:");
+		
+		lbldayValue = new Label(grpPlay, SWT.NONE);
+		lbldayValue.setText( String.format("%3d", timeStep));
+		lbldayValue.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false, 1, 1));
 		
 		Group grpSettings = new Group(this, SWT.NONE);
 		grpSettings.setLayout(new GridLayout(3, false));
@@ -294,7 +304,6 @@ public class FroggerComposite extends Composite {
 			public void widgetSelected(SelectionEvent e) {
 				try {
 					Slider slider = (Slider) e.widget;
-					WebClient client = new WebClient();
 					Map<String, String> params = data.toMap();
 					params.put(Attributes.INFECTED.toString(), String.valueOf( slider.getSelection()));
 					client.sendGet(Requests.SET_INFECTED, params);
@@ -336,13 +345,51 @@ public class FroggerComposite extends Composite {
 		Button btnV = new Button(grpControls, SWT.NONE);
 		btnV.setText("V");
 		new Label(grpControls, SWT.NONE);
+	}
 
+	public void addUpdateListener( IUpdateListener listener ) {
+		this.listeners.add(listener);
+	}
+
+	public void removeUpdateListener( IUpdateListener listener ) {
+		this.listeners.remove(listener);
+	}
+	
+	protected void notifyListers( UpdateEvent event ) {
+		for( IUpdateListener listener: this.listeners)
+			listener.notifyViewUpdated(event);
 	}
 
 	public void setInput( AuthenticationData data ) {
 		this.data = data;
 		btnStart.setEnabled(this.data != null );
 		btnPause.setEnabled(this.data != null );
+	}
+
+	public void poll(){
+		try {
+			if(!started || ( data == null ))
+				return;
+			client.addListener(session);
+			Map<String, String> params = data.toMap();
+			params.put(Attributes.STEP.toString(), String.valueOf( DEFAULT_HISTORY+1 ));
+			if( timeStep > DEFAULT_TEST_TIME) {
+				client.sendGet(Requests.STOP, params);
+				timeStep = 0;
+			}else
+				client.sendGet(Requests.UPDATE, params);
+			client.removeListener(session);
+		} catch (Exception e1) {
+			e1.printStackTrace();
+		}
+	}
+
+	public boolean isStarted() {
+		return started;
+	}
+
+	public boolean isPaused() {
+		return paused;
 	}
 
 	protected IPoint transform( IPoint hub, int half, double offset_top, int horizon, double scaleX, double scaleY ) {
@@ -410,12 +457,46 @@ public class FroggerComposite extends Composite {
 		gc.drawLine(prev.getXpos(), prev.getYpos(), next.getXpos(), next.getYpos());
 	}
 
+	protected IPoint transformHect( IPoint point, int half, double offset_top, int horizon, double scaleX, double scaleY ) {
+		int locy = point.getYpos();
+		double width = 2 * ( offset_top + 32 * scaleX*locy) + 100;
+		double xStart = half - 0.5 * width; 
+		double xpos = xStart + width * point.getXpos()/DEFAULT_WIDTH;
+		double ypos = horizon + scaleY * locy;
+		return new Point( point.getIdentifier(), (int) xpos, (int)ypos );	
+	}
+
+	protected void drawHectometerSign( GC gc, IPoint point, int size ) {
+		int correction = 50* size/point.getYpos();
+		int xpos = point.getXpos();
+		int ydraw = point.getYpos()-size+10+correction;
+		int width = size;
+		int height = size/2;
+		
+		gc.setForeground( getDisplay().getSystemColor( SWT.COLOR_DARK_GREEN));
+		gc.fillRoundRectangle(xpos, ydraw, width, height, 30, 30);
+		gc.setLineWidth(1);
+		gc.setForeground( getDisplay().getSystemColor( SWT.COLOR_BLACK));
+		gc.drawRoundRectangle(xpos, ydraw, width, height, 30, 30);
+		gc.setLineWidth(2);
+		gc.setForeground( getDisplay().getSystemColor( SWT.COLOR_WHITE));
+		gc.drawRoundRectangle(xpos+2, ydraw+2, width-4, height-4, 30, 30);
+		gc.setLineWidth(10);
+		gc.drawText(point.getIdentifier(), xpos+width/2-28, ydraw+10);
+		gc.setForeground( getDisplay().getSystemColor( SWT.COLOR_GRAY));
+		
+		int pole = 2 * height - correction;
+		gc.drawLine(xpos+2+width/2, ydraw+height, xpos+2+width/2, ydraw+pole);
+		gc.setLineWidth(1);
+	}
+
 	@Override
 	protected void checkSubclass() {
 		// Disable the check that prevents subclassing of SWT components
 	}
 	
 	public void dispose() {
+		client.removeListener(session);
 		session.dispose();
 		super.dispose();
 	}
@@ -423,6 +504,7 @@ public class FroggerComposite extends Composite {
 	private class WebClient extends AbstractHttpRequest<Requests, StringBuilder>{
 	
 		public WebClient() {
+			//super( S_PATH);
 			super( config.getServerContext() + S_COVAID_CONTEXT );
 		}
 
@@ -439,8 +521,38 @@ public class FroggerComposite extends Composite {
 		@Override
 		protected String onHandleResponse(ResponseEvent<Requests, StringBuilder> event, StringBuilder data)
 				throws IOException {
+			return event.getResponse();
+		}
+	}
+	
+	protected void setHubs( HubData[] hubData ) {
+		this.hubs.clear();
+		if( hubData == null )
+			return;
+		for( HubData hd: hubData ) {
+			if(( hd == null ) || ( hd.getLocation() == null ) || ( hd.getLocation().getPoint() == null )) {
+				System.err.println("Error");
+				continue;
+			}
+			hubs.put(hd.getLocation().getPoint(), hd);
+			timeStep = hd.getLocation().getPoint().getYpos();
+		}
+		//System.err.println("WAIT");
+	}
+	
+	private class SessionHandler extends AbstractSessionHandler<ResponseEvent<Requests, StringBuilder>> implements IHttpClientListener<Requests, StringBuilder>{
+
+		protected SessionHandler(Display display) {
+			super(display);
+		}
+
+		@Override
+		protected void onHandleSession(SessionEvent<ResponseEvent<Requests, StringBuilder>> sevent) {
+			if( sevent.getData() == null )
+				return;
 			Gson gson = new Gson();
-			switch( event.getRequest()) {
+			ResponseEvent<Requests, StringBuilder> response = sevent.getData();
+			switch( sevent.getData().getRequest()) {
 			case REGISTER:
 				break;
 			case START:
@@ -460,51 +572,30 @@ public class FroggerComposite extends Composite {
 				break;
 			case CLEAR:
 				btnClear.setEnabled(false);
+				hubs.clear();
+				timeStep = 0;
+				lbldayValue.setText( String.format("%3d", timeStep));
 				break;
 			case SET_INFECTED:
 				lblInfectionsValue.setText(String.valueOf( sliderInfections.getSelection()));
 				break;
 			case UPDATE:
-				setHubs( gson.fromJson(event.getResponse(), HubData[].class));
+				setHubs( gson.fromJson(response.getResponse(), HubData[].class));
 				break;
 			case GET_DAY:
 				break;
 			default:
 				break;
 			}
-			return null;
-		}
-	}
-	
-	protected void setHubs( HubData[] hubData ) {
-		this.hubs.clear();
-		for( HubData hd: hubData ) {
-			if(( hd == null ) || ( hd.getLocation() == null ) || ( hd.getLocation().getPoint() == null )) {
-				System.err.println("Error");
-				continue;
-			}
-			hubs.put(hd.getLocation().getPoint(), hd);
-		}
-		//System.err.println("WAIT");
-	}
-	
-	private class SessionHandler extends AbstractSessionHandler<ResponseEvent<Requests, StringBuilder>> implements IHttpClientListener<Requests, StringBuilder>{
-
-		protected SessionHandler(Display display) {
-			super(display);
-		}
-
-		@Override
-		protected void onHandleSession(SessionEvent<ResponseEvent<Requests, StringBuilder>> sevent) {
-			if( sevent.getData() == null )
-				return;
+			notifyListers( new UpdateEvent( this ));
 			canvas.redraw();	
+			lbldayValue.setText( String.format("%4d", timeStep));
+			requestLayout();
 		}
 
 		@Override
 		public void notifyResponse(ResponseEvent<Requests, StringBuilder> event) {
 			addData(event);
-		}
-		
+		}		
 	}
 }

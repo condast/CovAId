@@ -1,6 +1,4 @@
-package org.covaid.core.def;
-
-import org.covaid.core.environment.IDomain;
+package org.covaid.core.environment;
 
 public interface IEnvironment<T extends Object> {
 

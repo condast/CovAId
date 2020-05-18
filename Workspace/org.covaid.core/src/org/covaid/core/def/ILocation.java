@@ -19,7 +19,9 @@ public interface ILocation<T extends Object> extends IPoint{
 	IContagion<T>[] getContagion();
 
 	boolean isHealthy();
-	
+
+	boolean isHealthy( IContagion<T> contagion );
+
 	boolean isContagious(T step );
 
 	/**
@@ -64,5 +66,12 @@ public interface ILocation<T extends Object> extends IPoint{
 	boolean isInfected(IContagion<T> contagion);
 
 	@Override
-	ILocation<T> clone();	
+	ILocation<T> clone();
+
+	/**
+	 * move this location to the given point
+	 * @param point
+	 * @return
+	 */
+	void move(IPoint point);	
 }

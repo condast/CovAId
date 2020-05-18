@@ -69,6 +69,15 @@ public abstract class AbstractContagion<T extends Object> implements IContagion<
 		this.monitored = monitored;
 	}
 
+	/**
+	 * If true, the infection should alert a practitioner if the contagion
+	 * exceeds a certain value;
+	 * @return
+	 */
+	public boolean alert( double contagion) {
+		return contagion > DEFAULT_ALERT_THRESHOLD;
+	}
+
 	@Override
 	public int getIncubation() {
 		return incubation;

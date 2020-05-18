@@ -1,15 +1,19 @@
 package org.covaid.core.model;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Map;
 import java.util.TreeMap;
 import java.util.TreeSet;
 
-import org.covaid.core.def.IHub;
+import org.covaid.core.def.IContagion;
 import org.covaid.core.def.ILocation;
 import org.covaid.core.def.IPerson;
 import org.covaid.core.def.IPersonListener;
 import org.covaid.core.def.IPoint;
+import org.covaid.core.hub.HubEvent;
+import org.covaid.core.hub.IHub;
+import org.covaid.core.hub.IHubListener;
 
 public abstract class AbstractHub<T extends Object> extends Point implements IHub<T>{
 
@@ -27,6 +31,8 @@ public abstract class AbstractHub<T extends Object> extends Point implements IHu
 
 	//The previous hubs, that usually imply that a person had moved to this hub through the other
 	private Collection<Point> previous;
+
+	private Collection<IHubListener<T>> listeners;
 
 	private IPersonListener<T> listener = (e)->{
 		ILocation<T> check = e.getSnapshot();
@@ -46,12 +52,18 @@ public abstract class AbstractHub<T extends Object> extends Point implements IHu
 		this.location = location;
 		this.timeStep = initial;
 		this.history = history;
+		this.listeners = new ArrayList<>();
 		this.previous = new TreeSet<>();
 	}
 
 	@Override
 	public ILocation<T> getLocation() {
 		return location;
+	}
+
+	@Override
+	public boolean isHealthy( IContagion<T> contagion) {
+		return this.location.isHealthy(contagion);
 	}
 
 	protected T getTimeStep() {
@@ -78,6 +90,21 @@ public abstract class AbstractHub<T extends Object> extends Point implements IHu
 	@Override
 	public Map<IPerson<T>,T> getPersons() {
 		return persons;
+	}
+
+	@Override
+	public void addListener( IHubListener<T> listener ) {
+		this.listeners.add(listener);
+	}
+
+	@Override
+	public void removeListener( IHubListener<T> listener ) {
+		this.listeners.remove(listener);
+	}
+
+	protected void notifyListeners( HubEvent<T> event ) {
+		for( IHubListener<T> listener: this.listeners )
+			listener.notifyHubChanged(event);
 	}
 
 	@Override

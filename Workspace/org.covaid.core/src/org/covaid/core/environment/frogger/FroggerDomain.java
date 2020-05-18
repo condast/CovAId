@@ -8,14 +8,15 @@ import java.util.Map;
 import java.util.TreeMap;
 
 import org.covaid.core.data.frogger.HubData;
+import org.covaid.core.data.frogger.LocationData;
 import org.covaid.core.def.IContagion;
 import org.covaid.core.def.IContagion.SupportedContagion;
-import org.covaid.core.def.IEnvironment;
-import org.covaid.core.def.IHub;
 import org.covaid.core.def.IPerson;
 import org.covaid.core.def.IPoint;
 import org.covaid.core.environment.AbstractDomain;
 import org.covaid.core.environment.IDomain;
+import org.covaid.core.environment.IEnvironment;
+import org.covaid.core.hub.IHub;
 import org.covaid.core.model.Contagion;
 import org.covaid.core.model.Hub;
 import org.covaid.core.model.Person;
@@ -185,4 +186,18 @@ public class FroggerDomain extends AbstractDomain<Integer> implements IDomain<In
 		//this.hubs.entrySet().stream().filter( entry -> entry.getKey().getYpos() <= step).collect(Collectors.toList());
 		this.snapshot = Arrays.asList( HubData.getHubs(results, step));
 	}
+
+	public synchronized LocationData[] getSurroundings( IPoint point, int radius, Integer step) {
+		Collection<Hub> results = new ArrayList<>();
+		Iterator<Map.Entry<IPoint, Hub>> iterator = this.hubs.entrySet().iterator();
+		while( iterator.hasNext()) {
+			Map.Entry<IPoint, Hub> entry = iterator.next();
+			boolean valid = ( Math.abs(entry.getKey().getXpos() - point.getXpos())<=radius ) && 
+					( Math.abs(entry.getKey().getYpos() - point.getYpos())<radius );
+			if( valid )
+				results.add(entry.getValue());
+		}
+		return HubData.getSurroundings(results, point, radius, step );
+	}
+
 }

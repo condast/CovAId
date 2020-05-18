@@ -5,8 +5,10 @@ import java.util.Map;
 import java.util.TreeMap;
 
 import org.covaid.core.data.frogger.HubData;
-import org.covaid.core.def.IEnvironment;
+import org.covaid.core.data.frogger.LocationData;
+import org.covaid.core.def.IPoint;
 import org.covaid.core.environment.AbstractEnvironment;
+import org.covaid.core.environment.IEnvironment;
 import org.covaid.core.environment.frogger.FroggerDomain;
 import org.covaid.orientdb.object.AbstractPersistenceService;
 
@@ -89,6 +91,13 @@ public class Dispatcher extends AbstractPersistenceService {
 		return env.getUpdate( step );
 	}
 
+	public LocationData[] getSurroundings( String identifier, IPoint point, int radius, int step ) {
+		Environment env = (Environment) this.environments.get( identifier);
+		if( env == null )
+			return null;
+		return env.getSurroundings(point, radius, step);
+	}
+
 	@Override
 	protected Map<String, String> onPrepareManager() {
 		// TODO Auto-generated method stub
@@ -137,6 +146,10 @@ public class Dispatcher extends AbstractPersistenceService {
 		
 		public Collection<HubData> getUpdate( int step ){
 			return domain.getUpdate( step );
+		}
+
+		public LocationData[] getSurroundings( IPoint point, int radius, int step ){
+			return domain.getSurroundings(point, radius, step);
 		}
 	}
 }

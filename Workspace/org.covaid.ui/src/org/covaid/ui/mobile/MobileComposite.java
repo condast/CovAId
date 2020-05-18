@@ -2,6 +2,11 @@ package org.covaid.ui.mobile;
 
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.layout.GridLayout;
+
+import java.util.Date;
+import java.util.Timer;
+import java.util.TimerTask;
+
 import org.covaid.core.mobile.IMobileRegistration;
 import org.covaid.ui.frogger.FroggerComposite;
 import org.covaid.ui.wizard.MobileWizard;
@@ -13,11 +18,26 @@ public class MobileComposite extends Composite {
 	private MobileWizard wizard;
 	private FroggerComposite froggerComposite;
 	
-	
-	private IMobileRegistration listener = (e)->{
+	private IMobileRegistration<Date> listener = (e)->{
 		froggerComposite.setInput(e.getAuthenticationData());
 	};
-	
+
+	private IUpdateListener updateListener = (e)->{
+		//froggerComposite.setInput(e.getAuthenticationData());
+	};
+
+	private Timer timer;
+	private TimerTask timerTask = new TimerTask(){
+
+		@Override
+		public void run() {
+			if(!froggerComposite.isStarted() || froggerComposite.isPaused())
+				return;
+			froggerComposite.poll();
+			wizard.poll();
+		}
+	};
+
 	/**
 	 * Create the composite.
 	 * @param parent
@@ -31,8 +51,11 @@ public class MobileComposite extends Composite {
 		wizard.setLayoutData(new GridData(SWT.FILL, SWT.FILL, false, true, 1, 1));
 		froggerComposite = new FroggerComposite(this, SWT.NONE);
 		froggerComposite.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 3, 1));
+		froggerComposite.addUpdateListener(updateListener);
 		
 		wizard.addRegistrationListener(listener);
+	    this.timer = new Timer(true);
+	    timer.scheduleAtFixedRate(timerTask, 0, 1000);
 	}
 
 	@Override
@@ -42,6 +65,7 @@ public class MobileComposite extends Composite {
 
 	@Override
 	public void dispose() {
+		froggerComposite.removeUpdateListener(updateListener);
 		wizard.removeRegistrationListener(listener);
 		super.dispose();
 	}

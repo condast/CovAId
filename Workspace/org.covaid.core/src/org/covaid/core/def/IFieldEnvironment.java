@@ -3,6 +3,7 @@ package org.covaid.core.def;
 import java.util.Date;
 
 import org.condast.commons.data.plane.IField;
+import org.covaid.core.environment.IEnvironment;
 
 public interface IFieldEnvironment extends IEnvironment<Date>{
 

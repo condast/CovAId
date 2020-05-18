@@ -1,6 +1,5 @@
 package org.covaid.core.environment;
 
-import org.covaid.core.def.IEnvironment;
 import org.covaid.core.def.IDomainListener;
 
 public interface IDomain<T extends Object> {
