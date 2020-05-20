@@ -4,6 +4,7 @@ import java.util.Date;
 import java.util.Iterator;
 import java.util.Map;
 
+import org.covaid.core.data.ContagionData;
 import org.covaid.core.def.IContagion;
 import org.covaid.core.def.ILocation;
 import org.covaid.core.def.IPoint;
@@ -44,10 +45,10 @@ public class DateLocation extends AbstractLocation<Date> implements ILocation<Da
 	public ILocation<Date> clone() {
 		IPoint point = super.toPoint();
 		ILocation<Date> result = new DateLocation( point );
-		Iterator<Map.Entry<IContagion<Date>, Date>> iterator = super.getContagions().entrySet().iterator();
+		Iterator<Map.Entry<IContagion<Date>, ContagionData<Date>>> iterator = super.getContagions().entrySet().iterator();
 		while( iterator.hasNext() ) {
-			Map.Entry<IContagion<Date>, Date> entry = iterator.next();
-			result.addContagion(entry.getValue(), entry.getKey());
+			Map.Entry<IContagion<Date>, ContagionData<Date>> entry = iterator.next();
+			result.addContagion(entry.getValue().getTimeStep(), entry.getKey());
 		}
 		return result;
 	}

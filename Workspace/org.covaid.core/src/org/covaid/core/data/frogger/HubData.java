@@ -11,7 +11,7 @@ import org.covaid.core.model.Point;
 
 public class HubData{
 
-	private LocationData location;
+	private LocationData<Integer> location;
 		
 	private int moment;
 	
@@ -19,7 +19,7 @@ public class HubData{
 	private Collection<Point> previous;
 
 	public HubData( IHub<Integer> hub, int step) {
-		this.location = new LocationData( hub.getLocation(), step );
+		this.location = hub.getLocation().toLocationData();
 		this.moment = step;
 		this.previous = new ArrayList<>();
 	}
@@ -36,7 +36,7 @@ public class HubData{
 		return this.previous.remove( point );
 	}
 
-	public LocationData getLocation() {
+	public LocationData<Integer> getLocation() {
 		return location;
 	}
 	
@@ -59,13 +59,14 @@ public class HubData{
 		return results.toArray( new HubData[ results.size()]);
 	}
 
-	public synchronized static LocationData[] getSurroundings( Collection<Hub> hubs, IPoint centre, int radius, int step ){
-		Collection<LocationData> results = new ArrayList<>();
+	@SuppressWarnings("unchecked")
+	public synchronized static LocationData<Integer>[] getSurroundings( Collection<Hub> hubs, IPoint centre, int radius, int step ){
+		Collection<LocationData<Integer>> results = new ArrayList<>();
 		for( IHub<Integer> hub: hubs ) {
 			IPoint relative = new Point( hub.getLocation().getXpos() - centre.getXpos(), hub.getLocation().getYpos() - centre.getYpos());
 			ILocation<Integer> location =hub.getLocation().clone();
 			location.move(relative);
-			LocationData loc = new LocationData( location, step );
+			LocationData<Integer> loc = location.toLocationData();
 			results.add( loc );
 		}
 		return results.toArray( new LocationData[ results.size()]);

@@ -6,7 +6,6 @@ import java.util.TreeMap;
 
 import org.covaid.core.data.frogger.HubData;
 import org.covaid.core.data.frogger.LocationData;
-import org.covaid.core.def.IPoint;
 import org.covaid.core.environment.AbstractEnvironment;
 import org.covaid.core.environment.IEnvironment;
 import org.covaid.core.environment.frogger.FroggerDomain;
@@ -84,6 +83,21 @@ public class Dispatcher extends AbstractPersistenceService {
 		return true;
 	}
 
+	public boolean setProtection(String identifier, boolean protection) {
+		Environment result = this.environments.get( identifier);
+		if( result == null )
+			return false;
+		result.setProtection( protection );
+		return true;
+	}
+
+	public LocationData<Integer>[] getProtected(String identifier) {
+		Environment result = this.environments.get( identifier);
+		if( result == null )
+			return null;
+		return result.getProtected();
+	}
+
 	public Collection<HubData> getUpdate(String identifier, int step ) {
 		Environment env = (Environment) this.environments.get( identifier);
 		if( env == null )
@@ -91,11 +105,11 @@ public class Dispatcher extends AbstractPersistenceService {
 		return env.getUpdate( step );
 	}
 
-	public LocationData[] getSurroundings( String identifier, IPoint point, int radius, int step ) {
+	public LocationData<Integer>[] getSurroundings( String identifier, int radius, int step ) {
 		Environment env = (Environment) this.environments.get( identifier);
 		if( env == null )
 			return null;
-		return env.getSurroundings(point, radius, step);
+		return env.getSurroundings(radius, step);
 	}
 
 	@Override
@@ -106,8 +120,7 @@ public class Dispatcher extends AbstractPersistenceService {
 
 	@Override
 	protected void onManagerCreated(OEntityManager manager) {
-		// TODO Auto-generated method stub
-		
+		// TODO Auto-generated method stub		
 	}
 
 	public void subscribe(long id, int i) {
@@ -143,13 +156,21 @@ public class Dispatcher extends AbstractPersistenceService {
 		public Integer getTimeStep( long days ) {
 			return (int) days % Integer.MAX_VALUE;
 		}
-		
+
+		public void setProtection(boolean protection) {
+			domain.setProtection(protection);
+		}
+
+		public LocationData<Integer>[] getProtected() {
+			return domain.getProtected();
+		}
+
 		public Collection<HubData> getUpdate( int step ){
 			return domain.getUpdate( step );
 		}
 
-		public LocationData[] getSurroundings( IPoint point, int radius, int step ){
-			return domain.getSurroundings(point, radius, step);
+		public LocationData<Integer>[] getSurroundings( int radius, int step ){
+			return domain.getSurroundings(radius, step);
 		}
 	}
 }

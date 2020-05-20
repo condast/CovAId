@@ -56,4 +56,6 @@ public interface IHub<T extends Object> extends Cloneable{
 	void removeListener(IHubListener<T> listener);
 
 	boolean isHealthy(IContagion<T> contagion);
+
+	double getContagion(IContagion<T> contagion, T step);
 }

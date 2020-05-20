@@ -78,6 +78,11 @@ public abstract class AbstractHub<T extends Object> extends Point implements IHu
 		this.location = location;
 	}
 
+	@Override
+	public double getContagion( IContagion<T> contagion, T step ) {
+		return this.location.getContagion(contagion, step);
+	}
+	
 	public boolean isEmpty() {
 		return this.persons.isEmpty();
 	}

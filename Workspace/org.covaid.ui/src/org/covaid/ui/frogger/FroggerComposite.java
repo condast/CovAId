@@ -17,6 +17,7 @@ import org.condast.commons.messaging.http.ResponseEvent;
 import org.condast.commons.strings.StringStyler;
 import org.condast.commons.ui.session.AbstractSessionHandler;
 import org.condast.commons.ui.session.SessionEvent;
+import org.covaid.core.data.ContagionData;
 import org.covaid.core.data.frogger.HubData;
 import org.covaid.core.def.IContagion;
 import org.covaid.core.def.IPoint;
@@ -316,35 +317,6 @@ public class FroggerComposite extends Composite {
 
 		lblInfectionsValue = new Label(grpSettings, SWT.NONE);
 		lblInfectionsValue.setText(String.valueOf( sliderInfections.getSelection()));
-
-		Group grpControls = new Group(this, SWT.NONE);
-		grpControls.setLayoutData(new GridData(SWT.RIGHT, SWT.FILL, true, false, 1, 1));
-		grpControls.setLayout(new GridLayout(3, false));
-		grpControls.setText("Controls");
-		new Label(grpControls, SWT.NONE);
-
-		Button btnNewButton = new Button(grpControls, SWT.NONE);
-		btnNewButton.addSelectionListener(new SelectionAdapter() {
-			private static final long serialVersionUID = 1L;
-
-			@Override
-			public void widgetSelected(SelectionEvent e) {
-			}
-		});
-		btnNewButton.setText("^");
-		new Label(grpControls, SWT.NONE);
-
-		Button button_1 = new Button(grpControls, SWT.NONE);
-		button_1.setText("<-");
-		new Label(grpControls, SWT.NONE);
-
-		Button button = new Button(grpControls, SWT.NONE);
-		button.setText("->");
-		new Label(grpControls, SWT.NONE);
-
-		Button btnV = new Button(grpControls, SWT.NONE);
-		btnV.setText("V");
-		new Label(grpControls, SWT.NONE);
 	}
 
 	public void addUpdateListener( IUpdateListener listener ) {
@@ -423,13 +395,13 @@ public class FroggerComposite extends Composite {
 		IPoint prev = transform(previous.getLocation().getPoint(), half, offset_top, horizon, scaleX, scaleY);
 		IPoint next = transform(hub.getLocation().getPoint(), half, offset_top, horizon, scaleX, scaleY);
 		
-		Iterator<Map.Entry<Contagion, Double>> iterator = previous.getLocation().getContagions().entrySet().iterator();
+		Iterator<Map.Entry<Contagion, ContagionData<Integer>>> iterator = previous.getLocation().getContagions().entrySet().iterator();
 		Color base = getBaseColour();
 		Color colour = base;
 		gc.setForeground(colour);
 		while( iterator.hasNext() ) {
-			Map.Entry<Contagion, Double> entry = iterator.next();
-			double cont2 = hub.getLocation().getContagions().get( entry.getKey()).doubleValue();
+			Map.Entry<Contagion, ContagionData<Integer>> entry = iterator.next();
+			double cont2 = hub.getLocation().getContagions().get( entry.getKey()).getTimeStep();
 			colour = getColour( base, entry.getKey(), cont2);
 			gc.setForeground( colour);
 			gc.drawLine(prev.getXpos(), prev.getYpos(), next.getXpos(), next.getYpos());
@@ -443,13 +415,14 @@ public class FroggerComposite extends Composite {
 		IPoint prev = transform(previous, half, offset_top, horizon, scaleX, scaleY);
 		IPoint next = transform(hub.getLocation().getPoint(), half, offset_top, horizon, scaleX, scaleY);
 		
-		Iterator<Map.Entry<Contagion, Double>> iterator = hub.getLocation().getContagions().entrySet().iterator();
+		Iterator<Map.Entry<Contagion, ContagionData<Integer>>> iterator = hub.getLocation().getContagions().entrySet().iterator();
 		Color base = getBaseColour();
 		Color colour = base;
 		gc.setForeground(colour);
 		while( iterator.hasNext() ) {
-			Map.Entry<Contagion, Double> entry = iterator.next();
-			double cont2 = hub.getLocation().getContagions().get( entry.getKey()).doubleValue();
+			Map.Entry<Contagion, ContagionData<Integer>> entry = iterator.next();
+			ContagionData<Integer> data = hub.getLocation().getContagions().get( entry.getKey()); 
+			double cont2 = (data == null )? 0: (data.getTimeStep() == null )?0: data.getTimeStep();
 			colour = getColour( base, entry.getKey(), cont2);
 			gc.setForeground( colour);
 			gc.drawLine(prev.getXpos(), prev.getYpos(), next.getXpos(), next.getYpos());
@@ -537,7 +510,6 @@ public class FroggerComposite extends Composite {
 			hubs.put(hd.getLocation().getPoint(), hd);
 			timeStep = hd.getLocation().getPoint().getYpos();
 		}
-		//System.err.println("WAIT");
 	}
 	
 	private class SessionHandler extends AbstractSessionHandler<ResponseEvent<Requests, StringBuilder>> implements IHttpClientListener<Requests, StringBuilder>{

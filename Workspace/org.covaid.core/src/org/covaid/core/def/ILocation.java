@@ -1,5 +1,7 @@
 package org.covaid.core.def;
 
+import org.covaid.core.data.frogger.LocationData;
+
 public interface ILocation<T extends Object> extends IPoint{
 
 	/**
@@ -9,6 +11,14 @@ public interface ILocation<T extends Object> extends IPoint{
 	 * @param contagiousness
 	 */
 	void addContagion(T timestamp, IContagion<T> contagion);
+
+	/**
+	 * Add a contagion if it is less than 100%
+	 * @param timestamp
+	 * @param contagion
+	 * @param risk
+	 */
+	boolean addContagion(T timestamp, IContagion<T> contagion, double risk);
 
 	boolean removeContagion(IContagion<T> contagion);
 
@@ -73,5 +83,25 @@ public interface ILocation<T extends Object> extends IPoint{
 	 * @param point
 	 * @return
 	 */
-	void move(IPoint point);	
+	void move(IPoint point);
+
+	/**
+	 * Get the risk of being infected by the given contagion at the given time
+	 * @param contagion
+	 * @param step
+	 * @return
+	 */
+	double getRisk(IContagion<T> contagion, T step);	
+
+	/**
+	 * Set the current risk of the given contagion. 
+	 * @param contagion
+	 * @param step; the moment that the contagion occurs
+	 * @param risk
+	 * @return
+	 */
+	boolean setRisk(IContagion<T> contagion, T step, double risk);
+
+	LocationData<T> toLocationData();
+
 }

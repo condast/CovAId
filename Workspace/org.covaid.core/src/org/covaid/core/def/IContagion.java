@@ -18,11 +18,12 @@ public interface IContagion<T extends Object> extends Comparable<IContagion<T>>{
 		OTHER,
 		COVID_19,
 		SEASONAL,
-		EXPLOSION;
+		HAY_FEVER,
+		CALAMITY;
 		
 		@Override
 		public String toString() {
-			return super.toString();
+			return StringStyler.prettyString( super.name());
 		}
 		
 		public static boolean isSupported( String str ) {

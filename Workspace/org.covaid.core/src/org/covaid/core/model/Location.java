@@ -3,6 +3,7 @@ package org.covaid.core.model;
 import java.util.Iterator;
 import java.util.Map;
 
+import org.covaid.core.data.ContagionData;
 import org.covaid.core.def.IContagion;
 import org.covaid.core.def.ILocation;
 import org.covaid.core.def.IPoint;
@@ -17,7 +18,7 @@ public class Location extends AbstractLocation<Integer>{
 		super(point);
 	}
 
-	public Location(IPoint point, Map<IContagion<Integer>, Integer> contagions) {
+	public Location(IPoint point, Map<IContagion<Integer>, ContagionData<Integer>> contagions) {
 		super(point, contagions);
 	}
 
@@ -38,10 +39,10 @@ public class Location extends AbstractLocation<Integer>{
 	public ILocation<Integer> clone() {
 		IPoint point = super.toPoint();
 		ILocation<Integer> result = new Location( point );
-		Iterator<Map.Entry<IContagion<Integer>, Integer>> iterator = super.getContagions().entrySet().iterator();
+		Iterator<Map.Entry<IContagion<Integer>, ContagionData<Integer>>> iterator = super.getContagions().entrySet().iterator();
 		while( iterator.hasNext() ) {
-			Map.Entry<IContagion<Integer>, Integer> entry = iterator.next();
-			result.addContagion(entry.getValue(), entry.getKey());
+			Map.Entry<IContagion<Integer>, ContagionData<Integer>> entry = iterator.next();
+			result.addContagion(entry.getValue().getTimeStep(), entry.getKey());
 		}
 		return result;
 	}

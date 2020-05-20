@@ -61,8 +61,9 @@ public class Hub extends AbstractHub<Integer> {
 		
 		//If the hub has deteriorated, then add the person 
 		worse = super.getLocation().getWorse( worst );
-		if( !Utils.assertNull(worse))
+		if( !Utils.assertNull(worse)) {
 			super.setLocation( worst );
+		}
 			
 		super.put( person, step );
 		return true;

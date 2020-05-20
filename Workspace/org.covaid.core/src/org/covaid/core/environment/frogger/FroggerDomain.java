@@ -6,10 +6,12 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.TreeMap;
+import java.util.stream.Collectors;
 
 import org.covaid.core.data.frogger.HubData;
 import org.covaid.core.data.frogger.LocationData;
 import org.covaid.core.def.IContagion;
+import org.covaid.core.def.ILocation;
 import org.covaid.core.def.IContagion.SupportedContagion;
 import org.covaid.core.def.IPerson;
 import org.covaid.core.def.IPoint;
@@ -19,6 +21,7 @@ import org.covaid.core.environment.IEnvironment;
 import org.covaid.core.hub.IHub;
 import org.covaid.core.model.Contagion;
 import org.covaid.core.model.Hub;
+import org.covaid.core.model.Location;
 import org.covaid.core.model.Person;
 import org.covaid.core.model.Point;
 
@@ -38,8 +41,12 @@ public class FroggerDomain extends AbstractDomain<Integer> implements IDomain<In
 	private int width;
 	private int infected;
 	
-	private String contagion;
+	private IContagion<Integer> contagion;
 	
+	private boolean protection;
+	private ILocation<Integer> centre;
+	private ILocation<Integer> protect;
+
 	private Collection<HubData> snapshot; 
 	
 	public FroggerDomain( String name, IEnvironment<Integer> environment ) {
@@ -52,7 +59,7 @@ public class FroggerDomain extends AbstractDomain<Integer> implements IDomain<In
 	
 	public FroggerDomain( String name, IEnvironment<Integer> environment, IContagion.SupportedContagion supported, int maxTime ) {
 		super( name );
-		this.contagion = supported.name();
+		this.contagion = new Contagion( supported);
 		persons = new ArrayList<>();
 		this.snapshot = new ArrayList<>();
 		hubs = new TreeMap<>( (o1, o2)->{
@@ -62,12 +69,36 @@ public class FroggerDomain extends AbstractDomain<Integer> implements IDomain<In
 		this.maxTime = maxTime;
 	}
 
+	/**
+	 * The population is the amount of people allowd in one scan 
+	 * @param population
+	 * @param infected
+	 */
+	public void init(int width, int infected, int population ) {
+		this.width = width;
+		this.infected = infected;
+		this.centre = new Location( new Point( width/2, DEFAULT_HISTORY));
+		this.protect = new Location( centre.toPoint() );
+		this.init(population);
+	}
+
+	public IContagion<Integer> getContagion() {
+		return contagion;
+	}
+
 	public Point getField() {
 		return new Point( width, hubs.size() );
 	}
 
 	public Collection<Hub> getHubs() {
 		return this.hubs.values();
+	}
+
+	public Collection<IHub<Integer>> getHubs( int ypos ) {
+		Collection<IHub<Integer>> result = hubs.entrySet().stream().filter(e -> e.getKey().getYpos() == ypos)
+				.map( Map.Entry::getValue).
+				collect(Collectors.toList());
+		return result;
 	}
 
 	@Override
@@ -85,19 +116,12 @@ public class FroggerDomain extends AbstractDomain<Integer> implements IDomain<In
 		this.hubs.clear();
 	}
 
-	/**
-	 * The population is the amount of people allowd in one scan 
-	 * @param population
-	 * @param infected
-	 */
-	public void init(int width, int infected, int population ) {
-		this.width = width;
-		this.infected = infected;
-		this.init(population);
-	}
-
 	public void setInfected(int infected) {
 		this.infected = infected;
+	}
+
+	public void setProtection(boolean protection) {
+		this.protection = protection;
 	}
 
 	@Override
@@ -129,7 +153,7 @@ public class FroggerDomain extends AbstractDomain<Integer> implements IDomain<In
 			double contagion = 100*Math.random();
 			int moment = (int) (timeStep*Math.random());
 			if( contagion < this.infected )
-				person.setContagion( moment, new Contagion( SupportedContagion.valueOf( this.contagion)));
+				person.setContagion( moment, this.contagion );
 		}
 		
 		//Last clear old values and update the hubs
@@ -143,6 +167,8 @@ public class FroggerDomain extends AbstractDomain<Integer> implements IDomain<In
 				entry.getValue().update(timeStep);
 			}
 		}
+		handleProtection(timeStep);
+		
 		for( IPoint point: remove)
 			this.hubs.remove( point);
 		persons.removeIf(person -> person.getLocation().getYpos() > this.maxTime);
@@ -174,6 +200,58 @@ public class FroggerDomain extends AbstractDomain<Integer> implements IDomain<In
 		return new ArrayList<HubData>( this.snapshot );
 	}
 
+	protected IPoint handleProtection( int timeStep ) {
+		IPoint point = protect.toPoint();
+		IPoint lowest = point;
+		if(!this.protection)
+			return lowest;
+
+		IHub<Integer> centreHub = this.hubs.get(point);
+		double risk = ( centreHub == null )?0: centreHub.getContagion(this.contagion, timeStep);
+		if( risk == 0 )
+			return lowest;
+		double test = risk;
+		ILocation<Integer> ld;
+		for( int i=0;i<3;i++ ) {
+			for( int j=0; j<3;j++) {
+				int x = protect.getXpos()+i-1;
+				x = (x<0)?0:(x>DEFAULT_WIDTH)?DEFAULT_WIDTH:x;
+				int y = protect.getYpos()+j-1;
+				y = (y<0)?0:(y>DEFAULT_HISTORY)?DEFAULT_HISTORY:y;
+				point = new Point( x, y);
+				IHub<Integer> testHub = this.hubs.get(point);
+				if( testHub == null )
+					continue;
+				ld = testHub.getLocation();
+				test = ld.getContagion( this.contagion, timeStep);
+				if( test < risk) {
+					lowest = point;
+					risk = test;
+				}
+			}
+		}
+
+		//Update the risk of contagion in the centre
+		double avg = ( this.centre.getContagion(contagion, timeStep) + centreHub.getLocation().getContagion(contagion, timeStep))/2;
+		centre.setRisk(contagion, timeStep, avg);
+
+		this.protect.move(lowest);
+		IHub<Integer> loc = this.hubs.get(lowest);
+		if( loc != null ) {
+			avg = ( this.protect.getContagion(contagion, timeStep) + loc.getContagion(contagion, timeStep))/2;
+			this.protect.setRisk(contagion, timeStep, avg);
+		}
+		return lowest;
+	}
+
+	@SuppressWarnings("unchecked")
+	public LocationData<Integer>[] getProtected() {
+		LocationData<Integer>[] results = new LocationData[2];
+		results[0] = centre.toLocationData();
+		results[1] = protect.toLocationData();
+		return results;
+	}
+
 	@Override
 	public synchronized void update(Integer step) {
 		Collection<Hub> results = new ArrayList<>();
@@ -187,17 +265,16 @@ public class FroggerDomain extends AbstractDomain<Integer> implements IDomain<In
 		this.snapshot = Arrays.asList( HubData.getHubs(results, step));
 	}
 
-	public synchronized LocationData[] getSurroundings( IPoint point, int radius, Integer step) {
+	public synchronized LocationData<Integer>[] getSurroundings( int radius, Integer step) {
 		Collection<Hub> results = new ArrayList<>();
 		Iterator<Map.Entry<IPoint, Hub>> iterator = this.hubs.entrySet().iterator();
 		while( iterator.hasNext()) {
 			Map.Entry<IPoint, Hub> entry = iterator.next();
-			boolean valid = ( Math.abs(entry.getKey().getXpos() - point.getXpos())<=radius ) && 
-					( Math.abs(entry.getKey().getYpos() - point.getYpos())<radius );
+			boolean valid = ( Math.abs(entry.getKey().getXpos() - protect.getXpos())<=radius ) && 
+					( Math.abs(entry.getKey().getYpos() - protect.getYpos())<radius );
 			if( valid )
 				results.add(entry.getValue());
 		}
-		return HubData.getSurroundings(results, point, radius, step );
+		return HubData.getSurroundings(results, protect, radius, step );
 	}
-
 }

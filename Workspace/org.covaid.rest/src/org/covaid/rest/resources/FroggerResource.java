@@ -22,7 +22,6 @@ import org.condast.commons.strings.StringUtils;
 import org.covaid.core.data.frogger.HubData;
 import org.covaid.core.data.frogger.LocationData;
 import org.covaid.core.environment.IEnvironment;
-import org.covaid.core.model.Point;
 import org.covaid.rest.core.Dispatcher;
 
 @Path("/")
@@ -217,7 +216,72 @@ public class FroggerResource {
 	}
 
 	/**
-	 * Start the frogger environment
+	 * Set the protection for the frogger environment
+	 * @param id
+	 * @param token
+	 * @param identifier
+	 * @param history
+	 * @return
+	 */
+	@GET
+	@Consumes(MediaType.APPLICATION_JSON)
+	@Produces(MediaType.TEXT_PLAIN)
+	@Path("/set-protection")
+	public Response setProtection( @QueryParam("id") long id, @QueryParam("token") long token, @QueryParam("identifier") String identifier,
+			@QueryParam("protection") boolean protection) {
+		logger.fine( "Set protection environment " + identifier );
+		Dispatcher dispatcher = Dispatcher.getInstance();
+		Response response = null;
+		try{
+			if( StringUtils.isEmpty(identifier))
+				return Response.serverError().build();
+			boolean result = dispatcher.setProtection(identifier, protection);
+			response = result? Response.ok( protection ).build(): Response.noContent().build();
+		}
+		catch( Exception ex ){
+			ex.printStackTrace();
+			return Response.serverError().build();
+		}
+		return response;
+	}
+
+	/**
+	 * Get the protected locations
+	 * @param id
+	 * @param token
+	 * @param identifier
+	 * @param history
+	 * @return
+	 */
+	@GET
+	@Consumes(MediaType.APPLICATION_JSON)
+	@Produces(MediaType.TEXT_PLAIN)
+	@Path("/protected")
+	public Response getProtected( @QueryParam("id") long id, @QueryParam("token") long token, @QueryParam("identifier") String identifier) {
+		logger.fine( "Get protected " + identifier );
+		Dispatcher dispatcher = Dispatcher.getInstance();
+		Response response = null;
+		try{
+			if( StringUtils.isEmpty(identifier))
+				return Response.serverError().build();
+			LocationData<Integer>[] results = dispatcher.getProtected(identifier);
+			if( Utils.assertNull(results))
+				return Response.noContent().build();
+			GsonBuilder builder = new GsonBuilder();
+			builder.enableComplexMapKeySerialization();
+			Gson gson = builder.create();
+			String str=  gson.toJson(results, LocationData[].class);
+			response = Response.ok(str).build();
+		}
+		catch( Exception ex ){
+			ex.printStackTrace();
+			response = Response.serverError().build();
+		}
+		return response;
+	}
+
+	/**
+	 * dispose of the frogger environment
 	 * @param id
 	 * @param token
 	 * @param identifier
@@ -301,7 +365,7 @@ public class FroggerResource {
 	@Produces(MediaType.APPLICATION_JSON)
 	@Path("/surroundings")
 	public synchronized Response getSurroundings( @QueryParam("id") long id, @QueryParam("token") long token, @QueryParam("identifier") String identifier,
-			@QueryParam("xpos") int xpos, @QueryParam("ypos") int ypos, @QueryParam("radius") int radius, @QueryParam("step") int step  ) {
+			@QueryParam("radius") int radius, @QueryParam("step") int step  ) {
 		logger.fine( "Get surroundings " + identifier );
 		Dispatcher dispatcher = Dispatcher.getInstance();
 		Response response = null;
@@ -310,7 +374,7 @@ public class FroggerResource {
 				return Response.serverError().build();
 			lock.lock();
 			try {
-				LocationData[] results = dispatcher.getSurroundings(identifier, new Point( xpos, ypos ), radius, step);
+				LocationData<Integer>[] results = dispatcher.getSurroundings(identifier, radius, step);
 				if( Utils.assertNull(results)) 
 					return Response.noContent().build();
 				GsonBuilder builder = new GsonBuilder();
