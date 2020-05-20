@@ -1,12 +1,15 @@
-<nav class="navbar navbar-inverse">
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
 	<img src="/covaid/images/large/Covid-19-64.png" class="img-fluid"
 		alt="Responsive image">
 		<a class="navbar-brand" href='${link.index}'>CovAID</a>
-		<button class="navbar-toggle" type="button"
-			data-toggle="collapse" data-target="#collapsibleNavbar">
-			<span class="icon-bar"></span> 
-			<span class="icon-bar"></span> 
+		<button class="navbar-toggler" type="button"
+			data-toggle="collapse" data-target="#collapsibleNavbar"
+			aria-controls="navbarSupportedContent" aria-expanded="false"
+			aria-label="Toggle navigation">
 			<span class="icon-bar"></span>
+			<span class="icon-bar"></span>
+			<span class="icon-bar"></span>
+			<span class="navbar-toggler-icon"></span>
 		</button>
 		<div class="collapse navbar-collapse" id="collapsibleNavbar">
 			<ul class="nav-list nav navbar-nav">

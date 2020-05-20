@@ -9,13 +9,12 @@
 <title>Health</title>
 
 <!-- Bootstrap -->
-<link rel="stylesheet" 
-	  href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
-
+<link rel="stylesheet"
+	href="/covaid/web/bootstrap/4.4.1/css/bootstrap.min.css"
+	integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh"
+	crossorigin="anonymous">
+</head>
 <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
-<script type="text/javascript" src="/covaid/web/jquery/jquery-3.4.1.min.js" ></script>
-<script type="text/javascript" src="/covaid/web/jquery/popper.min.js"></script>
-<script type="text/javascript" src="/covaid/web/bootstrap/js/bootstrap.min.js"></script>
 <script type="text/javascript">${script.js.mobile^js};</script>
 <style type="text/css">
 .full-height {

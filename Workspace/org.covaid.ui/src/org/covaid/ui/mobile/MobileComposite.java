@@ -9,7 +9,6 @@ import java.util.TimerTask;
 
 import org.covaid.core.mobile.IMobileRegistration;
 import org.covaid.ui.frogger.FroggerComposite;
-import org.covaid.ui.wizard.MobileWizard;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.GridData;
 

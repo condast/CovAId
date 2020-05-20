@@ -1,4 +1,4 @@
-package org.covaid.ui.wizard;
+package org.covaid.ui.mobile;
 
 import com.google.gson.Gson;
 import java.io.IOException;
@@ -298,9 +298,10 @@ public class MobileWizard extends Composite {
 	protected void createPage( Composite parent, int style ) {
 		super.setLayout(new GridLayout(1, false));
 		super.setBackground(getDisplay().getSystemColor(SWT.COLOR_BLACK));
-		new Label(this, SWT.NONE);
 		browser = new Browser( this, SWT.BORDER | SWT.NO_SCROLL);
-		browser.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1));
+		GridData gd_browser = new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1);
+		gd_browser.heightHint = 152;
+		browser.setLayoutData(gd_browser);
 		browser.setBackground(getDisplay().getSystemColor(SWT.COLOR_BLACK));
 		wizard = new AbstractHtmlParser(browser, MobileWizard.class) {
 		
@@ -416,7 +417,7 @@ public class MobileWizard extends Composite {
 		grpDaysForecast.setBackground(getDisplay().getSystemColor(SWT.COLOR_BLACK));
 		grpDaysForecast.setText( S_FORECAST );
 		grpDaysForecast.setLayout(new GridLayout(2, false));
-		grpDaysForecast.setLayoutData(new GridData(SWT.FILL, SWT.FILL, false, false, 1, 1));
+		grpDaysForecast.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false, 1, 1));
 		
 		contagionCombo = new Combo(grpDaysForecast, SWT.NONE);
 		contagionCombo.setLayoutData(new GridData(SWT.FILL, SWT.TOP, false, false, 1, 1));
