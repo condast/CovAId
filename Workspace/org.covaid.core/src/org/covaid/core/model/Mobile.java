@@ -78,12 +78,12 @@ public class Mobile<T extends Object> implements IMobile<T> {
 	}
 
 	@Override
-	public double getSafety() {
+	public double getRisk() {
 		return safety;
 	}
 
 	@Override
-	public void setSafety(double safety) {
+	public void setRisk(double safety) {
 		this.safety = safety;
 	}
 
@@ -116,6 +116,32 @@ public class Mobile<T extends Object> implements IMobile<T> {
 		return this.history.isEmpty();
 	}
 
+	/**
+	 * Set the health and safety based on a questionnaire
+	 * @param cough
+	 * @param fever
+	 * @param lackoftaste
+	 * @param soreThroat
+	 * @param nasalCold
+	 * @param temperature
+	 * @return
+	 */
+	@Override
+	public double getHealthAdvice( boolean cough, boolean fever, boolean lackoftaste, boolean soreThroat, boolean nasalCold,  double temperature) {
+		if( cough || fever || lackoftaste ) { 
+			health = 5;
+			safety = 100;
+		}else if( soreThroat || nasalCold) {
+			health = 40;
+			safety = 60;
+		}
+		if(( temperature < 36.5 )|| ( temperature > 39.5)) {
+			health = 0;
+			safety = 100;
+		}
+		return health;
+	}
+	
 	public StoredNode<T> getNode() {
 		return node;
 	}

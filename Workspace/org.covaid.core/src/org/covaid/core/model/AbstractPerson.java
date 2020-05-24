@@ -182,7 +182,7 @@ public abstract class AbstractPerson<T extends Object> implements IPerson<T>{
 		double maxContagion = 100;
 		if( contagiousness != null )
 			maxContagion = getContagiousness(contagion, step, contagiousness);
-		return contagion.getDistance() * mobile.getSafety()/ maxContagion;
+		return contagion.getDistance() * mobile.getRisk()/ maxContagion;
 	}
 
 	/**

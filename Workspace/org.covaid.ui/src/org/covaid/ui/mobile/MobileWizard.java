@@ -192,7 +192,7 @@ public class MobileWizard extends Composite {
 		Rectangle rect = canvas.getBounds();
 		int radius = Math.min(rect.width, rect.height)/3;
 		int riskRadius = radius;
-		double safety = ( this.mobile == null )?100:this.mobile.getSafety();
+		double safety = ( this.mobile == null )?100:this.mobile.getRisk();
 		double amplify = ( this.mobile == null )? 1.5: 2*(1.01-safety/100);
 		int safetyRadius = (int) (amplify*radius);
 		GC gc = e.gc;

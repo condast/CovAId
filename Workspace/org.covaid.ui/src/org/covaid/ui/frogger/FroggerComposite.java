@@ -46,14 +46,12 @@ import org.eclipse.swt.widgets.Slider;
 public class FroggerComposite extends Composite {
 	private static final long serialVersionUID = 1L;
 
-	//public static final String S_PATH = "http://localhost:10080/covaid/rest";
-	//public static final String S_PATH = "http://www.condast.com:8080/covaid/rest";
 	public static final String S_COVAID_CONTEXT = "covaid/rest";
 
 	public static final int DEFAULT_WIDTH = 100;//metres
 	public static final int DEFAULT_HISTORY = 16;//day, looking ahead of what is coming
 
-	public static final int DEFAULT_TEST_TIME = 1000;//seconds. After this the dimulation will stop
+	public static final int DEFAULT_TEST_TIME = 400;//seconds. After this the dimulation will stop
 
 	private enum Requests{
 

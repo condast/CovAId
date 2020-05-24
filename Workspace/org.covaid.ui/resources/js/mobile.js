@@ -5,6 +5,7 @@ const MOBILE_CREATE_URL = MOBILE_DEFAULT + 'create';
 const MOBILE_SET_HEALTH = MOBILE_DEFAULT + 'health';
 const MOBILE_SET_SAFETY = MOBILE_DEFAULT + 'safety';
 const MOBILE_SET_EMAIL = MOBILE_DEFAULT + 'email';
+const MOBILE_HEALTH_ADVICE = MOBILE_DEFAULT + 'healthAdvice';
 
 var id ${authentication.mobile.id};
 var token ${authentication.mobile.token};
@@ -70,6 +71,32 @@ function setSafety( val){
 	("#safetyRange").value = val; 
 }
 
+function healthAdvice() {
+	console.log('health advice');
+	let url = new URL(MOBILE_HEALTH_ADVICE)
+	url.search = new URLSearchParams({
+	    id:this.id,
+	    token:this.token,
+	    identifier:this.identifier,
+    	cough:$("#adviceCough").is(':checked'),
+		fever:$("#adviceFever").is(':checked'),
+		lot:$("#adviceLackOfTaste").is(':checked'),
+		sorethroat:$("#adviceSoreThroat").is(':checked'),
+		nasal:$("#adviceNasalCold").is(':checked'),
+		temp:$("#adviceTemp").val()
+	})
+	fetch( url, {
+		method: 'get',
+		headers: {
+			'Content-Type': 'application/json'
+		},
+	}).then(response => {
+		if (!response.ok) {
+			return;
+		}
+		refreshCanvas( this.id, this.token, this.identifier);
+	});
+}
 function setEmail() {
 	// Call a method on the slider
 	var value = $("#email").val();

@@ -190,6 +190,48 @@ public class MobileResource {
 	}
 
 	/**
+	 * Set the health of the owner
+	 * @param id
+	 * @param token
+	 * @param identifier
+	 * @param history
+	 * @return
+	 */
+	@GET
+	@Consumes(MediaType.APPLICATION_JSON)
+	@Produces(MediaType.APPLICATION_JSON)
+	@Path("/healthAdvice")
+	public Response getHealthAdvice( @QueryParam("id") long id, @QueryParam("token") long token, @QueryParam("identifier") String identifier,
+			@QueryParam("cough") boolean cough, @QueryParam("fever") boolean fever, @QueryParam("lot") boolean lackoftaste, 
+			@QueryParam("sorethroat") boolean soreThroat, @QueryParam("nasal") boolean nasalCold, @QueryParam("temp") double temperature) {
+		logger.info( "Get health Advice" + identifier );
+		Dispatcher dispatcher = Dispatcher.getInstance();
+		Response result = null;
+		MobileService service = null;
+		try{
+			service = new MobileService(dispatcher);
+			service.open();
+			Collection<IMobile<Date>> results = service.find(identifier);
+			if( Utils.assertNull( results ))
+				return Response.noContent().build();
+			IMobile<Date> mobile = results.iterator().next();
+			mobile.getHealthAdvice(cough, fever, lackoftaste, soreThroat, nasalCold, temperature);
+			service.update(mobile);
+			dispatcher.addMobile(mobile);
+			result = Response.ok( "ok").build();
+		}
+		catch( Exception ex ){
+			ex.printStackTrace();
+			return Response.serverError().build();
+		}
+		finally {
+			if( service != null )
+				service.close();			
+		}
+		return result;
+	}
+
+	/**
 	 * Set the safety of the owner
 	 * @param id
 	 * @param token
@@ -214,7 +256,7 @@ public class MobileResource {
 			if( Utils.assertNull( results ))
 				return Response.noContent().build();
 			IMobile<Date> mobile = results.iterator().next();
-			mobile.setSafety( safety );
+			mobile.setRisk( safety );
 			service.update(mobile);
 			dispatcher.addMobile(mobile);
 			result = Response.ok("ok").build();

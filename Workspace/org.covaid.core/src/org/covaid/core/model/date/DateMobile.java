@@ -20,7 +20,7 @@ public class DateMobile implements IMobile<Date>, IFieldListener {
 	
 	private String identifier;
 	
-	private double health, safety;
+	private double health, risk;
 	private String email;//doctor email
 	private IPoint location;
 
@@ -43,7 +43,7 @@ public class DateMobile implements IMobile<Date>, IFieldListener {
 	 * The Safety is the extent in which the bubble should protect you, e.g. for vulnerable people
 	 * The Risk is the amount of risk you are willing to take
 	 * @param id
-	 * @param safety (0-100)
+	 * @param risk (0-100)
 	 * @param risk (0-100)
 	 * @param location
 	 */
@@ -63,7 +63,7 @@ public class DateMobile implements IMobile<Date>, IFieldListener {
 	public DateMobile( String identifier, double safety, double health, IPoint location) {
 		super();
 		this.identifier = identifier;
-		this.safety = safety;
+		this.risk = safety;
 		this.health = health;
 		this.location = location;
 		this.history = new DateHistory();
@@ -106,18 +106,18 @@ public class DateMobile implements IMobile<Date>, IFieldListener {
 	@Override
 	public void setHealth(double health) {
 		this.health = health;
-		if( this.health < this.safety )
-			this.safety=  this.health;
+		if( this.health < this.risk )
+			this.risk=  this.health;
 	}
 
 	@Override
-	public double getSafety() {
-		return safety;
+	public double getRisk() {
+		return risk;
 	}
 
 	@Override
-	public void setSafety(double safety) {
-		this.safety = safety;
+	public void setRisk(double risk) {
+		this.risk = risk;
 	}
 
 	@Override
@@ -162,5 +162,33 @@ public class DateMobile implements IMobile<Date>, IFieldListener {
 	public void notifyFieldChange(FieldChangeEvent event) {
 		// TODO Auto-generated method stub
 		
-	}	
+	}
+
+	/**
+	 * Set the health and safety based on a questionnaire
+	 * @param cough
+	 * @param fever
+	 * @param lackoftaste
+	 * @param soreThroat
+	 * @param nasalCold
+	 * @param temperature
+	 * @return
+	 */
+	@Override
+	public double getHealthAdvice( boolean cough, boolean fever, boolean lackoftaste, boolean soreThroat, boolean nasalCold,  double temperature) {
+		this.health = 100;
+		this.risk = 50;
+		if( cough || fever || lackoftaste ) { 
+			health = 5;
+			risk = 0;
+		}else if( soreThroat || nasalCold) {
+			health = 40;
+			risk = 20;
+		}
+		if(( temperature < 36.5 )|| ( temperature > 39.5)) {
+			health = 0;
+			risk = 0;
+		}
+		return health;
+	}
 }

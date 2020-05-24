@@ -26,9 +26,9 @@ public interface IMobile<T extends Object> {
 
 	void setHealth(double risk);
 
-	double getSafety();
+	double getRisk();
 
-	void setSafety(double safety);
+	void setRisk(double safety);
 
 	IPoint getLocation();
 
@@ -51,5 +51,18 @@ public interface IMobile<T extends Object> {
 	String getEmail();
 
 	void setEmail(String email);
+
+	/**
+	 * Set the health and safety based on a questionnaire
+	 * @param cough
+	 * @param fever
+	 * @param lackoftaste
+	 * @param soreThroat
+	 * @param nasalCold
+	 * @param temperature
+	 * @return
+	 */
+	double getHealthAdvice(boolean cough, boolean fever, boolean lackoftaste, boolean soreThroat, boolean nasalCold,
+			double temperature);
 
 }

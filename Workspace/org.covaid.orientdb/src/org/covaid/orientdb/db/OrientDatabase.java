@@ -226,7 +226,7 @@ public class OrientDatabase {
 		return root;
 	}
 	
-	protected static void fill( Vertex vertex, StoredData data ) {
+	protected static void fill( Vertex vertex, StoredData<Date> data ) {
 		vertex.setProperty( StoredData.Attributes.IDENTIFIER.name(), data.getIdentifier());
 		Iterator<Map.Entry<IContagion<Date>, Date>> iterator = data.getContagiousness().entrySet().iterator();
 		OrientGraph graph = service.getGraph();
