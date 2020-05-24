@@ -56,7 +56,7 @@ public class Dispatcher extends AbstractPersistenceService {
 		this.mobiles.remove( identifier );
 	}
 
-	public IMobile<Date> getmobile( String identifier ){
+	public IMobile<Date> getMobile( String identifier ){
 		return this.mobiles.get(identifier);
 	}
 	

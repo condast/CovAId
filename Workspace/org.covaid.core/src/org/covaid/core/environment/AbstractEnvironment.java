@@ -56,9 +56,13 @@ public abstract class AbstractEnvironment<T extends Object> implements IEnvironm
 	};
 	
 	protected AbstractEnvironment( String name ) {
-		this( name, DEFAULT_LENGTH, DEFAULT_WIDTH, DEFAULT_POPULATION, DEFAULT_SPEED );
+		this( name, DEFAULT_SPEED );
 	}
-	
+
+	protected AbstractEnvironment( String name, int speed ) {
+		this( name, DEFAULT_LENGTH, DEFAULT_WIDTH, DEFAULT_POPULATION, speed );
+	}
+
 	protected AbstractEnvironment( String name, int length, int width, int population ) {
 		this( name, length, width, population, DEFAULT_SPEED);
 	}

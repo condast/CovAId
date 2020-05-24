@@ -3,11 +3,15 @@ package org.covaid.core.environment.frogger;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.TreeMap;
+import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
+import org.covaid.core.data.TimelineCollection;
+import org.covaid.core.data.TimelineData;
 import org.covaid.core.data.frogger.HubData;
 import org.covaid.core.data.frogger.LocationData;
 import org.covaid.core.def.IContagion;
@@ -19,6 +23,7 @@ import org.covaid.core.environment.AbstractDomain;
 import org.covaid.core.environment.IDomain;
 import org.covaid.core.environment.IEnvironment;
 import org.covaid.core.hub.IHub;
+import org.covaid.core.hub.IHubListener;
 import org.covaid.core.model.Contagion;
 import org.covaid.core.model.Hub;
 import org.covaid.core.model.Location;
@@ -33,6 +38,11 @@ public class FroggerDomain extends AbstractDomain<Integer> implements IDomain<In
 
 	public static final String S_ERR_INVALID_HUB = "An invalid hub was encountered; the position must be smaller than the width: ";
 
+	public enum Hubs{
+		CENTRE,
+		PROTECTED;
+	}
+	
 	private Collection<IPerson<Integer>> persons;
 	private Map<IPoint, Hub> hubs;
 	//private int window; // the window is the number of days that are in the future 
@@ -49,6 +59,20 @@ public class FroggerDomain extends AbstractDomain<Integer> implements IDomain<In
 
 	private Collection<HubData> snapshot; 
 	
+	private TimelineCollection<Integer, Double> average;
+	
+	private int timeStep;
+	
+	private Logger logger = Logger.getLogger(this.getClass().getName());
+	
+	private IHubListener<Integer> hubListener = (e)->{
+		for( IHub<Integer> hub: this.hubs.values()) {
+			if( hub.equals( e.getHub()))
+				continue;
+			hub.updateTrace( e.getContagion(),e.getStep(), e.getTrace());
+		}
+	};
+	
 	public FroggerDomain( String name, IEnvironment<Integer> environment ) {
 		this( name, environment, SupportedContagion.COVID_19, DEFAULT_MAX_TIME );
 	}
@@ -59,6 +83,7 @@ public class FroggerDomain extends AbstractDomain<Integer> implements IDomain<In
 	
 	public FroggerDomain( String name, IEnvironment<Integer> environment, IContagion.SupportedContagion supported, int maxTime ) {
 		super( name );
+		this.timeStep = 0;
 		this.contagion = new Contagion( supported);
 		persons = new ArrayList<>();
 		this.snapshot = new ArrayList<>();
@@ -67,6 +92,7 @@ public class FroggerDomain extends AbstractDomain<Integer> implements IDomain<In
 			return( compare != 0)? compare: o1.getXpos() - o2.getXpos();
 		});
 		this.maxTime = maxTime;
+		this.average = new TimelineCollection<>();
 	}
 
 	/**
@@ -129,7 +155,7 @@ public class FroggerDomain extends AbstractDomain<Integer> implements IDomain<In
 
 		//first advance the population by moving the persons one place
 		//logger.info( "TIMESTEP: " + timeStep +", " + this.hubs.size());
-
+		this.timeStep = (timeStep == null )?0: timeStep;
 		for( IPerson<Integer> person: this.persons ) {
 			IPoint point = person.getLocation().clone();
 			int xpos = moveX( person );
@@ -179,6 +205,7 @@ public class FroggerDomain extends AbstractDomain<Integer> implements IDomain<In
 		Hub hub = this.hubs.get(person.getLocation());
 		if( hub == null ) {
 			hub = new Hub( person, step, DEFAULT_MAX_TIME );
+			hub.addListener(hubListener);
 			this.hubs.put(hub.getLocation(), hub);
 		}
 		hub.encounter(person, step);
@@ -196,10 +223,6 @@ public class FroggerDomain extends AbstractDomain<Integer> implements IDomain<In
 		return xpos;
 	}
 	
-	public synchronized Collection<HubData> getUpdate(Integer step){
-		return new ArrayList<HubData>( this.snapshot );
-	}
-
 	protected IPoint handleProtection( int timeStep ) {
 		IPoint point = protect.toPoint();
 		IPoint lowest = point;
@@ -234,16 +257,28 @@ public class FroggerDomain extends AbstractDomain<Integer> implements IDomain<In
 		//Update the risk of contagion in the centre
 		double avg = ( this.centre.getContagion(contagion, timeStep) + centreHub.getLocation().getContagion(contagion, timeStep))/2;
 		centre.setRisk(contagion, timeStep, avg);
+		if( avg > Double.MIN_VALUE)
+			logger.info("CENTRE AVERAGE: " + avg );
 
 		this.protect.move(lowest);
 		IHub<Integer> loc = this.hubs.get(lowest);
 		if( loc != null ) {
 			avg = ( this.protect.getContagion(contagion, timeStep) + loc.getContagion(contagion, timeStep))/2;
+			if( avg > Double.MIN_VALUE)
+				logger.info("PROTECT AVERAGE: " + avg );
 			this.protect.setRisk(contagion, timeStep, avg);
 		}
 		return lowest;
 	}
 
+	public Map<Integer, Double> getPrediction( Hubs select, Integer range ) {
+		IPoint point = Hubs.CENTRE.equals(select)?centre.toPoint(): protect.toPoint();
+		IHub<Integer> hub = this.hubs.get(point);
+		if( hub == null)
+			return new HashMap<>();
+		return hub.getPrediction(contagion, range);
+	}
+	
 	@SuppressWarnings("unchecked")
 	public LocationData<Integer>[] getProtected() {
 		LocationData<Integer>[] results = new LocationData[2];
@@ -252,6 +287,41 @@ public class FroggerDomain extends AbstractDomain<Integer> implements IDomain<In
 		return results;
 	}
 
+	public TimelineCollection<Integer, Double> getAverage( int step ) {
+		String identifier = null;
+		for( Hubs name: Hubs.values() ) {
+			identifier = name.name();
+			TimelineData<Integer, Double> timeLine = this.average.get( identifier );
+			if( timeLine == null ) {
+				timeLine = new TimelineData<Integer, Double>(identifier);
+				this.average.put(identifier, timeLine);
+			}else {
+				if( timeStep > step )
+					timeLine.getData().entrySet().removeIf(entry-> entry.getKey()<= timeStep - step);
+			}
+			int time = timeLine.size();
+			switch( name ) {
+			case CENTRE:
+				timeLine.put( timeStep, this.centre.getRisk(contagion, step));
+				break;
+			case PROTECTED:
+				timeLine.put( timeStep, this.protect.getRisk(contagion, step));
+				break;
+			}
+		}
+		return this.average;
+	}
+
+	/**
+	 * Get the hubs over the given period, from the most recent to recent-period
+	 */
+	public synchronized Collection<HubData> getUpdate(Integer period){
+		return this.snapshot.stream().filter(item -> item.getLocation().getPoint().getYpos() < period.intValue()).collect(Collectors.toList());
+	}
+
+	/**
+	 * Update the hubs, along the time step
+	 */
 	@Override
 	public synchronized void update(Integer step) {
 		Collection<Hub> results = new ArrayList<>();

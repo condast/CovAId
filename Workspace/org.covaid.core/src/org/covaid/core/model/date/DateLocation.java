@@ -35,12 +35,6 @@ public class DateLocation extends AbstractLocation<Date> implements ILocation<Da
 		super( identifier, xpos, ypos);
 	}
 
-	
-	@Override
-	protected ILocation<Date> createLocation(String identifier, IPoint point) {
-		return new DateLocation( identifier, point );
-	}
-	
 	@Override
 	public ILocation<Date> clone() {
 		IPoint point = super.toPoint();

@@ -200,7 +200,8 @@ public abstract class AbstractHistory<T extends Object> implements IHistory<T> {
 			previous = previous.createWorst(location);
 			result = true;
 		}
-		this.history.put(step, previous);		
+		if( previous != null )
+			this.history.put(step, previous);		
 		return result;
 	}
 }

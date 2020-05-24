@@ -6,7 +6,9 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.TreeMap;
 import java.util.logging.Logger;
 
@@ -20,10 +22,13 @@ import org.condast.commons.messaging.http.ResponseEvent;
 import org.condast.commons.strings.StringStyler;
 import org.condast.commons.ui.session.AbstractSessionHandler;
 import org.condast.commons.ui.session.SessionEvent;
+import org.condast.commons.ui.xy.AbstractMultiXYGraph;
 import org.condast.js.commons.controller.AbstractJavascriptController;
 import org.condast.js.commons.eval.IEvaluationListener;
 import org.condast.js.commons.wizard.AbstractHtmlParser;
 import org.covaid.core.data.ContagionData;
+import org.covaid.core.data.TimelineCollection;
+import org.covaid.core.data.TimelineData;
 import org.covaid.core.data.frogger.LocationData;
 import org.covaid.core.def.IContagion;
 import org.covaid.core.def.IMobile;
@@ -56,8 +61,6 @@ import org.eclipse.swt.widgets.Button;
 public class MobileWizard extends Composite {
 	private static final long serialVersionUID = 1L;
 
-	//public static final String S_PATH = "http://localhost:10080/covaid/mobile/rest";
-	//public static final String S_PATH = "http://www.condast.com:8080/covaid/mobile/rest";
 	public static final String S_COVAID_CONTEXT = "covaid/rest";
 	public static final String S_COVAID_MOBILE_CONTEXT = "covaid/mobile/rest";
 
@@ -66,6 +69,26 @@ public class MobileWizard extends Composite {
 	public static final int DEFAULT_RADIUS = 5;//day, looking ahead of what is coming
 
 	private static final String S_FORECAST = "14 Day Forecast";
+
+	public enum Hubs{
+		CENTRE,
+		PROTECTED;
+		
+		public int getColorCode() {
+			int colour = SWT.COLOR_WHITE;
+			switch( this ) {
+			case CENTRE:
+				colour = SWT.COLOR_RED;
+				break;
+			case PROTECTED:
+				colour = SWT.COLOR_DARK_GREEN;
+				break;
+			default:
+				break;
+			}
+			return colour;
+		}
+	}
 
 	private enum Requests{
 
@@ -77,7 +100,9 @@ public class MobileWizard extends Composite {
 		GET_RISK,
 		SURROUNDINGS,
 		SET_PROTECTION,
-		PROTECTED;
+		PROTECTED,
+		PREDICTION,
+		AVERAGE;
 		
 		@Override
 		public String toString() {
@@ -120,7 +145,8 @@ public class MobileWizard extends Composite {
 		YPOS,
 		RADIUS,
 		STEP,
-		PROTECTION;
+		PROTECTION,
+		RANGE;
 		
 		@Override
 		public String toString() {
@@ -134,11 +160,10 @@ public class MobileWizard extends Composite {
 	private Canvas canvasForecast;
 	private Group grpDaysForecast;
 	private Combo contagionCombo;
-	private Button btnSafetyButton;
-	private Label lblWithout;
-	private Label lblWithoutValue;		
-	private Label lblWith;
-	private Label lblWithValue;		
+	private Button btnSafety;
+	private Label lblRisk;
+	private Label lblProtected;		
+	private XYGraph graph;
 
 	private AbstractHtmlParser wizard;
 	
@@ -151,10 +176,9 @@ public class MobileWizard extends Composite {
 	private Config config;
 
 	private Map<IPoint,LocationData<Integer>> hubs;	
-	private int timeStep;
-
-	private IContagion<Integer> contagion;
 	
+	private Map<Integer,Double> prediction;	
+
 	private boolean protection;
 	
 	private Collection<IMobileRegistration<Date>> listeners;
@@ -222,15 +246,32 @@ public class MobileWizard extends Composite {
 	private PaintListener forecastListener = (e)->{
 		Canvas canvas = (Canvas) e.getSource();
 		Rectangle rect = canvas.getBounds();
-		int halfY = rect.height/2;
 		GC gc = e.gc;
 		Color base = getDisplay().getSystemColor(SWT.COLOR_DARK_CYAN);
 		gc.setBackground(base);
-		gc.drawLine( 10, 10, 10, rect.height - 10 );
-		gc.drawLine( 10, halfY, rect.width, halfY );
+		int xStart = 10;
+		int yStart = rect.height/2;
+		int panning = 10;
+		int scaleX = (rect.width-2*panning)/DEFAULT_HISTORY;
+		int scaleY = (rect.height-2*panning)/100;
+		int step = (rect.width-2*panning)/DEFAULT_HISTORY;
+		gc.drawLine( xStart, panning, xStart, rect.height - panning );
+		gc.drawLine( xStart, yStart, rect.width, yStart );
 		for( int i=0; i<DEFAULT_HISTORY; i++ ) {
-			int x = 10 + i * (rect.width-20)/DEFAULT_HISTORY;
-			gc.drawLine(x, halfY-3, x, halfY+3);
+			int x = xStart + i * step;
+			gc.drawLine(x, yStart-3, x, yStart+3);
+		}
+		gc.setForeground( base );
+		if( !Utils.assertNull(prediction )) {
+			Iterator<Map.Entry<Integer, Double>> iterator = prediction.entrySet().iterator();
+			Map.Entry<Integer, Double> current = null;
+			while( iterator.hasNext()) {
+				Map.Entry<Integer, Double> entry = iterator.next();
+				int xpos = xStart+scaleX*entry.getKey();
+				int ypos = (int) ((current == null )?yStart: yStart -scaleY * current.getValue());
+				gc.drawLine(xpos, ypos, xpos+step, (int) (yStart + scaleY*entry.getValue()));
+				current = entry;
+			}
 		}
 		gc.dispose();
 		requestLayout();
@@ -238,7 +279,7 @@ public class MobileWizard extends Composite {
 
 	private IEvaluationListener<Object> elistener = (event) ->{
 		try {
-			logger.fine("CALLBACK");
+			logger.info("CALLBACK");
 			if(!CanvasController.S_CALLBACK_ID.equals(event.getId()) || ( this.authData == null ))
 				return;
 			MobileWebClient client = new MobileWebClient();
@@ -260,15 +301,14 @@ public class MobileWizard extends Composite {
 		config = new Config();
 		this.link = Links.DOWNLOAD;
 		createPage(parent, style | SWT.NO_SCROLL);
-		this.contagion = new Contagion( SupportedContagion.COVID_19 );
 		this.contagionCombo.setItems(SupportedContagion.getItems());
 		this.contagionCombo.select(SupportedContagion.COVID_19.ordinal());
 		this.controller = new CanvasController( this.browser );
 		this.controller.addEvaluationListener(elistener);
 
-		this.timeStep = 0;
 		this.protection = false;
 		this.hubs = new TreeMap<>();
+		this.prediction = new HashMap<>();
 		
 		session = new SessionHandler(getDisplay());
 		this.listeners = new ArrayList<>();
@@ -284,7 +324,7 @@ public class MobileWizard extends Composite {
 			auth.put(AuthenticationData.Authentication.valueOf(split1[0].toUpperCase()), split1[1]);
 		}
 		this.authData = new AuthenticationData(auth);
-		this.btnSafetyButton.setEnabled(this.authData !=null);
+		this.btnSafety.setEnabled(this.authData !=null);
 		if( mobile == null ) {
 			MobileWebClient client = new MobileWebClient();
 			Map<String, String> params = authData.toMap();
@@ -437,14 +477,15 @@ public class MobileWizard extends Composite {
 		canvasSafety = new Canvas(grpIndication, SWT.NONE);
 		canvasSafety.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 2, 1));
 		canvasSafety.setBackground(getDisplay().getSystemColor(SWT.COLOR_TRANSPARENT));
-		
-		btnSafetyButton = new Button(grpIndication, SWT.CHECK);
-		btnSafetyButton.setSize(141, 20);
-		btnSafetyButton.setBackground( getDisplay().getSystemColor(SWT.COLOR_TRANSPARENT));
-		btnSafetyButton.setForeground( getDisplay().getSystemColor(SWT.COLOR_WHITE));
-		btnSafetyButton.setText("Enable Protection");
-		btnSafetyButton.setEnabled(this.authData != null );
-		btnSafetyButton.addSelectionListener( new SelectionAdapter() {
+		canvasSafety.addPaintListener(safetyListener);
+				
+		btnSafety = new Button(grpIndication, SWT.CHECK);
+		btnSafety.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, false, false, 2, 1));
+		btnSafety.setBackground( getDisplay().getSystemColor(SWT.COLOR_TRANSPARENT));
+		btnSafety.setForeground( getDisplay().getSystemColor(SWT.COLOR_WHITE));
+		btnSafety.setText("Enable Protection");
+		btnSafety.setEnabled(this.authData != null );
+		btnSafety.addSelectionListener( new SelectionAdapter() {
 			private static final long serialVersionUID = 1L;
 
 			@Override
@@ -455,28 +496,25 @@ public class MobileWizard extends Composite {
 				super.widgetSelected(e);
 			}
 		});
-		new Label(grpIndication, SWT.NONE);
 		
-		lblWithout = new Label(grpIndication, SWT.NONE);
-		lblWithout.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, false, false, 1, 1));
-		lblWithout.setText("Risk without:");
-		lblWithout.setEnabled(this.protection);
 		
-		lblWithoutValue = new Label(grpIndication, SWT.NONE);
-		lblWithoutValue.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false, 1, 1));
-		lblWithoutValue.setText("0");
-		lblWithoutValue.setEnabled(this.protection);
-		
-		lblWith = new Label(grpIndication, SWT.NONE);
-		lblWith.setLayoutData(new GridData(SWT.FILL, SWT.FILL, false, false, 1, 1));
-		lblWith.setText("Risk with:");
-		lblWith.setEnabled(this.protection);
-		
-		lblWithValue = new Label(grpIndication, SWT.NONE);
-		lblWithValue.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false, 1, 1));
-		lblWithValue.setText("0");
-		lblWithValue.setEnabled(this.protection);
-		canvasSafety.addPaintListener(safetyListener);
+		lblRisk = new Label(grpIndication, SWT.NONE);
+		lblRisk.setLayoutData(new GridData(SWT.FILL, SWT.FILL, false, false, 1, 1));
+		lblRisk.setEnabled(this.protection);
+		lblRisk.setBackground( getDisplay().getSystemColor(SWT.COLOR_BLACK));
+		lblRisk.setForeground( getDisplay().getSystemColor( Hubs.CENTRE.getColorCode()));
+		lblRisk.setText("Risk without:");
+
+		graph = new XYGraph(grpIndication, SWT.BORDER);
+		graph.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false, 1, 2));
+		graph.setEnabled(this.protection);
+		graph.setBackground(getDisplay().getSystemColor( SWT.COLOR_TRANSPARENT));
+		lblProtected = new Label(grpIndication, SWT.NONE);
+		lblProtected.setLayoutData(new GridData(SWT.RIGHT, SWT.FILL, false, false, 1, 1));
+		lblProtected.setBackground( getDisplay().getSystemColor(SWT.COLOR_BLACK));
+		lblProtected.setForeground( getDisplay().getSystemColor( Hubs.PROTECTED.getColorCode()));
+		lblProtected.setText("With: ");
+		lblProtected.setEnabled(this.protection);		
 		
 		wizard.createPage( MobileWizard.class.getResourceAsStream( link.toFile()));	
 	}
@@ -493,6 +531,12 @@ public class MobileWizard extends Composite {
 		for( IMobileRegistration<Date> listener: this.listeners )
 			listener.notifyMobileRegistration(event);
 	}
+	
+	public void clear() {
+		this.graph.clear();
+		this.hubs.clear();
+		this.prediction.clear();
+	}
 
 	public void poll() {
 		try {
@@ -501,7 +545,10 @@ public class MobileWizard extends Composite {
 			Map<String, String> params = authData.toMap();
 			params.put(Attributes.RADIUS.toString(), String.valueOf( DEFAULT_RADIUS ));
 			params.put(Attributes.STEP.toString(), String.valueOf( DEFAULT_HISTORY+1 ));
+			params.put(Attributes.RANGE.toString(), String.valueOf( DEFAULT_HISTORY+1 ));
 			client.sendGet(Requests.SURROUNDINGS, params);
+			client.sendGet(Requests.PREDICTION, params);
+			client.sendGet(Requests.AVERAGE, params);
 			client.removeListener(session);
 		} catch (Exception e1) {
 			e1.printStackTrace();
@@ -533,6 +580,37 @@ public class MobileWizard extends Composite {
 		this.controller.removeEvaluationListener(elistener);
 		this.controller.dispose();
 		super.dispose();
+	}
+	
+	private class XYGraph extends AbstractMultiXYGraph<Integer, Double>{
+		private static final long serialVersionUID = 1L;
+
+		public XYGraph(Composite parent, int style) {
+			super(parent, style|SWT.BOTTOM);
+		}
+	
+		@Override
+		protected Color onSetForeground(GC gc, String identifier) {
+			Color color = getDisplay().getSystemColor( Hubs.valueOf(identifier).getColorCode());
+			return color;
+		}
+
+		@Override
+		protected Color onSetBackground(GC gc, String identifier) {
+			Color color = getDisplay().getSystemColor( Hubs.valueOf(identifier).getColorCode());
+			return color;
+		}
+
+		@Override
+		protected int onPaint(GC gc, String identifier, int xZero, int yZero, Entry<Integer, Double> prev, Entry<Integer, Double> value) {
+			double scaleX = ((double)getArea().width)/DEFAULT_HISTORY;
+			double scaleY = ((double)getArea().height)/100;
+			int prevY = (int) ((prev == null )? 0: (int)(scaleY*prev.getValue()));
+			int ypos = (int) ((value == null )? 0: (int)(scaleY*value.getValue()));
+			gc.drawLine(xZero, yZero - prevY, (int)(xZero+scaleX), yZero - ypos);	
+			int xpos = (value == null )? xZero: xZero + (int)(scaleX * value.getKey());
+			return xpos;
+		}	
 	}
 	
 	private class MobileWebClient extends AbstractHttpRequest<Requests, StringBuilder>{
@@ -567,7 +645,7 @@ public class MobileWizard extends Composite {
 				notifyRegistrationEvent( new RegistrationEvent<Date>(browser, IMobileRegistration.RegistrationTypes.UNREGISTER, authData, mobile));
 				break;
 			default:
-				break;// TODO Auto-generated method stub
+				break;
 			}
 			canvasSafety.redraw();
 			return null;
@@ -607,6 +685,7 @@ public class MobileWizard extends Composite {
 		protected void onHandleResponseFail(HttpStatus status, ResponseEvent<Requests, StringBuilder> event)
 				throws IOException {
 			switch( event.getRequest()){
+			case PREDICTION:
 			case SURROUNDINGS:
 				break;
 			default:
@@ -626,7 +705,6 @@ public class MobileWizard extends Composite {
 				continue;
 			}
 			hubs.put(ld.getPoint(), ld);
-			timeStep = ld.getPoint().getYpos();
 		}
 		handleProtection( );
 	}
@@ -673,19 +751,27 @@ public class MobileWizard extends Composite {
 			ResponseEvent<Requests, StringBuilder> response = sevent.getData();
 			switch( sevent.getData().getRequest()) {
 			case GET:
-				btnSafetyButton.setEnabled(authData != null );
+				btnSafety.setEnabled(authData != null );
 				break;
 			case SET_PROTECTION:
 				protection = Boolean.valueOf(response.getResponse());
-				lblWithout.setEnabled(protection);
-				lblWithoutValue.setEnabled(protection);
-				lblWith.setEnabled(protection);
-				lblWithValue.setEnabled(protection);
+				lblRisk.setEnabled(protection);
+				lblProtected.setEnabled(protection);
+				//lblWith.setEnabled(protection);
+				//lblWithValue.setEnabled(protection);
 				break;
 			case PROTECTED:
 				LocationData<Integer>[] results = gson.fromJson(response.getResponse(), LocationData[].class);
-				lblWithoutValue.setText( String.format("%3f", results[0].getRisk(contagion, timeStep)));
-				lblWithValue.setText( String.format("%3f", results[1].getRisk(contagion, timeStep)));
+				//lblWithoutValue.setText( String.format("%3f", results[0].getRisk(contagion, timeStep)));
+				//lblWithValue.setText( String.format("%3f", results[1].getRisk(contagion, timeStep)));
+				break;
+			case AVERAGE:
+				TimelineCollection<Integer, Double> timeLine = convert( gson, response.getResponse());	
+				graph.setInput(timeLine.getTimelineData());
+				graph.requestLayout();
+				break;
+			case PREDICTION:
+				prediction = gson.fromJson(response.getResponse(), Map.class);				
 				break;
 			case SURROUNDINGS:
 				setHubs( gson.fromJson(response.getResponse(), LocationData[].class));				
@@ -696,6 +782,20 @@ public class MobileWizard extends Composite {
 			canvasSafety.redraw();
 			canvasForecast.redraw();
 			requestLayout();
+		}
+
+		@SuppressWarnings("unchecked")
+		private TimelineCollection<Integer, Double> convert( Gson gson, String str ){
+			TimelineCollection<String, Double> timeLine = gson.fromJson( str, TimelineCollection.class);
+			TimelineCollection<Integer, Double> collection = new TimelineCollection<Integer, Double>();
+			for( Map.Entry<String, Map<String, Double>> entry: timeLine.getTimelineData().entrySet()) {
+				TimelineData<Integer, Double> td = new TimelineData<Integer, Double>(entry.getKey());
+				for( Map.Entry<String, Double> data: entry.getValue().entrySet()) {
+					td.put( Integer.parseInt(data.getKey()), data.getValue());
+					collection.put(entry.getKey(), td);
+				}
+			}
+			return collection;
 		}
 
 		@Override

@@ -34,8 +34,8 @@ function updateHealth() {
 		if (!response.ok) {
 			return;
 		}
+		refreshCanvas( this.id, this.token, this.identifier);
 	});
-	refreshCanvas( this.id, this.token, this.identifier);
 }
 
 function setHealth( val){
@@ -62,8 +62,8 @@ function updateSafety() {
 		if (!response.ok) {
 			return;
 		}
+		refreshCanvas( this.id, this.token, this.identifier);
 	});
-	refreshCanvas( this.id, this.token, this.identifier);
 }
 
 function setSafety( val){

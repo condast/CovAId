@@ -4,6 +4,7 @@ import java.util.Collection;
 import java.util.Map;
 import java.util.TreeMap;
 
+import org.covaid.core.data.TimelineCollection;
 import org.covaid.core.data.frogger.HubData;
 import org.covaid.core.data.frogger.LocationData;
 import org.covaid.core.environment.AbstractEnvironment;
@@ -98,6 +99,20 @@ public class Dispatcher extends AbstractPersistenceService {
 		return result.getProtected();
 	}
 
+	public Map<Integer, Double> getPrediction( String identifier, FroggerDomain.Hubs select, Integer range ) {
+		Environment result = this.environments.get( identifier);
+		if( result == null )
+			return null;
+		return result.getPrediction(select, range);
+	}
+
+	public TimelineCollection<Integer, Double> getAverage( String identifier, int step ) {
+		Environment result = this.environments.get( identifier);
+		if( result == null )
+			return null;
+		return result.getAverage( step);		
+	}
+
 	public Collection<HubData> getUpdate(String identifier, int step ) {
 		Environment env = (Environment) this.environments.get( identifier);
 		if( env == null )
@@ -133,11 +148,12 @@ public class Dispatcher extends AbstractPersistenceService {
 	}
 
 	private class Environment extends AbstractEnvironment<Integer>{
-
+		private static final int FROGGER_SPEED = 1500;//1.5 sec
+		
 		private FroggerDomain domain;
 		
 		protected Environment( String name) {
-			super(name);
+			super(name, FROGGER_SPEED);
 			this.domain = new FroggerDomain( name, this);
 			super.addDomain(domain);
 		}
@@ -146,6 +162,13 @@ public class Dispatcher extends AbstractPersistenceService {
 			int population = (int)((double)width*density/100);
 			super.init(population);
 			domain.init(width, infected, 10);
+		}
+
+		
+		@Override
+		public void clear() {
+			domain.clear();
+			super.clear();
 		}
 
 		public void setinfected( int infected ) {
@@ -163,6 +186,14 @@ public class Dispatcher extends AbstractPersistenceService {
 
 		public LocationData<Integer>[] getProtected() {
 			return domain.getProtected();
+		}
+
+		public Map<Integer, Double> getPrediction( FroggerDomain.Hubs select, Integer range ) {
+			return this.domain.getPrediction(select, range);
+		}
+
+		public TimelineCollection<Integer, Double> getAverage( int step ) {
+			return domain.getAverage(step);
 		}
 
 		public Collection<HubData> getUpdate( int step ){

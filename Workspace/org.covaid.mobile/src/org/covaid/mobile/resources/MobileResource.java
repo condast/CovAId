@@ -124,7 +124,7 @@ public class MobileResource {
 		Response result = null;
 		MobileService service = null;
 		try{
-			IMobile<Date> mobile = dispatcher.getmobile(identifier);
+			IMobile<Date> mobile = dispatcher.getMobile(identifier);
 			if( mobile == null ) {
 				service = new MobileService(dispatcher);
 				service.open();

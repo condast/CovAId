@@ -423,6 +423,7 @@ public class FroggerComposite extends Composite {
 			Map.Entry<Contagion, ContagionData<Integer>> entry = iterator.next();
 			ContagionData<Integer> data = hub.getLocation().getContagions().get( entry.getKey()); 
 			double cont2 = (data == null )? 0: (data.getTimeStep() == null )?0: data.getTimeStep();
+			cont2 = (cont2)<0?0:cont2>100?100:cont2;
 			colour = getColour( base, entry.getKey(), cont2);
 			gc.setForeground( colour);
 			gc.drawLine(prev.getXpos(), prev.getYpos(), next.getXpos(), next.getYpos());

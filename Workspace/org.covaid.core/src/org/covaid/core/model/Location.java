@@ -29,11 +29,6 @@ public class Location extends AbstractLocation<Integer>{
 	public Location(String identifier, IPoint point) {
 		super(identifier, point);
 	}
-
-	@Override
-	protected ILocation<Integer> createLocation(String identifier, IPoint point) {
-		return new Location( identifier, point );
-	}
 	
 	@Override
 	public ILocation<Integer> clone() {

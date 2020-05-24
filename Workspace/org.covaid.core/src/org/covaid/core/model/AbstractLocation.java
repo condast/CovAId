@@ -225,8 +225,6 @@ public abstract class AbstractLocation<T extends Object> extends Point implement
 		return results.toArray( new IContagion[ results.size()]);
 	}
 
-	protected abstract ILocation<T> createLocation( String identifier, IPoint point );
-
 	/**
 	 * Returns the worst possible situation when combining the contagiousness of both locations
 	 * Returns null if the locations are not the same
@@ -238,7 +236,7 @@ public abstract class AbstractLocation<T extends Object> extends Point implement
 		if( check.compareTo(this) != 0 )
 			return null;//invalid comparison
 		
-		ILocation<T> worst = createLocation( this.getIdentifier(), this.toPoint());
+		ILocation<T> worst = this.clone();
 		return createWorst(worst, this, check);
 	}
 

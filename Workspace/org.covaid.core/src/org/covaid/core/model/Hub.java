@@ -2,14 +2,15 @@ package org.covaid.core.model;
 
 import java.util.Iterator;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 import org.condast.commons.Utils;
 import org.covaid.core.def.IContagion;
 import org.covaid.core.def.ILocation;
 import org.covaid.core.def.IPerson;
 import org.covaid.core.def.IPoint;
-import org.covaid.core.model.AbstractHub;
+import org.covaid.core.hub.AbstractHub;
+import org.covaid.core.hub.trace.AbstractTrace;
+import org.covaid.core.hub.trace.ITrace;
 
 public class Hub extends AbstractHub<Integer> {
 
@@ -18,7 +19,8 @@ public class Hub extends AbstractHub<Integer> {
 	}
 	
 	public Hub(IPoint location, int timeStep, int history) {
-		super(new Location( location.getIdentifier(), location.getXpos(), location.getYpos()), timeStep, history );
+		super(new Location( location.getIdentifier(), location.getXpos(), location.getYpos()), timeStep, history, new Trace());
+		super.getTrace().setHub(this);
 	}
 
 	/**
@@ -51,7 +53,7 @@ public class Hub extends AbstractHub<Integer> {
 		ILocation<Integer> check = person.createSnapshot();
 
 		//Determine the worst case situation for the encounter
-		ILocation<Integer> worst = check.createWorst( check );
+		ILocation<Integer> worst = this.getLocation().createWorst( check );
 		
 		//Check if the person is worse off, and if so generate an alert		
 		IContagion<Integer>[] worse = check.getWorse( worst );
@@ -68,60 +70,12 @@ public class Hub extends AbstractHub<Integer> {
 		super.put( person, step );
 		return true;
 	}
-
-	/**
-	 * Respond to an alert of a person. This happens when the person has become infected, and is alerting previous locations 
-	 * of the infection. Returns true if the snapshot has become worse
-	 * @param person
-	 * @return
-	 */
-	@Override
-	public boolean alert( IPerson<Integer> person, Integer step ) {
-		if( person.isHealthy() || !person.getLocation().getIdentifier().equals( super.getIdentifier()))
-			return false;
-		
-		super.setLocation( createSnapShot());
-		Iterator<Map.Entry<IPerson<Integer>, Integer>> iterator = super.getPersons().entrySet().stream()
-				.filter(item -> item.getValue()<=step)
-				.collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue)).entrySet().iterator();
-		
-		ILocation<Integer> reference = person.get(step);
-		while( iterator.hasNext() ) {
-			Map.Entry<IPerson<Integer>, Integer> entry = iterator.next();
-			ILocation<Integer> check = entry.getKey().get( step );
-			IContagion<Integer>[] contagion = reference.getWorse(check);
-			if( !Utils.assertNull(contagion))
-				entry.getKey().alert(step, check);
-		}			
-		return true;
-	}
 	
 	@Override
 	protected boolean onPersonAlert(IPerson<Integer> person, Integer moment, Integer timeStep, Integer history, Integer encountered) {
 		return ( timeStep - moment )<history ;
 	}
 
-	/**
-	 * A snap shot is a representation of the current state of this location, with respect to
-	 * the risk of contagion. In case of a Hub, the location is quite clear;
-	 *  for a Person it is the current location 
-	 * 
-	 * @return
-	 */
-	@Override
-	public ILocation<Integer> createSnapShot() {
-		Iterator<Map.Entry<IPerson<Integer>, Integer>> iterator = super.getPersons().entrySet().iterator();
-		ILocation<Integer> result = new Location( super.getLocation().getIdentifier(), this );
-		while( iterator.hasNext()) {
-			Map.Entry<IPerson<Integer>, Integer> entry = iterator.next();
-			ILocation<Integer> snapshot = entry.getKey().createSnapshot();
-			ILocation<Integer> test = result.createWorst(snapshot);
-			if( test != null )
-				result = test;
-		}
-		return result;
-	}
-	
 	@Override
 	protected boolean onRemovePersons(IPerson<Integer> person, Integer timeStep, Integer history, Integer encountered) {
 		return ( timeStep - encountered ) > history;
@@ -136,5 +90,20 @@ public class Hub extends AbstractHub<Integer> {
 			hub.put(entry.getKey(), entry.getValue());
 		}
 		return hub;
+	}
+	
+	private static class Trace extends AbstractTrace<Integer> implements ITrace<Integer>{
+
+		public Trace() {
+			super();
+		}
+
+		@Override
+		protected Integer onGetAverage(Integer first, Integer second) {
+			int f = ( first == null )?0: first;
+			int l = ( second == null )?0: second;
+			return (l+f)/2;
+		}
+
 	}
 }

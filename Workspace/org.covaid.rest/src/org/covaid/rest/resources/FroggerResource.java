@@ -5,6 +5,7 @@ import com.google.gson.GsonBuilder;
 
 import java.util.Calendar;
 import java.util.Collection;
+import java.util.Map;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.logging.Logger;
@@ -19,9 +20,11 @@ import javax.ws.rs.core.Response;
 
 import org.condast.commons.Utils;
 import org.condast.commons.strings.StringUtils;
+import org.covaid.core.data.TimelineCollection;
 import org.covaid.core.data.frogger.HubData;
 import org.covaid.core.data.frogger.LocationData;
 import org.covaid.core.environment.IEnvironment;
+import org.covaid.core.environment.frogger.FroggerDomain;
 import org.covaid.rest.core.Dispatcher;
 
 @Path("/")
@@ -199,7 +202,7 @@ public class FroggerResource {
 	@Path("/set-infected")
 	public Response setInfected( @QueryParam("id") long id, @QueryParam("token") long token, @QueryParam("identifier") String identifier,
 			@QueryParam("infected") int infected) {
-		logger.info( "Set infected environment " + identifier );
+		logger.fine( "Set infected environment " + identifier );
 		Dispatcher dispatcher = Dispatcher.getInstance();
 		Response response = null;
 		try{
@@ -271,6 +274,79 @@ public class FroggerResource {
 			builder.enableComplexMapKeySerialization();
 			Gson gson = builder.create();
 			String str=  gson.toJson(results, LocationData[].class);
+			response = Response.ok(str).build();
+		}
+		catch( Exception ex ){
+			ex.printStackTrace();
+			response = Response.serverError().build();
+		}
+		return response;
+	}
+
+	/**
+	 * Get the protected locations
+	 * @param id
+	 * @param token
+	 * @param identifier
+	 * @param history
+	 * @return
+	 */
+	@GET
+	@Consumes(MediaType.APPLICATION_JSON)
+	@Produces(MediaType.TEXT_PLAIN)
+	@Path("/prediction")
+	public Response getPredicition( @QueryParam("id") long id, @QueryParam("token") long token, @QueryParam("identifier") String identifier,
+			@QueryParam("range") int range) {
+		logger.fine( "Get Prediction " + identifier );
+		Dispatcher dispatcher = Dispatcher.getInstance();
+		Response response = null;
+		try{
+			if( StringUtils.isEmpty(identifier))
+				return Response.serverError().build();
+			Map<Integer, Double> results = dispatcher.getPrediction( identifier, FroggerDomain.Hubs.PROTECTED, range);
+			if( Utils.assertNull(results))
+				return Response.noContent().build();
+			GsonBuilder builder = new GsonBuilder();
+			builder.enableComplexMapKeySerialization();
+			Gson gson = builder.create();
+			String str=  gson.toJson(results, Map.class);
+			response = Response.ok(str).build();
+		}
+		catch( Exception ex ){
+			ex.printStackTrace();
+			response = Response.serverError().build();
+		}
+		return response;
+	}
+
+	
+	/**
+	 * Get the protected locations
+	 * @param id
+	 * @param token
+	 * @param identifier
+	 * @param history
+	 * @return
+	 */
+	@GET
+	@Consumes(MediaType.APPLICATION_JSON)
+	@Produces(MediaType.TEXT_PLAIN)
+	@Path("/average")
+	public Response getAverage( @QueryParam("id") long id, @QueryParam("token") long token, @QueryParam("identifier") String identifier,
+			@QueryParam("range") int range) {
+		logger.fine( "Get Average " + identifier );
+		Dispatcher dispatcher = Dispatcher.getInstance();
+		Response response = null;
+		try{
+			if( StringUtils.isEmpty(identifier))
+				return Response.serverError().build();
+			TimelineCollection<Integer, Double> results = dispatcher.getAverage(identifier, range);
+			if( results.isEmpty())
+				return Response.noContent().build();
+			GsonBuilder builder = new GsonBuilder();
+			builder.enableComplexMapKeySerialization();
+			Gson gson = builder.create();
+			String str=  gson.toJson(results, TimelineCollection.class);
 			response = Response.ok(str).build();
 		}
 		catch( Exception ex ){
@@ -391,61 +467,6 @@ public class FroggerResource {
 			return Response.serverError().build();
 		}
 		return response;
-	}
-	/**
-	 * Set the health of the owner
-	 * @param id
-	 * @param token
-	 * @param identifier
-	 * @param history
-	 * @return
-	 */
-	@GET
-	@Consumes(MediaType.APPLICATION_JSON)
-	@Produces(MediaType.APPLICATION_JSON)
-	@Path("/status")
-	public Response getStatus( @QueryParam("id") long id, @QueryParam("token") long token, @QueryParam("identifier") String identifier ) {
-		logger.info( "Get status " + identifier );
-		Dispatcher dispatcher = Dispatcher.getInstance();
-		Response result = null;
-		try{
-			Gson gson = new Gson();
-			String str = gson.toJson( null, CreateRegisterData.class);
-			result = Response.ok( str ).build();
-		}
-		catch( Exception ex ){
-			ex.printStackTrace();
-			return Response.serverError().build();
-		}
-		return result;
-	}
-
-	/**
-	 * Set the safety of the owner
-	 * @param id
-	 * @param token
-	 * @param identifier
-	 * @param history
-	 * @return
-	 */
-	@GET
-	@Consumes(MediaType.APPLICATION_JSON)
-	@Produces(MediaType.APPLICATION_JSON)
-	@Path("/move")
-	public Response setSafety( @QueryParam("id") long id, @QueryParam("token") long token, @QueryParam("identifier") String identifier,
-			@QueryParam("angle") int angle) {
-		logger.info( "Set safety " + angle );
-		Dispatcher dispatcher = Dispatcher.getInstance();
-		Response result = null;
-		try{
-			//dispatcher.move( identifier );
-			result = Response.ok().build();
-		}
-		catch( Exception ex ){
-			ex.printStackTrace();
-			return Response.serverError().build();
-		}
-		return result;
 	}
 	
 	@SuppressWarnings("unused")
