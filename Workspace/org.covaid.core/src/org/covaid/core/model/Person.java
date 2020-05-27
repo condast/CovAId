@@ -24,7 +24,7 @@ public class Person extends AbstractPerson<Integer>{
 	 * @param health
 	 * @param contagion
 	 */
-	public Person( String identifier, int xpos, int ypos, double safety, double health, IContagion<Integer> contagion) {
+	public Person( String identifier, int xpos, int ypos, double safety, double health, IContagion contagion) {
 		super( xpos, ypos, contagion, new Mobile<Integer>(identifier, safety, health, new Point( identifier, xpos, ypos), new History()));
 	}
 
@@ -34,7 +34,7 @@ public class Person extends AbstractPerson<Integer>{
 	}
 
 	@Override
-	protected IContagion<Integer> createContagion(String identifier, double safety) {
+	protected IContagion createContagion(String identifier, double safety) {
 		return new Contagion( identifier, safety );
 	}
 

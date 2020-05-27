@@ -20,7 +20,7 @@ import org.covaid.core.def.IDomainListener;
 import org.covaid.core.def.IPerson;
 import org.covaid.core.environment.IDomain.DomainEvents;
 import org.covaid.core.environment.field.IFieldDomain;
-import org.covaid.core.model.date.DateContagion;
+import org.covaid.core.model.Contagion;
 import org.covaid.core.environment.DomainEvent;
 import org.covaid.core.environment.IDomain;
 import org.eclipse.swt.SWT;
@@ -49,7 +49,7 @@ public class GraphCanvas extends Canvas {
 		List<Data> list = domains.get( domain );
 		Data data = list.get(list.size()-1);
 		int infected = 0;
-		IContagion<Date> contagion = new DateContagion( IContagion.SupportedContagion.valueOf( env.getContagion()), 100);
+		IContagion contagion = new Contagion( IContagion.SupportedContagion.valueOf( env.getContagion()), 100);
 		for( IPerson<Date> person: domain.getPersons() ) {
 			if( person.getContagiousness( contagion, date ) > 10 )
 				infected++;
@@ -66,7 +66,6 @@ public class GraphCanvas extends Canvas {
 			catch( Exception ex ) {
 				ex.printStackTrace();
 			}
-			requestLayout();
 		});
 	};
 

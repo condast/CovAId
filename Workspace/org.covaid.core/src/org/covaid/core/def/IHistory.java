@@ -15,7 +15,7 @@ public interface IHistory<T extends Object> {
 	 * @param date
 	 * @param location
 	 */
-	void alert(T date, IPoint location, IContagion<T> contagion, double conatagiousness);
+	void alert(T date, IPoint location, IContagion contagion, double conatagiousness);
 
 	/**
 	 * Alert of a new contagion. 
@@ -50,14 +50,14 @@ public interface IHistory<T extends Object> {
 	 * @param contagion
 	 * @return
 	 */
-	IContagion<T> getMonitor();
+	IContagion getMonitor();
 
 	/**
 	 * Get the history with the maximum contagiousness
 	 * @param contagion
 	 * @return
 	 */
-	Vector<T, ILocation<T>> getMaxContagiousness(IContagion<T> contagion);
+	Vector<T, ILocation<T>> getMaxContagiousness(IContagion contagion);
 
 	void clean(T date);
 

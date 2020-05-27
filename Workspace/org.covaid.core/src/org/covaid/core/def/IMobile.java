@@ -2,6 +2,10 @@ package org.covaid.core.def;
 
 public interface IMobile<T extends Object> {
 
+	public static final String S_INFO_NOTHING_WRONG = "Based on previous movement, there is no reason for concern.";
+	public static final String S_INFO_RISK_OF_CONTAGION = "You have a higher risk of being infected with: ";
+	public static final String S_INFO_EMAIL_DOCTOR = "Shall I send an email to your doctor to schedule an appointment?";
+	
 	public enum Risks{
 		DONT_CARE(0),
 		ADVENTUROUS(80),
@@ -34,7 +38,7 @@ public interface IMobile<T extends Object> {
 
 	void setLocation(IPoint location);
 
-	void alert(T date, ILocation<T> location, IContagion<T> contagion);
+	void alert(T date, IPoint location, IContagion contagion);
 
 	IHistory<T> getHistory();
 
@@ -64,5 +68,7 @@ public interface IMobile<T extends Object> {
 	 */
 	double getHealthAdvice(boolean cough, boolean fever, boolean lackoftaste, boolean soreThroat, boolean nasalCold,
 			double temperature);
+
+	String getAdvice(IContagion contagion, T timeStep);
 
 }

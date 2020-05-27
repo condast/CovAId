@@ -15,7 +15,13 @@ public interface ITrace<T extends Object> {
 
 	IHubTrace<T> addHubTrace(IHub<T> hub);
 
-	boolean update(IContagion<T> contagion, T timeStep, ITrace<T> guest);
+	/**
+	 * Get the prediction from the given range towards the current time
+	 * @param contagion
+	 * @param range
+	 * @return
+	 */
+	Map<T, Double> getPrediction(IContagion contagion, T range);
 
-	Map<T, Double> getPrediction(IContagion<T> contagion, T range);
+	boolean update(IContagion contagion, T current, ITrace<T> guest);
 }

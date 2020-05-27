@@ -8,14 +8,14 @@ import org.covaid.core.hub.trace.ITrace;
 public class HubEvent<T extends Object> extends EventObject {
 	private static final long serialVersionUID = 1L;
 
-	private IContagion<T> contagion;
+	private IContagion contagion;
 	private ITrace<T> trace;
-	private T step;
+	private T current;
 	
-	public HubEvent( IHub<T> source, ITrace<T> trace, T step, IContagion<T> contagion) {
+	public HubEvent( IHub<T> source, ITrace<T> trace, T current, IContagion contagion) {
 		super(source);
 		this.trace = trace;
-		this.step = step;
+		this.current = current;
 		this.contagion = contagion;
 	}
 
@@ -24,7 +24,7 @@ public class HubEvent<T extends Object> extends EventObject {
 		return (IHub<T>) getSource();
 	}
 
-	public IContagion<T> getContagion() {
+	public IContagion getContagion() {
 		return contagion;
 	}
 
@@ -32,7 +32,7 @@ public class HubEvent<T extends Object> extends EventObject {
 		return trace;
 	}
 
-	public T getStep() {
-		return step;
+	public T getCurrent() {
+		return current;
 	}
 }

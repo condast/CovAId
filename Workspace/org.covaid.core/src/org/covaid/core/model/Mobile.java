@@ -1,5 +1,6 @@
 package org.covaid.core.model;
 
+import org.condast.commons.data.util.Vector;
 import org.covaid.core.data.StoredNode;
 import org.covaid.core.def.IContagion;
 import org.covaid.core.def.IHistory;
@@ -9,9 +10,7 @@ import org.covaid.core.def.IPoint;
 
 public class Mobile<T extends Object> implements IMobile<T> {
 
-		
 	//An anonymous id used for communication with the server
-	
 	private String identifier;
 	
 	private double health, safety;
@@ -98,7 +97,7 @@ public class Mobile<T extends Object> implements IMobile<T> {
 	}
 
 	@Override
-	public void alert( T date, ILocation<T> location, IContagion<T> contagion ) {
+	public void alert( T date, IPoint location, IContagion contagion ) {
 		this.history.alert( date, location, contagion, 100);
 	}
 
@@ -140,6 +139,17 @@ public class Mobile<T extends Object> implements IMobile<T> {
 			safety = 100;
 		}
 		return health;
+	}
+	
+	@Override
+	public String getAdvice( IContagion contagion, T timeStep) {
+		Vector<T, ILocation<T>> ill = getHistory().getMaxContagiousness( contagion);
+		double contagiousness = ill.getValue().getContagion(contagion, timeStep );
+		String result = S_INFO_NOTHING_WRONG;
+		if( contagiousness > 20 ) {
+			result = S_INFO_RISK_OF_CONTAGION + contagion.getIdentifier() + "\n" + S_INFO_EMAIL_DOCTOR;
+		}
+		return result;
 	}
 	
 	public StoredNode<T> getNode() {

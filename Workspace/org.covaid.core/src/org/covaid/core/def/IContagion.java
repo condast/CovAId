@@ -1,10 +1,9 @@
 package org.covaid.core.def;
 
-import org.condast.commons.data.util.Vector;
 import org.condast.commons.strings.StringStyler;
 import org.condast.commons.strings.StringUtils;
 
-public interface IContagion<T extends Object> extends Comparable<IContagion<T>>{
+public interface IContagion extends Comparable<IContagion>{
 
 	public static final int DAY = 24 * 3600 * 1000;//msec
 	public static final int DEFAULT_CONTAGION = 14;//two weeks
@@ -90,30 +89,6 @@ public interface IContagion<T extends Object> extends Comparable<IContagion<T>>{
 	 * @return
 	 */
 	double getSpread(long days, double distance);
-
-	/**
-	 * Get the contagion as it spreads in the seconds after contact
-	 * <contagion, radius>
-	 * 
-	 * @param contagion
-	 * @param date
-	 * @param distance
-	 * @return
-	 */
-	Vector<Double, Double> getContagion(T init, T date);
-
-	/**
-	 * Returns true if the this contagiousness is larger than the given one
-	 * @param contagion
-	 * @return
-	 */
-	boolean isLarger(IContagion<T> contagion);
-
-	boolean isContagious(T step);
-
-	double getContagiousness(T init, T step);
-
-	int compareTo(IContagion<T> o);
 
 	double getThreshold();
 }

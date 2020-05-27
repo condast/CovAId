@@ -23,8 +23,12 @@ import org.condast.commons.strings.StringUtils;
 import org.covaid.core.data.TimelineCollection;
 import org.covaid.core.data.frogger.HubData;
 import org.covaid.core.data.frogger.LocationData;
+import org.covaid.core.def.IContagion;
+import org.covaid.core.def.IContagion.SupportedContagion;
 import org.covaid.core.environment.IEnvironment;
 import org.covaid.core.environment.frogger.FroggerDomain;
+import org.covaid.core.environment.frogger.FroggerDomain.Hubs;
+import org.covaid.core.model.Contagion;
 import org.covaid.rest.core.Dispatcher;
 
 @Path("/")
@@ -219,6 +223,36 @@ public class FroggerResource {
 	}
 
 	/**
+	 * Start the frogger environment
+	 * @param id
+	 * @param token
+	 * @param identifier
+	 * @param history
+	 * @return
+	 */
+	@GET
+	@Consumes(MediaType.APPLICATION_JSON)
+	@Produces(MediaType.TEXT_PLAIN)
+	@Path("/set-density")
+	public Response setDensity( @QueryParam("id") long id, @QueryParam("token") long token, @QueryParam("identifier") String identifier,
+			@QueryParam("density") int density) {
+		logger.fine( "Set population density " + identifier );
+		Dispatcher dispatcher = Dispatcher.getInstance();
+		Response response = null;
+		try{
+			if( StringUtils.isEmpty(identifier))
+				return Response.serverError().build();
+			boolean result = dispatcher.setDensity(identifier, density);
+			response = Response.ok( result ).build();
+		}
+		catch( Exception ex ){
+			ex.printStackTrace();
+			return Response.serverError().build();
+		}
+		return response;
+	}
+
+	/**
 	 * Set the protection for the frogger environment
 	 * @param id
 	 * @param token
@@ -354,6 +388,30 @@ public class FroggerResource {
 			response = Response.serverError().build();
 		}
 		return response;
+	}
+
+	/**
+	 * Set the health of the owner
+	 * @param id
+	 * @param token
+	 * @param identifier
+	 * @param history
+	 * @return
+	 */
+	@GET
+	@Consumes(MediaType.APPLICATION_JSON)
+	@Produces(MediaType.TEXT_PLAIN)
+	@Path("/getAdvice")
+	public Response getAdvice( @QueryParam("id") long id, @QueryParam("token") long token, @QueryParam("identifier") String identifier,
+			@QueryParam("contagion") String contagionStr) {
+		logger.info( "Get Advice " + identifier );
+		Dispatcher dispatcher = Dispatcher.getInstance();
+		Response result = null;
+		String str = StringUtils.isEmpty(contagionStr)?SupportedContagion.COVID_19.name(): contagionStr;
+		IContagion contagion = new Contagion( str, 100 );
+		str = dispatcher.getAdvice( Hubs.PROTECTED, contagion );
+		result = Response.ok( str ).build();
+		return result;
 	}
 
 	/**

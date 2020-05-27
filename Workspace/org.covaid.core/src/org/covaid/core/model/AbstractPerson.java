@@ -17,7 +17,7 @@ import org.covaid.core.def.PersonEvent;
 public abstract class AbstractPerson<T extends Object> implements IPerson<T>{
 
 	private States state;
-	private IContagion<T> monitor;
+	private IContagion monitor;
 	
 	private IPoint point;
 	
@@ -25,7 +25,7 @@ public abstract class AbstractPerson<T extends Object> implements IPerson<T>{
 	
 	private Collection<IPersonListener<T>> listeners;
 	
-	protected AbstractPerson( int xpos, int ypos, IContagion<T> contagion, IMobile<T> mobile) {
+	protected AbstractPerson( int xpos, int ypos, IContagion contagion, IMobile<T> mobile) {
 		point = new Point( mobile.getIdentifier(), xpos, ypos);
 		this.mobile = mobile;
 		this.state = States.HEALTHY;
@@ -72,7 +72,7 @@ public abstract class AbstractPerson<T extends Object> implements IPerson<T>{
 	}
 
 	@Override
-	public IContagion<T> getMonitor() {
+	public IContagion getMonitor() {
 		return monitor;
 	}
 
@@ -103,19 +103,19 @@ public abstract class AbstractPerson<T extends Object> implements IPerson<T>{
 
 	protected abstract long getDifference( T first, T last );
 
-	protected abstract IContagion<T> createContagion( String identifier, double safety );
+	protected abstract IContagion createContagion( String identifier, double safety );
 
 	protected abstract ILocation<T> createLocation( String identifier, IPoint point );
 
 	@Override
-	public void setContagion( T step, IContagion<T> contagion) {
+	public void setContagion( T current, T moment, IContagion contagion) {
 		ILocation<T> loc = createLocation( point.getIdentifier(),  point );
-		loc.addContagion( step, contagion);
+		loc.addContagion( moment, contagion);
 		this.monitor = contagion;
 		if( contagion.getContagiousness() > DEFAULT_ILL_THRESHOLD) {
 			state = States.FEEL_ILL;
 		}
-		this.alert( step, loc );
+		this.alert( current, moment, loc, contagion );
 	}
 	
 	@Override
@@ -142,9 +142,9 @@ public abstract class AbstractPerson<T extends Object> implements IPerson<T>{
 	}
 
 	@Override
-	public void alert( T step, ILocation<T> location ) {
-		this.mobile.alert( step, location, monitor);
-		this.notifyListeners( new PersonEvent<T>( this, step, createSnapshot()));
+	public void alert( T current, T moment, IPoint location, IContagion contagion) {
+		this.mobile.alert( moment, location, monitor);
+		this.notifyListeners( new PersonEvent<T>( this, current, moment, contagion, createSnapshot()));
 	}
 
 	/**
@@ -157,13 +157,13 @@ public abstract class AbstractPerson<T extends Object> implements IPerson<T>{
 	}
 
 	@Override
-	public double getContagiousness( IContagion<T> contagion, T step ) {
+	public double getContagiousness( IContagion contagion, T step ) {
 		ILocation<T> location = createSnapshot();
 		return location.getContagion(contagion, step);
 	}
 
 	@Override
-	public double getContagiousness( IContagion<T> contagion, T step, Map.Entry<T, ILocation<T>> entry ) {
+	public double getContagiousness( IContagion contagion, T step, Map.Entry<T, ILocation<T>> entry ) {
 		if( entry == null )
 			return 0;
 		double distance = point.getDistance( entry.getValue());
@@ -177,7 +177,7 @@ public abstract class AbstractPerson<T extends Object> implements IPerson<T>{
 	 * @return
 	 */
 	@Override
-	public double getSafetyBubble( IContagion<T> contagion, T step ) {
+	public double getSafetyBubble( IContagion contagion, T step ) {
 		Map.Entry<T, ILocation<T>> contagiousness = mobile.getHistory().getMaxContagiousness(contagion);
 		double maxContagion = 100;
 		if( contagiousness != null )
@@ -190,7 +190,7 @@ public abstract class AbstractPerson<T extends Object> implements IPerson<T>{
 	 * @return
 	 */
 	@Override
-	public double getRiskBubble( IContagion<T> contagion ) {
+	public double getRiskBubble( IContagion contagion ) {
 		double radius = contagion.getDistance() * (100 - mobile.getHealth())/100;
 		return NumberUtils.clipRange(0, 100, radius );
 	}

@@ -4,6 +4,7 @@ import java.util.Iterator;
 import java.util.Map;
 
 import org.condast.commons.Utils;
+import org.covaid.core.contagion.IntegerContagionOperator;
 import org.covaid.core.def.IContagion;
 import org.covaid.core.def.ILocation;
 import org.covaid.core.def.IPerson;
@@ -18,8 +19,8 @@ public class Hub extends AbstractHub<Integer> {
 		this( location, 0, DEFAULT_HISTORY );
 	}
 	
-	public Hub(IPoint location, int timeStep, int history) {
-		super(new Location( location.getIdentifier(), location.getXpos(), location.getYpos()), timeStep, history, new Trace());
+	public Hub(IPoint location, int current, int history) {
+		super(new Location( location.getIdentifier(), location.getXpos(), location.getYpos()), current, history, new Trace( current));
 		super.getTrace().setHub(this);
 	}
 
@@ -56,9 +57,10 @@ public class Hub extends AbstractHub<Integer> {
 		ILocation<Integer> worst = this.getLocation().createWorst( check );
 		
 		//Check if the person is worse off, and if so generate an alert		
-		IContagion<Integer>[] worse = check.getWorse( worst );
+		IContagion[] worse = check.getWorse( worst );
 		if( !Utils.assertNull(worse)) {
-			person.alert( step, worst);
+			for( IContagion contagion: worse)
+				person.alert( step, step, worst, contagion );
 		}
 		
 		//If the hub has deteriorated, then add the person 
@@ -94,8 +96,8 @@ public class Hub extends AbstractHub<Integer> {
 	
 	private static class Trace extends AbstractTrace<Integer> implements ITrace<Integer>{
 
-		public Trace() {
-			super();
+		public Trace( Integer current ) {
+			super( current, new IntegerContagionOperator() );
 		}
 
 		@Override

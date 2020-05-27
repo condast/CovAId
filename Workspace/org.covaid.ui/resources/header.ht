@@ -16,6 +16,7 @@
 </head>
 <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
 <script type="text/javascript">${script.js.mobile^js};</script>
+<script type="text/javascript">${script.js.frogger^js};</script>
 <style type="text/css">
 .full-height {
 	height: 100%;

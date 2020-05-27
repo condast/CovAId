@@ -31,6 +31,7 @@ public class RestServlet extends AbstractServletWrapper {
 		//Loading classes is the safest way...
 		//in equinox the scanning of packages may not work
 		private RestApplication() {
+			register( CorsFilter.class );
 			register( FroggerResource.class );
 			register( PushResource.class );
 		}

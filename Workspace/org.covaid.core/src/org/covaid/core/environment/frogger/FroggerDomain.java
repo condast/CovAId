@@ -45,13 +45,12 @@ public class FroggerDomain extends AbstractDomain<Integer> implements IDomain<In
 	
 	private Collection<IPerson<Integer>> persons;
 	private Map<IPoint, Hub> hubs;
-	//private int window; // the window is the number of days that are in the future 
 	private int maxTime;//the maximum number of days that is registered
 
 	private int width;
 	private int infected;
 	
-	private IContagion<Integer> contagion;
+	private IContagion contagion;
 	
 	private boolean protection;
 	private ILocation<Integer> centre;
@@ -69,7 +68,7 @@ public class FroggerDomain extends AbstractDomain<Integer> implements IDomain<In
 		for( IHub<Integer> hub: this.hubs.values()) {
 			if( hub.equals( e.getHub()))
 				continue;
-			hub.updateTrace( e.getContagion(),e.getStep(), e.getTrace());
+			hub.updateTrace( e.getContagion(), e.getCurrent(), e.getTrace());
 		}
 	};
 	
@@ -108,7 +107,7 @@ public class FroggerDomain extends AbstractDomain<Integer> implements IDomain<In
 		this.init(population);
 	}
 
-	public IContagion<Integer> getContagion() {
+	public IContagion getContagion() {
 		return contagion;
 	}
 
@@ -120,6 +119,10 @@ public class FroggerDomain extends AbstractDomain<Integer> implements IDomain<In
 		return this.hubs.values();
 	}
 
+	public ILocation<Integer> getLocation( Hubs hub ){
+		return Hubs.CENTRE.equals(hub)?this.centre: this.protect;
+	}
+	
 	public Collection<IHub<Integer>> getHubs( int ypos ) {
 		Collection<IHub<Integer>> result = hubs.entrySet().stream().filter(e -> e.getKey().getYpos() == ypos)
 				.map( Map.Entry::getValue).
@@ -130,6 +133,14 @@ public class FroggerDomain extends AbstractDomain<Integer> implements IDomain<In
 	@Override
 	public int getPopulation() {
 		return this.persons.size();
+	}
+
+	public Collection<IPerson<Integer>> getPersons(){
+		return this.persons;
+	}
+	
+	public int getTimeStep() {
+		return timeStep;
 	}
 
 	public int getMaxTime() {
@@ -144,6 +155,11 @@ public class FroggerDomain extends AbstractDomain<Integer> implements IDomain<In
 
 	public void setInfected(int infected) {
 		this.infected = infected;
+	}
+
+	public int setDensity(int density) {
+		super.init((int)((double)width*density/100));
+		return super.getPopulation();
 	}
 
 	public void setProtection(boolean protection) {
@@ -179,7 +195,7 @@ public class FroggerDomain extends AbstractDomain<Integer> implements IDomain<In
 			double contagion = 100*Math.random();
 			int moment = (int) (timeStep*Math.random());
 			if( contagion < this.infected )
-				person.setContagion( moment, this.contagion );
+				person.setContagion( timeStep, moment, this.contagion );
 		}
 		
 		//Last clear old values and update the hubs
@@ -258,14 +274,14 @@ public class FroggerDomain extends AbstractDomain<Integer> implements IDomain<In
 		double avg = ( this.centre.getContagion(contagion, timeStep) + centreHub.getLocation().getContagion(contagion, timeStep))/2;
 		centre.setRisk(contagion, timeStep, avg);
 		if( avg > Double.MIN_VALUE)
-			logger.info("CENTRE AVERAGE: " + avg );
+			logger.fine("CENTRE AVERAGE: " + avg );
 
 		this.protect.move(lowest);
 		IHub<Integer> loc = this.hubs.get(lowest);
 		if( loc != null ) {
 			avg = ( this.protect.getContagion(contagion, timeStep) + loc.getContagion(contagion, timeStep))/2;
 			if( avg > Double.MIN_VALUE)
-				logger.info("PROTECT AVERAGE: " + avg );
+				logger.fine("PROTECT AVERAGE: " + avg );
 			this.protect.setRisk(contagion, timeStep, avg);
 		}
 		return lowest;
@@ -299,7 +315,6 @@ public class FroggerDomain extends AbstractDomain<Integer> implements IDomain<In
 				if( timeStep > step )
 					timeLine.getData().entrySet().removeIf(entry-> entry.getKey()<= timeStep - step);
 			}
-			int time = timeLine.size();
 			switch( name ) {
 			case CENTRE:
 				timeLine.put( timeStep, this.centre.getRisk(contagion, step));

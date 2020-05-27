@@ -12,7 +12,7 @@ public class History extends AbstractHistory<Integer> {
 	}
 	
 	@Override
-	protected IContagion<Integer> createContagion(String identifier) {
+	protected IContagion createContagion(String identifier) {
 		return new Contagion( identifier, 100 );
 	}
 

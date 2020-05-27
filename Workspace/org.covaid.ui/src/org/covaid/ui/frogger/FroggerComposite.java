@@ -51,7 +51,7 @@ public class FroggerComposite extends Composite {
 	public static final int DEFAULT_WIDTH = 100;//metres
 	public static final int DEFAULT_HISTORY = 16;//day, looking ahead of what is coming
 
-	public static final int DEFAULT_TEST_TIME = 400;//seconds. After this the dimulation will stop
+	public static final int DEFAULT_TEST_TIME = 1400;//seconds. After this the dimulation will stop
 
 	private enum Requests{
 
@@ -61,6 +61,7 @@ public class FroggerComposite extends Composite {
 		STOP,
 		CLEAR,
 		SET_INFECTED,
+		SET_DENSITY,
 		GET_DAY,
 		GET_HUBS, 
 		UPDATE;
@@ -109,61 +110,71 @@ public class FroggerComposite extends Composite {
 	
 	private SessionHandler session;
 	
+	private boolean busy;
+	
 	private PaintListener listener = (e)->{
-		Canvas canvas = (Canvas) e.getSource();
-		Rectangle rect = canvas.getBounds();
+		this.busy = true;
 		GC gc = e.gc;
-		
-		//Surroundings
-		int horizon = rect.height/4;
-		gc.setBackground(getDisplay().getSystemColor(SWT.COLOR_DARK_BLUE));
-		gc.fillRectangle(0, 0, rect.width, horizon);
-		gc.setBackground(getDisplay().getSystemColor(SWT.COLOR_DARK_GREEN));
-		gc.fillRectangle(0, horizon, rect.width, rect.height);
-		gc.setForeground(getDisplay().getSystemColor(SWT.COLOR_BLACK));
-		gc.setLineWidth(4);
-		gc.drawLine(0, horizon, rect.width, horizon);
-		
-		//Road
-		int half = rect.width/2;
-		double offset_bottom = rect.width/2;
-		double offset_top = rect.width/30;
-		gc.setBackground(getDisplay().getSystemColor(SWT.COLOR_YELLOW));
-		int[] pg = { (int) (half-offset_top), horizon, (int) (half-offset_bottom), rect.height, (int) (half+offset_bottom), rect.height, (int) (half+offset_top), horizon};
-		gc.fillPolygon(pg);
-		gc.setBackground(getDisplay().getSystemColor(SWT.COLOR_DARK_YELLOW));
-		gc.drawLine((int)(half-offset_top), horizon, (int)(half-offset_bottom), rect.height);
-		gc.drawLine((int)(half+offset_top), horizon, (int)(half+offset_bottom), rect.height);
-		//gc.setLineStyle(SWT.LINE_DOT);
+		try {
+			Canvas canvas = (Canvas) e.getSource();
+			Rectangle rect = canvas.getBounds();
 
-		int xpos = -10;
-		int span = 2;
-		double scaleX = (offset_bottom - offset_top)/(rect.height - horizon);
-		double scaleY = (rect.height - horizon)/( DEFAULT_HISTORY-1);
-		
-		//Hectometer signs
-		for( int i=0; i< DEFAULT_HISTORY/span; i++ ) {
-			String text = String.valueOf( DEFAULT_HISTORY - i*span ) + " days";
-			IPoint point = transformHect( new Point(text, xpos, i*span), half, offset_top, horizon, scaleX, scaleY); 
-			drawHectometerSign(gc, point, 70 );
-		}
+			//Surroundings
+			int horizon = rect.height/4;
+			gc.setBackground(getDisplay().getSystemColor(SWT.COLOR_DARK_BLUE));
+			gc.fillRectangle(0, 0, rect.width, horizon);
+			gc.setBackground(getDisplay().getSystemColor(SWT.COLOR_DARK_GREEN));
+			gc.fillRectangle(0, horizon, rect.width, rect.height);
+			gc.setForeground(getDisplay().getSystemColor(SWT.COLOR_BLACK));
+			gc.setLineWidth(4);
+			gc.drawLine(0, horizon, rect.width, horizon);
 
-		//Fill in the hubs
-		if( !Utils.assertNull(hubs)) {
-			Collection<HubData> test = new ArrayList<HubData>( this.hubs.values());
-			for( HubData hub: test) {
-				timeStep = hub.getMoment();
-				for( IPoint previous: hub.getPrevious() ) {
-					draw(gc, hub, previous.clone(), 1, half, offset_top, horizon, scaleX, scaleY);
+			//Road
+			int half = rect.width/2;
+			double offset_bottom = rect.width/2;
+			double offset_top = rect.width/30;
+			gc.setBackground(getDisplay().getSystemColor(SWT.COLOR_YELLOW));
+			int[] pg = { (int) (half-offset_top), horizon, (int) (half-offset_bottom), rect.height, (int) (half+offset_bottom), rect.height, (int) (half+offset_top), horizon};
+			gc.fillPolygon(pg);
+			gc.setBackground(getDisplay().getSystemColor(SWT.COLOR_DARK_YELLOW));
+			gc.drawLine((int)(half-offset_top), horizon, (int)(half-offset_bottom), rect.height);
+			gc.drawLine((int)(half+offset_top), horizon, (int)(half+offset_bottom), rect.height);
+
+			int xpos = -10;
+			int span = 2;
+			double scaleX = (offset_bottom - offset_top)/(rect.height - horizon);
+			double scaleY = (rect.height - horizon)/( DEFAULT_HISTORY-1);
+
+			//Hectometer signs
+			for( int i=0; i< DEFAULT_HISTORY/span; i++ ) {
+				String text = String.valueOf( DEFAULT_HISTORY - i*span ) + " days";
+				IPoint point = transformHect( new Point(text, xpos, i*span), half, offset_top, horizon, scaleX, scaleY); 
+				drawHectometerSign(gc, point, 70 );
+			}
+
+			//Fill in the hubs
+			if( !Utils.assertNull(hubs)) {
+				Collection<HubData> test = new ArrayList<HubData>( this.hubs.values());
+				for( HubData hub: test) {
+					timeStep = hub.getMoment();
+					for( IPoint previous: hub.getPrevious() ) {
+						draw(gc, hub, previous.clone(), 1, half, offset_top, horizon, scaleX, scaleY);
+					}
 				}
 			}
 		}
-		gc.dispose();
-		requestLayout();
+		catch( Exception ex ){
+			ex.printStackTrace();
+		}
+		finally {
+			busy = false;
+			gc.dispose();
+		}
 	};
+
 	private Label lblDays;
 	private Label lbldayValue;
-	
+
 	/**
 	 * Create the composite.
 	 * @param parent
@@ -178,6 +189,7 @@ public class FroggerComposite extends Composite {
 		this.timeStep = 0;
 		this.hubs = new TreeMap<>();
 		this.listeners = new ArrayList<>();
+		new Label(this, SWT.NONE);
 		client = new WebClient();
 		session = new SessionHandler(getDisplay());
 		client.addListener( session );
@@ -282,12 +294,20 @@ public class FroggerComposite extends Composite {
 
 			@Override
 			public void widgetSelected(SelectionEvent e) {
-				Slider slider = (Slider) e.widget;
-				lblDensityValue.setText(String.valueOf( slider.getSelection()));
+				try {
+					Slider slider = (Slider) e.widget;
+					lblDensityValue.setText(String.valueOf( slider.getSelection()));
+					Map<String, String> params = data.toMap();
+					params.put(Attributes.DENSITY.toString(), String.valueOf( slider.getSelection()));
+					client.sendGet(Requests.SET_DENSITY, params);
+				} catch (Exception e1) {
+					e1.printStackTrace();
+				}
 				super.widgetSelected(e);
 			}	
 		});
 		lblDensityValue = new Label(grpSettings, SWT.NONE);
+		lblDensityValue.setLayoutData(new GridData(SWT.FILL, SWT.FILL, false, false, 1, 1));
 		lblDensityValue.setText(String.valueOf( sliderDensity.getSelection()));
 
 		Label lblInfected = new Label(grpSettings, SWT.NONE);
@@ -314,6 +334,7 @@ public class FroggerComposite extends Composite {
 		});
 
 		lblInfectionsValue = new Label(grpSettings, SWT.NONE);
+		lblInfectionsValue.setLayoutData(new GridData(SWT.FILL, SWT.FILL, false, false, 1, 1));
 		lblInfectionsValue.setText(String.valueOf( sliderInfections.getSelection()));
 	}
 
@@ -382,7 +403,7 @@ public class FroggerComposite extends Composite {
 		return new Color( getDisplay(), 227, 199, 0 );
 	}
 
-	protected Color getColour( Color colour, IContagion<?> contagion, double value ) {
+	protected Color getColour( Color colour, IContagion contagion, double value ) {
 		double green = colour.getGreen() * (1f-value/100);
 		return new Color( getDisplay(), colour.getRed(), (int)(green), colour.getBlue() );
 	}
@@ -399,7 +420,7 @@ public class FroggerComposite extends Composite {
 		gc.setForeground(colour);
 		while( iterator.hasNext() ) {
 			Map.Entry<Contagion, ContagionData<Integer>> entry = iterator.next();
-			double cont2 = hub.getLocation().getContagions().get( entry.getKey()).getTimeStep();
+			double cont2 = hub.getLocation().getContagions().get( entry.getKey()).getMoment();
 			colour = getColour( base, entry.getKey(), cont2);
 			gc.setForeground( colour);
 			gc.drawLine(prev.getXpos(), prev.getYpos(), next.getXpos(), next.getYpos());
@@ -420,7 +441,7 @@ public class FroggerComposite extends Composite {
 		while( iterator.hasNext() ) {
 			Map.Entry<Contagion, ContagionData<Integer>> entry = iterator.next();
 			ContagionData<Integer> data = hub.getLocation().getContagions().get( entry.getKey()); 
-			double cont2 = (data == null )? 0: (data.getTimeStep() == null )?0: data.getTimeStep();
+			double cont2 = (data == null )? 0: (data.getMoment() == null )?0: data.getMoment();
 			cont2 = (cont2)<0?0:cont2>100?100:cont2;
 			colour = getColour( base, entry.getKey(), cont2);
 			gc.setForeground( colour);
@@ -476,7 +497,6 @@ public class FroggerComposite extends Composite {
 	private class WebClient extends AbstractHttpRequest<Requests, StringBuilder>{
 	
 		public WebClient() {
-			//super( S_PATH);
 			super( config.getServerContext() + S_COVAID_CONTEXT );
 		}
 
@@ -559,7 +579,8 @@ public class FroggerComposite extends Composite {
 				break;
 			}
 			notifyListers( new UpdateEvent( this ));
-			canvas.redraw();	
+			if(!busy )
+				canvas.redraw();	
 			lbldayValue.setText( String.format("%4d", timeStep));
 			requestLayout();
 		}

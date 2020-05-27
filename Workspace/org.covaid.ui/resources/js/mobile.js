@@ -5,7 +5,7 @@ const MOBILE_CREATE_URL = MOBILE_DEFAULT + 'create';
 const MOBILE_SET_HEALTH = MOBILE_DEFAULT + 'health';
 const MOBILE_SET_SAFETY = MOBILE_DEFAULT + 'safety';
 const MOBILE_SET_EMAIL = MOBILE_DEFAULT + 'email';
-const MOBILE_HEALTH_ADVICE = MOBILE_DEFAULT + 'healthAdvice';
+const MOBILE_HEALTH_ADVICE = MOBILE_DEFAULT + 'health';
 
 var id ${authentication.mobile.id};
 var token ${authentication.mobile.token};
@@ -97,6 +97,7 @@ function healthAdvice() {
 		refreshCanvas( this.id, this.token, this.identifier);
 	});
 }
+
 function setEmail() {
 	// Call a method on the slider
 	var value = $("#email").val();

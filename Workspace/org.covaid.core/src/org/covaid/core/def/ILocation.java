@@ -1,6 +1,7 @@
 package org.covaid.core.def;
 
 import org.covaid.core.data.frogger.LocationData;
+import org.covaid.core.operators.IContagionOperator;
 
 public interface ILocation<T extends Object> extends IPoint{
 
@@ -10,7 +11,7 @@ public interface ILocation<T extends Object> extends IPoint{
 	 * @param contagion
 	 * @param contagiousness
 	 */
-	void addContagion(T timestamp, IContagion<T> contagion);
+	void addContagion(T timestamp, IContagion contagion);
 
 	/**
 	 * Add a contagion if it is less than 100%
@@ -18,19 +19,17 @@ public interface ILocation<T extends Object> extends IPoint{
 	 * @param contagion
 	 * @param risk
 	 */
-	boolean addContagion(T timestamp, IContagion<T> contagion, double risk);
+	boolean addContagion(T timestamp, IContagion contagion, double risk);
 
-	boolean removeContagion(IContagion<T> contagion);
+	boolean removeContagion(IContagion contagion);
 
-	double getContagion( IContagion<T> contagion, T step );
+	double getContagion( IContagion contagion, T step );
 
-	IContagion<T> getContagion(String identifier);
+	IContagion[] getContagion();
 
-	IContagion<T>[] getContagion();
+	boolean isHealthy( T step );
 
-	boolean isHealthy();
-
-	boolean isHealthy( IContagion<T> contagion );
+	boolean isHealthy( IContagion contagion, T step );
 
 	boolean isContagious(T step );
 
@@ -40,7 +39,7 @@ public interface ILocation<T extends Object> extends IPoint{
 	 * @param location
 	 * @return
 	 */
-	IContagion<T>[] getWorse( ILocation<T> location);
+	IContagion[] getWorse( ILocation<T> location);
 
 	IPoint toPoint();
 
@@ -66,14 +65,14 @@ public interface ILocation<T extends Object> extends IPoint{
 	 * @param contagion
 	 * @return
 	 */
-	T getInfectionDate(IContagion<T> contagion);
+	T getInfectionDate(IContagion contagion);
 
 	/**
 	 * Returns true if this location is infected
 	 * @param contagion
 	 * @return
 	 */
-	boolean isInfected(IContagion<T> contagion);
+	boolean isInfected(IContagion contagion, T step);
 
 	@Override
 	ILocation<T> clone();
@@ -91,7 +90,7 @@ public interface ILocation<T extends Object> extends IPoint{
 	 * @param step
 	 * @return
 	 */
-	double getRisk(IContagion<T> contagion, T step);	
+	double getRisk(IContagion contagion, T step);	
 
 	/**
 	 * Set the current risk of the given contagion. 
@@ -100,8 +99,9 @@ public interface ILocation<T extends Object> extends IPoint{
 	 * @param risk
 	 * @return
 	 */
-	boolean setRisk(IContagion<T> contagion, T step, double risk);
+	boolean setRisk(IContagion contagion, T step, double risk);
 
 	LocationData<T> toLocationData();
 
+	IContagionOperator<T> getOperator();
 }

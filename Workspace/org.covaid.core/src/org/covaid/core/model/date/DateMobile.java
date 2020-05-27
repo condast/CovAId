@@ -4,6 +4,7 @@ import java.util.Calendar;
 import java.util.Date;
 
 import org.condast.commons.data.plane.IField;
+import org.condast.commons.data.util.Vector;
 import org.covaid.core.def.IContagion;
 import org.covaid.core.def.IHistoryListener;
 import org.covaid.core.def.ILocation;
@@ -24,7 +25,7 @@ public class DateMobile implements IMobile<Date>, IFieldListener {
 	private String email;//doctor email
 	private IPoint location;
 
-	private DateHistory history;
+	private transient DateHistory history;
 	
 	private Date timestamp;
 	
@@ -36,6 +37,15 @@ public class DateMobile implements IMobile<Date>, IFieldListener {
 
 	public DateMobile() {
 		super();
+		this.identifier = "null";
+		this.risk = 50;
+		this.health = 50;
+		//this.history = new DateHistory();
+		this.timestamp = Calendar.getInstance().getTime();
+	}
+
+	public DateMobile( String identifier ) {
+		this( identifier, 50, 50, new Point( 0, 0 ));
 		this.timestamp = Calendar.getInstance().getTime();
 	}
 
@@ -131,13 +141,13 @@ public class DateMobile implements IMobile<Date>, IFieldListener {
 	}
 
 	@Override
-	public void alert( Date date, ILocation<Date> location, IContagion<Date> contagion ) {
+	public void alert( Date date, IPoint location, IContagion contagion ) {
 		this.history.alert( date, location, contagion, 100);
 	}
 
 	@Override
 	public DateHistory getHistory() {
-		return this.history;
+		return null;//this.history;
 	}
 
 	/**
@@ -146,7 +156,7 @@ public class DateMobile implements IMobile<Date>, IFieldListener {
 	 */
 	@Override
 	public boolean isHealthy() {
-		return this.history.isEmpty();
+		return false;//this.history.isEmpty();
 	}
 
 	@Override
@@ -190,5 +200,19 @@ public class DateMobile implements IMobile<Date>, IFieldListener {
 			risk = 0;
 		}
 		return health;
+	}
+	
+	@Override
+	public String getAdvice( IContagion contagion, Date timeStep) {
+		String result = S_INFO_NOTHING_WRONG;
+		Vector<Date, ILocation<Date>> ill = null;//history.getMaxContagiousness( contagion);
+		if( ill == null )
+			return result;
+			
+		double contagiousness = ill.getValue().getContagion(contagion, timeStep );
+		if( contagiousness > 20 ) {
+			result = S_INFO_RISK_OF_CONTAGION + contagion.getIdentifier() + "\n" + S_INFO_EMAIL_DOCTOR;
+		}
+		return result;
 	}
 }

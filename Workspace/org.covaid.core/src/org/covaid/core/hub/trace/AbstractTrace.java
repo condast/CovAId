@@ -1,8 +1,8 @@
 package org.covaid.core.hub.trace;
 
 import java.util.Collection;
+import java.util.Comparator;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map;
 import java.util.TreeMap;
 
@@ -10,19 +10,24 @@ import org.covaid.core.data.ContagionData;
 import org.covaid.core.def.IContagion;
 import org.covaid.core.def.ILocation;
 import org.covaid.core.hub.IHub;
+import org.covaid.core.operators.IContagionOperator;
 
 public abstract class AbstractTrace<T extends Object> implements ITrace<T>{
 
 	private IHub<T> hub;
+	private T current;
+	private IContagionOperator<T> operator;
 	
 	private Map<IHub<T>, IHubTrace<T>> traces;
 
-	public AbstractTrace() {
-		traces = new HashMap<>();
+	protected AbstractTrace( T current, IContagionOperator<T> operator) {
+		traces = new TreeMap<>();
+		this.operator = operator;
+		this.current = current;
 	}
 
-	public AbstractTrace( IHub<T> hub) {
-		this();
+	protected AbstractTrace( IHub<T> hub, T current, IContagionOperator<T> operator) {
+		this( current, operator );
 		this.hub = hub;
 	}
 	
@@ -49,36 +54,38 @@ public abstract class AbstractTrace<T extends Object> implements ITrace<T>{
 	}
 	
 	@Override
-	public Map<T, Double> getPrediction( IContagion<T> contagion, T range ){
-		Map<T, Double> results = new TreeMap<>();
-		Iterator<Map.Entry<IHub<T>, IHubTrace<T>>> iterator = this.traces.entrySet().iterator();
-		while( iterator.hasNext() ) {
-			Map.Entry<IHub<T>, IHubTrace<T>> entry = iterator.next();
+	public Map<T, Double> getPrediction( IContagion contagion, T range ){
+		Map<T, Double> results = new TreeMap<>( new TimeComparator());
+		this.operator.setCurrent(current);
+		for( Map.Entry<IHub<T>, IHubTrace<T>> entry: this.traces.entrySet()) {
 			ContagionData<T> data = entry.getValue().get(contagion);
-			Double check = results.get(data.getTimeStep());
+			if( !operator.isLastEntry(range, data.getMoment()))
+				continue;
+			Double check = results.get(data.getMoment());
 			double risk = ( check==null)?0: check;
 			if( data.getRisk() > risk)
-				results.put(data.getTimeStep(), data.getRisk());
+				results.put( operator.subtract(data.getMoment(), range), data.getRisk());
 		}
 		return results;
 	}
 
 	@Override
-	public boolean update( IContagion<T> contagion, T timeStep, ITrace<T> guest ) {
+	public boolean update( IContagion contagion, T current, ITrace<T> guest ) {
+		this.current = current;
 		ILocation<T> location = hub.getLocation();
-		if( !location.isInfected(contagion))
+		if( !location.isInfected(contagion, current))
 			return false;
 		IHubTrace<T> ct = guest.getHubTrace(this.hub);
 		if( ct == null )
 			ct = guest.addHubTrace( this.hub );
-		ct.update(contagion, timeStep, ct);
+		ct.update(contagion, current, ct);
 		return true;
 	}
 	
 	protected abstract T onGetAverage( T first, T second );
 	
 	/*
-	public boolean alert( IHub<T> hub, T timeStep, IContagion<T> contagion, double contagiousness ) {
+	public boolean alert( IHub<T> hub, T timeStep, IContagion contagion, double contagiousness ) {
 		if( hub.isHealthy( contagion))
 			return false;
 		ContagionTrace trace = this.traces.get(hub);
@@ -101,44 +108,60 @@ public abstract class AbstractTrace<T extends Object> implements ITrace<T>{
 	
 	private class HubTrace implements IHubTrace<T>{
 		
-		private Map<IContagion<T>,ContagionData<T>> data;
+		private Map<IContagion,ContagionData<T>> data;
 
 		public HubTrace() {
 			this.data = new HashMap<>();
 		}
 		
 		@Override
-		public Collection<IContagion<T>> getContagions(){
+		public Collection<IContagion> getContagions(){
 			return this.data.keySet();
 		}
 		
 		@Override
-		public ContagionData<T> get( IContagion<T> contagion ) {
+		public ContagionData<T> get( IContagion contagion ) {
 			return this.data.get(contagion);
 		}
 		
-		public void put( IContagion<T> contagion, ContagionData<T> data ) {
+		public void put( IContagion contagion, ContagionData<T> data ) {
 			this.data.put(contagion, data);
 		}
 
 		@Override
-		public void update( IContagion<T> contagion, T timeStep, IHubTrace<T> ct) {
+		public void update( IContagion contagion, T current, IHubTrace<T> ct) {
 			ContagionData<T> guest = ct.get(contagion);
 			if( guest == null ) {
-				guest = new ContagionData<T>( timeStep );
+				guest = new ContagionData<T>( current );
 				ct.put(contagion, guest);
 			}
 			ContagionData<T> source = this.data.get(contagion);
 			double risk = 0;
-			T step = timeStep;
+			operator.setCurrent(current);
+			operator.setContagion(contagion);
+			T calc = current;
 			if( source != null ) {
-				risk = ( source.getRisk() + guest.getRisk() )/2;
-				step = onGetAverage(source.getTimeStep(), guest.getTimeStep());
+				risk = ( source.getRisk() + operator.getContagionRange( guest.getMoment() ).getValue() )/2;
+				calc = onGetAverage(source.getMoment(), guest.getMoment());
 			}else{
 				risk = guest.getRisk()/2;
 			}
-			guest.setRisk(risk);
-			guest.setTimeStep(step);
+			guest.setRisk(risk/100);
+			guest.setTimeStep(calc);
 		}
+
+		@Override
+		public String toString() {
+			return this.data.toString();
+		}
+	}
+	
+	private class TimeComparator implements Comparator<T>{
+
+		@Override
+		public int compare(T o1, T o2) {
+			return (int) operator.getDifference(o1, o2);
+		}
+		
 	}
 }

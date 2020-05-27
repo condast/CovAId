@@ -3,7 +3,6 @@ package org.covaid.core.contagion;
 import java.util.Date;
 import org.condast.commons.date.DateUtils;
 import org.covaid.core.def.IContagion;
-import org.covaid.core.model.date.DateContagion;
 
 public class ContagionManager implements IContagionManager<Date> {
 
@@ -12,7 +11,7 @@ public class ContagionManager implements IContagionManager<Date> {
 	public static final int DEFAULT_COVID_UNSAFE_TIME = 14;
 	public static final int DEFAULT_COVID_SAFE_TIME = 30;
 	
-	public double calculateContagiousness( DateContagion.SupportedContagion identifier, double detectedContagion, double distance ) {
+	public double calculateContagiousness( IContagion.SupportedContagion identifier, double detectedContagion, double distance ) {
 		double contagion = 0f;
 		switch( identifier ) {
 		case COVID_19:
@@ -25,7 +24,7 @@ public class ContagionManager implements IContagionManager<Date> {
 		return contagion; 
 	}
 
-	public double calculateContagiousness( IContagion<Date> data, double detectedContagion, double distance ) {
+	public double calculateContagiousness( IContagion data, double detectedContagion, double distance ) {
 		double contagion = 0f;
 		if( IContagion.SupportedContagion.isSupported(data.getIdentifier()))
 			contagion = calculateContagiousness(IContagion.SupportedContagion.valueOf(data.getIdentifier()), detectedContagion, distance);
@@ -33,7 +32,7 @@ public class ContagionManager implements IContagionManager<Date> {
 	}
 
 	
-	public double calculateContagiousness( DateContagion.SupportedContagion identifier, Date previous, Date current ) {
+	public double calculateContagiousness( IContagion.SupportedContagion identifier, Date previous, Date current ) {
 		double contagion = 0f;
 		long diff = DateUtils.getDifferenceDays(current, previous);
 		switch( identifier ) {
@@ -47,7 +46,7 @@ public class ContagionManager implements IContagionManager<Date> {
 	}
 
 	@Override
-	public double calculateContagiousness(IContagion<Date> data, Date previous, Date current) {
+	public double calculateContagiousness(IContagion data, Date previous, Date current) {
 		double contagion = 0f;
 		if( IContagion.SupportedContagion.isSupported(data.getIdentifier()))
 			contagion = calculateContagiousness(IContagion.SupportedContagion.valueOf(data.getIdentifier()), previous, current);

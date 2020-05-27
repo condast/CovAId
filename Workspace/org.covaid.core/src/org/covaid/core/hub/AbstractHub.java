@@ -44,13 +44,14 @@ public abstract class AbstractHub<T extends Object> extends Point implements IHu
 	private IPersonListener<T> listener = (e)->{
 		ILocation<T> check = e.getSnapshot();
 		if(( !check.equals( this.location)) || 
-				check.isHealthy() || 
+				check.isHealthy(this.timeStep) || 
 				( location.isWorse(check)))
 			return;
 		if(!onPersonAlert(e.getPerson(), e.getMoment(), this.timeStep, history, persons.get(e.getPerson())))
 			return;
 		location = createSnapShot();
 		location = location.createWorst(check);
+		this.notifyListeners( new HubEvent<T>( this, this.trace, e.getCurrent(), e.getContagion()));
 	};
 
 	protected AbstractHub( ILocation<T> location, T initial, T history, ITrace<T> trace ) {
@@ -70,8 +71,8 @@ public abstract class AbstractHub<T extends Object> extends Point implements IHu
 	}
 
 	@Override
-	public boolean isHealthy( IContagion<T> contagion) {
-		return this.location.isHealthy(contagion);
+	public boolean isHealthy( IContagion contagion) {
+		return this.location.isHealthy(contagion, this.timeStep);
 	}
 
 	protected T getTimeStep() {
@@ -85,9 +86,9 @@ public abstract class AbstractHub<T extends Object> extends Point implements IHu
 	protected ITrace<T> getTrace() {
 		return trace;
 	}
-	
+		
 	@Override
-	public Map<T, Double> getPrediction( IContagion<T> contagion, T range ){
+	public Map<T, Double> getPrediction( IContagion contagion, T range ){
 		return this.trace.getPrediction(contagion, range);
 	}
 
@@ -96,7 +97,7 @@ public abstract class AbstractHub<T extends Object> extends Point implements IHu
 	}
 
 	@Override
-	public double getContagion( IContagion<T> contagion, T step ) {
+	public double getContagion( IContagion contagion, T step ) {
 		return this.location.getContagion(contagion, step);
 	}
 	
@@ -133,9 +134,13 @@ public abstract class AbstractHub<T extends Object> extends Point implements IHu
 	public boolean addPrevious( IHub<T> hub ) {
 		if( hub == null )
 			return false;
+		IContagion[] worse = this.location.getWorse( hub.getLocation() );
 		ILocation<T> result = (ILocation<T>) this.location.clone();
 		this.location = AbstractLocation.createWorst( result, this.location, hub.getLocation());
-		return this.previous.add( (Point) hub);
+		boolean retval = this.previous.add( (Point) hub);
+		for( IContagion contagion: worse )
+			this.notifyListeners( new HubEvent<T>( this, this.trace, this.timeStep, contagion ));
+		return retval;
 	}
 
 	@Override
@@ -189,10 +194,10 @@ public abstract class AbstractHub<T extends Object> extends Point implements IHu
 	 * @return
 	 */
 	@Override
-	public boolean encounter( IPerson<T> person, T step, IContagion<T> contagion ) {
+	public boolean encounter( IPerson<T> person, T step, IContagion contagion ) {
 		if( !person.getLocation().equals( this.location))
 			return false;
-		return alert(person, contagion, step);
+		return alert(person, contagion, step, step);
 	}
 
 	/**
@@ -201,7 +206,7 @@ public abstract class AbstractHub<T extends Object> extends Point implements IHu
 	 * @param person
 	 * @return
 	 */
-	protected boolean alert( IPerson<T> person, IContagion<T> contagion, T moment ) {
+	protected boolean alert( IPerson<T> person, IContagion contagion, T current, T moment ) {
 		if( !person.getLocation().equals( this.location ))
 			return false;
 		
@@ -211,10 +216,10 @@ public abstract class AbstractHub<T extends Object> extends Point implements IHu
 		ILocation<T> worst = this.location.createWorst( check );
 
 		//Check if the person is worse off, and if so generate an alert		
-		IContagion<T>[] worse = check.getWorse( worst );
+		IContagion[] worse = check.getWorse( worst );
 		boolean result = !Utils.assertNull(worse);
 		if( result)
-			person.alert( moment, worst);
+			person.alert( current, moment, worst, contagion);
 		
 		persons.put( person, moment );
 
@@ -233,7 +238,7 @@ public abstract class AbstractHub<T extends Object> extends Point implements IHu
 			if( person.equals(entry.getKey()))
 				continue;
 			if( onPersonAlert(entry.getKey(), moment, timeStep, history, entry.getValue()))
-				entry.getKey().alert(moment, this.location);
+				entry.getKey().alert(current, moment, this.location, contagion);
 		}
 		
 		//Last alert other hubs of a contagion
@@ -263,8 +268,8 @@ public abstract class AbstractHub<T extends Object> extends Point implements IHu
 	protected abstract boolean onRemovePersons( IPerson<T> person, T timeStep, T history, T encountered );
 	
 	@Override
-	public void updateTrace( IContagion<T> contagion, T timeStep, ITrace<T> guest ) {
-		trace.update(contagion, timeStep, guest);
+	public void updateTrace( IContagion contagion, T current, ITrace<T> guest ) {
+		trace.update(contagion, current, guest);
 	}
 	
 	@Override

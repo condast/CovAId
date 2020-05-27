@@ -7,9 +7,13 @@ import java.util.TreeMap;
 import org.covaid.core.data.TimelineCollection;
 import org.covaid.core.data.frogger.HubData;
 import org.covaid.core.data.frogger.LocationData;
+import org.covaid.core.def.IContagion;
+import org.covaid.core.def.ILocation;
+import org.covaid.core.def.IMobile;
 import org.covaid.core.environment.AbstractEnvironment;
 import org.covaid.core.environment.IEnvironment;
 import org.covaid.core.environment.frogger.FroggerDomain;
+import org.covaid.core.environment.frogger.FroggerDomain.Hubs;
 import org.covaid.orientdb.object.AbstractPersistenceService;
 
 import com.orientechnologies.orient.core.entity.OEntityManager;
@@ -76,11 +80,26 @@ public class Dispatcher extends AbstractPersistenceService {
 		return result.pause();
 	}
 
+	public ILocation<Integer> getLocation( String identifier, Hubs hub ){
+		Environment result = this.environments.get( identifier);
+		if( result == null )
+			return null;
+		return result.getLocation(hub);
+	}
+
 	public boolean setInfected(String identifier, int infected) {
 		Environment result = this.environments.get( identifier);
 		if( result == null )
 			return false;
-		result.setinfected(infected);
+		result.setInfected(infected);
+		return true;
+	}
+
+	public boolean setDensity(String identifier, int density) {
+		Environment result = this.environments.get( identifier);
+		if( result == null )
+			return false;
+		result.setDensity(density);
 		return true;
 	}
 
@@ -133,6 +152,26 @@ public class Dispatcher extends AbstractPersistenceService {
 		return null;
 	}
 
+	public String getAdvice( Hubs hub, IContagion contagion ) {
+		String result = IMobile.S_INFO_NOTHING_WRONG;
+		Environment env = this.environments.values().iterator().next();
+		if( env == null )
+			return result;
+		ILocation<Integer> location = env.getLocation(hub);
+		if( location == null )
+			return result;
+		try {
+			double risk = location.getRisk(contagion, FroggerDomain.DEFAULT_HISTORY);
+			if( risk > 20 ) {
+				result = IMobile.S_INFO_RISK_OF_CONTAGION + contagion.getIdentifier() + "\n" + IMobile.S_INFO_EMAIL_DOCTOR;
+			}
+		}
+		catch( Exception ex ) {
+			ex.printStackTrace();
+		}
+		return result;
+	}
+
 	@Override
 	protected void onManagerCreated(OEntityManager manager) {
 		// TODO Auto-generated method stub		
@@ -163,7 +202,6 @@ public class Dispatcher extends AbstractPersistenceService {
 			super.init(population);
 			domain.init(width, infected, 10);
 		}
-
 		
 		@Override
 		public void clear() {
@@ -171,10 +209,19 @@ public class Dispatcher extends AbstractPersistenceService {
 			super.clear();
 		}
 
-		public void setinfected( int infected ) {
+		public ILocation<Integer> getLocation( Hubs hub ){
+			return domain.getLocation(hub);
+		}
+
+		public void setInfected( int infected ) {
 			domain.setInfected( infected );
 		}
-		
+
+		public void setDensity(int density) {
+			int population = domain.setDensity(density);
+			super.setPopulation(population);
+		}
+
 		@Override
 		public Integer getTimeStep( long days ) {
 			return (int) days % Integer.MAX_VALUE;

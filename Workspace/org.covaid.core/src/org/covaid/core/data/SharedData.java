@@ -27,17 +27,17 @@ public class SharedData<T extends Object>{
 	}
 	
 	private String identifier;
-	private Collection<IContagion<T>> contagion;
+	private Collection<IContagion> contagion;
 	private float distance;
 	
 	private LatLng latlng;
 
-	public SharedData(String identifier, IContagion<T> disease, float distance, LatLng latlng) {
-		this( identifier, new ArrayList<IContagion<T>>(), distance, latlng );
+	public SharedData(String identifier, IContagion disease, float distance, LatLng latlng) {
+		this( identifier, new ArrayList<IContagion>(), distance, latlng );
 		this.contagion.add(disease);
 	}
 
-	public SharedData(String identifier, Collection<IContagion<T>> contagion, float distance, LatLng latlng) {
+	public SharedData(String identifier, Collection<IContagion> contagion, float distance, LatLng latlng) {
 		super();
 		this.identifier = identifier;
 		this.contagion = contagion;
@@ -49,8 +49,7 @@ public class SharedData<T extends Object>{
 		return this.identifier;
 	}
 
-	@SuppressWarnings("unchecked")
-	public IContagion<T>[] getContagion() {
+	public IContagion[] getContagion() {
 		return contagion.toArray( new IContagion[ this.contagion.size()] );
 	}
 
@@ -78,9 +77,9 @@ public class SharedData<T extends Object>{
 		return data.getIdentifier().equals(identifier);
 	}
 	
-	public static Map<IContagion<Date>, Date> toTimeStamped( SharedData<Date> data ){
-		Map<IContagion<Date>, Date> results = new HashMap<>();
-		for( IContagion<Date> cd: data.contagion )
+	public static Map<IContagion, Date> toTimeStamped( SharedData<Date> data ){
+		Map<IContagion, Date> results = new HashMap<>();
+		for( IContagion cd: data.contagion )
 			results.put(cd, Calendar.getInstance().getTime());
 		return results;
 	}

@@ -7,12 +7,11 @@ import org.covaid.core.def.IContagion;
 
 interface IHubTrace<T extends Object> {
 
-	Collection<IContagion<T>> getContagions();
+	Collection<IContagion> getContagions();
 
-	ContagionData<T> get(IContagion<T> contagion);
+	ContagionData<T> get(IContagion contagion);
 
-	void update(IContagion<T> contagion, T timeStep, IHubTrace<T> ct);
+	void put(IContagion contagion, ContagionData<T> guest);
 
-	void put(IContagion<T> contagion, ContagionData<T> guest);
-
+	void update(IContagion contagion, T current, IHubTrace<T> ct);
 }

@@ -141,6 +141,11 @@ public abstract class AbstractEnvironment<T extends Object> implements IEnvironm
 	}
 
 	@Override
+	public void setPopulation(int population) {
+		this.population = population;
+	}
+
+	@Override
 	public int getDays() {
 		return days;
 	}	

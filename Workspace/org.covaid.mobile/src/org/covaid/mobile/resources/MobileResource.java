@@ -18,8 +18,11 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import org.condast.commons.Utils;
 import org.condast.commons.messaging.http.IHttpRequest.HttpStatus;
+import org.covaid.core.def.IContagion;
+import org.covaid.core.def.IContagion.SupportedContagion;
 import org.covaid.core.def.ILocation;
 import org.covaid.core.def.IMobile;
+import org.covaid.core.model.Contagion;
 import org.covaid.core.model.date.DateMobile;
 import org.covaid.mobile.core.Dispatcher;
 import org.covaid.mobile.service.MobileService;
@@ -125,8 +128,8 @@ public class MobileResource {
 		MobileService service = null;
 		try{
 			IMobile<Date> mobile = dispatcher.getMobile(identifier);
+			service = new MobileService(dispatcher);
 			if( mobile == null ) {
-				service = new MobileService(dispatcher);
 				service.open();
 				Collection<IMobile<Date>> results = service.find(identifier);
 				if( Utils.assertNull( results ))
@@ -169,10 +172,13 @@ public class MobileResource {
 		try{
 			service = new MobileService(dispatcher);
 			service.open();
-			Collection<IMobile<Date>> results = service.find(identifier);
-			if( Utils.assertNull( results ))
-				return Response.noContent().build();
-			IMobile<Date> mobile = results.iterator().next();
+			IMobile<Date> mobile = dispatcher.getMobile(identifier);
+			if( mobile == null ) {
+				Collection<IMobile<Date>> results = service.find(identifier);
+				if( Utils.assertNull( results ))
+					return Response.noContent().build();
+				mobile = results.iterator().next();
+			}
 			mobile.setHealth(health);
 			service.update(mobile);
 			dispatcher.addMobile(mobile);
@@ -209,16 +215,61 @@ public class MobileResource {
 		Response result = null;
 		MobileService service = null;
 		try{
+			IMobile<Date> mobile = dispatcher.getMobile(identifier);
 			service = new MobileService(dispatcher);
-			service.open();
-			Collection<IMobile<Date>> results = service.find(identifier);
-			if( Utils.assertNull( results ))
-				return Response.noContent().build();
-			IMobile<Date> mobile = results.iterator().next();
+			if( mobile == null ) {
+				service.open();
+				Collection<IMobile<Date>> results = service.find(identifier);
+				if( Utils.assertNull( results ))
+					return Response.noContent().build();
+				mobile = results.iterator().next();
+			}
 			mobile.getHealthAdvice(cough, fever, lackoftaste, soreThroat, nasalCold, temperature);
 			service.update(mobile);
 			dispatcher.addMobile(mobile);
 			result = Response.ok( "ok").build();
+		}
+		catch( Exception ex ){
+			ex.printStackTrace();
+			return Response.serverError().build();
+		}
+		finally {
+			if( service != null )
+				service.close();			
+		}
+		return result;
+	}
+
+	/**
+	 * Set the health of the owner
+	 * @param id
+	 * @param token
+	 * @param identifier
+	 * @param history
+	 * @return
+	 */
+	@GET
+	@Consumes(MediaType.APPLICATION_JSON)
+	@Produces(MediaType.TEXT_PLAIN)
+	@Path("/getAdvice")
+	public Response getAdvice( @QueryParam("id") long id, @QueryParam("token") long token, @QueryParam("identifier") String identifier) {
+		logger.info( "Get mobile Advice " + identifier );
+		Dispatcher dispatcher = Dispatcher.getInstance();
+		Response result = null;
+		MobileService service = null;
+		try{
+			IMobile<Date> mobile = dispatcher.getMobile(identifier);
+			service = new MobileService(dispatcher);
+			if( mobile == null ) {
+				service.open();
+				Collection<IMobile<Date>> results = service.find(identifier);
+				if( Utils.assertNull( results ))
+					return Response.noContent().build();
+				mobile = results.iterator().next();
+			}
+			IContagion contagion = new Contagion( SupportedContagion.COVID_19 );
+			String str = mobile.getAdvice(contagion, Calendar.getInstance().getTime());
+			result = Response.ok( str ).build();
 		}
 		catch( Exception ex ){
 			ex.printStackTrace();
@@ -250,12 +301,15 @@ public class MobileResource {
 		Response result = null;
 		MobileService service = null;
 		try{
+			IMobile<Date> mobile = dispatcher.getMobile(identifier);
 			service = new MobileService(dispatcher);
 			service.open();
-			Collection<IMobile<Date>> results = service.find(identifier);
-			if( Utils.assertNull( results ))
-				return Response.noContent().build();
-			IMobile<Date> mobile = results.iterator().next();
+			if( mobile == null ) {
+				Collection<IMobile<Date>> results = service.find(identifier);
+				if( Utils.assertNull( results ))
+					return Response.noContent().build();
+				mobile = results.iterator().next();
+			}
 			mobile.setRisk( safety );
 			service.update(mobile);
 			dispatcher.addMobile(mobile);
@@ -291,12 +345,15 @@ public class MobileResource {
 		Response result = null;
 		MobileService service = null;
 		try{
-			service = new MobileService(dispatcher);
-			service.open();
-			Collection<IMobile<Date>> results = service.find(identifier);
-			if( Utils.assertNull( results ))
-				return Response.noContent().build();
-			IMobile<Date> mobile = results.iterator().next();
+			IMobile<Date> mobile = dispatcher.getMobile(identifier);
+			if( mobile == null ) {
+				service = new MobileService(dispatcher);
+				service.open();
+				Collection<IMobile<Date>> results = service.find(identifier);
+				if( Utils.assertNull( results ))
+					return Response.noContent().build();
+				mobile = results.iterator().next();
+			}
 			mobile.setEmail( email );
 			service.update(mobile);
 			dispatcher.addMobile(mobile);

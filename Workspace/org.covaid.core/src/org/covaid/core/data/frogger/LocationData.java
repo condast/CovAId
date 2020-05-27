@@ -27,11 +27,11 @@ public class LocationData<T extends Object> {
 		return point;
 	}
 
-	public Double getRisk(IContagion<T> contagion, int timeStep) {
+	public Double getRisk(IContagion contagion, int timeStep) {
 		return Utils.assertNull(this.contagions)?0: this.contagions.get(contagion).getRisk();
 	}
 
-	public double getContagion(IContagion<Integer> contagion, int day) {
+	public double getContagion(IContagion contagion, int day) {
 		return contagions.get(contagion).getRisk();
 	}
 }

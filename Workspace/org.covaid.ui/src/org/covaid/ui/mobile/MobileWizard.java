@@ -6,7 +6,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.TreeMap;
@@ -20,6 +19,7 @@ import org.condast.commons.messaging.http.AbstractHttpRequest;
 import org.condast.commons.messaging.http.IHttpClientListener;
 import org.condast.commons.messaging.http.ResponseEvent;
 import org.condast.commons.strings.StringStyler;
+import org.condast.commons.strings.StringUtils;
 import org.condast.commons.ui.session.AbstractSessionHandler;
 import org.condast.commons.ui.session.SessionEvent;
 import org.condast.commons.ui.xy.AbstractMultiXYGraph;
@@ -56,6 +56,7 @@ import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Canvas;
 import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Label;
+import org.eclipse.swt.widgets.MessageBox;
 import org.eclipse.swt.widgets.Button;
 
 public class MobileWizard extends Composite {
@@ -90,6 +91,15 @@ public class MobileWizard extends Composite {
 		}
 	}
 
+	public enum Contexts{
+		REST,
+		MOBILE;
+		
+		public String getPath() {
+			return MOBILE.equals(this)? S_COVAID_MOBILE_CONTEXT: S_COVAID_CONTEXT;
+		}
+	}
+	
 	private enum Requests{
 
 		REGISTER,
@@ -221,7 +231,7 @@ public class MobileWizard extends Composite {
 					LocationData<Integer> data = hubs.get( new Point( xpos, ypos)); 
 					if( data == null )
 						continue;
-					IContagion<Integer> contagion = new Contagion(SupportedContagion.COVID_19);
+					IContagion contagion = new Contagion(SupportedContagion.COVID_19);
 					Map<Contagion, ContagionData<Integer>> contagions = data.getContagions();
 					if( Utils.assertNull(contagions))
 						continue;
@@ -240,7 +250,6 @@ public class MobileWizard extends Composite {
 			}
 		}
 		gc.dispose();
-		requestLayout();
 	};
 
 	private PaintListener forecastListener = (e)->{
@@ -263,10 +272,8 @@ public class MobileWizard extends Composite {
 		}
 		gc.setForeground( base );
 		if( !Utils.assertNull(prediction )) {
-			Iterator<Map.Entry<Integer, Double>> iterator = prediction.entrySet().iterator();
 			Map.Entry<Integer, Double> current = null;
-			while( iterator.hasNext()) {
-				Map.Entry<Integer, Double> entry = iterator.next();
+			for( Map.Entry<Integer, Double> entry: prediction.entrySet()) {
 				int xpos = xStart+scaleX*entry.getKey();
 				int ypos = (int) ((current == null )?yStart: yStart -scaleY * current.getValue());
 				gc.drawLine(xpos, ypos, xpos+step, (int) (yStart + scaleY*entry.getValue()));
@@ -274,12 +281,11 @@ public class MobileWizard extends Composite {
 			}
 		}
 		gc.dispose();
-		requestLayout();
 	};
 
 	private IEvaluationListener<Object> elistener = (event) ->{
 		try {
-			logger.info("CALLBACK");
+			logger.fine("CALLBACK");
 			if(!CanvasController.S_CALLBACK_ID.equals(event.getId()) || ( this.authData == null ))
 				return;
 			MobileWebClient client = new MobileWebClient();
@@ -347,7 +353,25 @@ public class MobileWizard extends Composite {
 		
 			@Override
 			protected String onHandleContext(String context, String application, String service) {
-				return config.getServerContext() + S_COVAID_MOBILE_CONTEXT;
+				Contexts cxt = Contexts.valueOf( StringStyler.styleToEnum(service));
+				String path = cxt.getPath();
+				return config.getServerContext() +path;
+			}
+			
+			@Override
+			protected String onCreateLink(String id, String type, String url) {
+				String result = super.onCreateLink(id, type, url);
+				switch( link ) {
+				case DOWNLOAD:
+				case INSTALLING:
+					Links ref = Links.valueOf(type.toUpperCase());
+					if( Links.HEALTH.equals(ref))
+						result = "#";
+					break;
+				default:
+					break;
+				}
+				return result;
 			}
 
 			@Override
@@ -461,7 +485,27 @@ public class MobileWizard extends Composite {
 		
 		contagionCombo = new Combo(grpDaysForecast, SWT.NONE);
 		contagionCombo.setLayoutData(new GridData(SWT.FILL, SWT.TOP, false, false, 1, 1));
-		
+		contagionCombo.addSelectionListener( new SelectionAdapter() {
+			private static final long serialVersionUID = 1L;
+
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				try {
+					Combo combo = (Combo) e.widget;
+					SupportedContagion sc = SupportedContagion.values()[ combo.getSelectionIndex()];
+					if( !SupportedContagion.COVID_19.equals(sc)) {
+						MessageBox messageBox = new MessageBox( getDisplay().getActiveShell());
+						messageBox.setMessage( "Option " + sc.toString() + " is currently not supported in this demo.");
+						combo.select(SupportedContagion.COVID_19.ordinal());
+						messageBox.open();
+					}
+				}
+				catch( Exception ex ) {
+					ex.printStackTrace();
+				}
+				super.widgetSelected(e);
+			}		
+		});
 		canvasForecast = new Canvas(grpDaysForecast, SWT.NONE);
 		canvasForecast.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false, 1, 1));
 		canvasForecast.setBackground(getDisplay().getSystemColor(SWT.COLOR_TRANSPARENT));
@@ -555,7 +599,7 @@ public class MobileWizard extends Composite {
 		}		
 	}
 	
-	protected Color getColour( Color colour, IContagion<?> contagion, double value ) {
+	protected Color getColour( Color colour, IContagion contagion, double value ) {
 		double green = colour.getGreen() * (1f-value/100);
 		int red = (int) (255f*value/100);
 		return new Color( getDisplay(), red, (int)(green), 0 );
@@ -771,7 +815,7 @@ public class MobileWizard extends Composite {
 				graph.requestLayout();
 				break;
 			case PREDICTION:
-				prediction = gson.fromJson(response.getResponse(), Map.class);				
+				prediction = convertToType(gson, response.getResponse());				
 				break;
 			case SURROUNDINGS:
 				setHubs( gson.fromJson(response.getResponse(), LocationData[].class));				
@@ -785,9 +829,23 @@ public class MobileWizard extends Composite {
 		}
 
 		@SuppressWarnings("unchecked")
+		private Map<Integer, Double> convertToType( Gson gson, String str ){
+			Map<Integer, Double> results = new HashMap<>();
+			if( StringUtils.isEmpty(str))
+				return results;
+			Map<String, Double> map = gson.fromJson( str, Map.class);
+			for( Map.Entry<String, Double> entry: map.entrySet()) {
+				results.put( Integer.parseInt(entry.getKey()), entry.getValue());
+			}
+			return results;
+		}
+
+		@SuppressWarnings("unchecked")
 		private TimelineCollection<Integer, Double> convert( Gson gson, String str ){
-			TimelineCollection<String, Double> timeLine = gson.fromJson( str, TimelineCollection.class);
 			TimelineCollection<Integer, Double> collection = new TimelineCollection<Integer, Double>();
+			if(StringUtils.isEmpty(str))
+				return collection;
+			TimelineCollection<String, Double> timeLine = gson.fromJson( str, TimelineCollection.class);
 			for( Map.Entry<String, Map<String, Double>> entry: timeLine.getTimelineData().entrySet()) {
 				TimelineData<Integer, Double> td = new TimelineData<Integer, Double>(entry.getKey());
 				for( Map.Entry<String, Double> data: entry.getValue().entrySet()) {

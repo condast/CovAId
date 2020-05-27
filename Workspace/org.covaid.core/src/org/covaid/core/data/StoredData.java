@@ -23,16 +23,16 @@ public class StoredData<T extends Object> {
 	
 	private String id;
 	private String identifier;
-	private Map<IContagion<T>, T> contagiousness;
+	private Map<IContagion, T> contagiousness;
 	
-	public StoredData(String identifier, Map<IContagion<T>, T> contagiousness ) {
+	public StoredData(String identifier, Map<IContagion, T> contagiousness ) {
 		super();
 		this.identifier = identifier;
 		this.contagiousness = contagiousness;
 	}
 	
 	public StoredData(String identifier ) {
-		this( identifier, new HashMap<IContagion<T>, T>());
+		this( identifier, new HashMap<IContagion, T>());
 	}
 
 	public String getId() {
@@ -47,21 +47,21 @@ public class StoredData<T extends Object> {
 		return this.identifier;
 	}
 
-	public IContagion<T> getContagiousness( String identifier ) {
-		Iterator<Map.Entry<IContagion<T>, T>> iterator = contagiousness.entrySet().iterator();
+	public IContagion getContagiousness( String identifier ) {
+		Iterator<Map.Entry<IContagion, T>> iterator = contagiousness.entrySet().iterator();
 		while( iterator.hasNext()) {
-			Map.Entry<IContagion<T>, T> entry = iterator.next();
+			Map.Entry<IContagion, T> entry = iterator.next();
 			if( entry.getKey().getIdentifier().equals(identifier))
 				return entry.getKey();
 		}
 		return null;
 	}
 
-	public Map<IContagion<T>, T> getContagiousness() {
+	public Map<IContagion, T> getContagiousness() {
 		return contagiousness;
 	}
 
-	public void addContagion( IContagion<T> data, T timestamp ) {
+	public void addContagion( IContagion data, T timestamp ) {
 		if( !this.contagiousness.containsKey(data))
 			this.contagiousness.put(data, timestamp);
 		else

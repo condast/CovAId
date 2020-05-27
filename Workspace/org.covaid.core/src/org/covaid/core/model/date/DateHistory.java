@@ -8,6 +8,7 @@ import org.covaid.core.def.IContagion;
 import org.covaid.core.def.ILocation;
 import org.covaid.core.def.IPoint;
 import org.covaid.core.model.AbstractHistory;
+import org.covaid.core.model.Contagion;
 
 public class DateHistory extends AbstractHistory<Date> {
 	
@@ -21,8 +22,8 @@ public class DateHistory extends AbstractHistory<Date> {
 	}
 
 	@Override
-	protected IContagion<Date> createContagion(String identifier) {
-		return new DateContagion( identifier, 100 );
+	protected IContagion createContagion(String identifier) {
+		return new Contagion( identifier, 100 );
 	}
 
 	@Override
@@ -37,7 +38,7 @@ public class DateHistory extends AbstractHistory<Date> {
 	 * @param test
 	 * @return
 	 */
-	public static double getContagion( IContagion<Date> contagion, IPoint location, Date date, Map.Entry<Date, DateLocation> test) {
+	public static double getContagion( IContagion contagion, IPoint location, Date date, Map.Entry<Date, DateLocation> test) {
 		long days = DateUtils.getDifferenceDays( date, test.getKey());
 		double distance = location.getDistance( test.getValue());
 		return contagion.getSpread( days, distance );

@@ -16,7 +16,7 @@ public class ContagionData<T extends Object> {
 		this.risk = contagiousness;
 	}
 
-	public T getTimeStep() {
+	public T getMoment() {
 		return timeStep;
 	}
 
@@ -30,5 +30,10 @@ public class ContagionData<T extends Object> {
 
 	public void setRisk(double contagiousness) {
 		this.risk = contagiousness;
+	}
+
+	@Override
+	public String toString() {
+		return "{" + timeStep.toString() + ", " + risk + "}";
 	}
 }

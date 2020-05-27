@@ -10,8 +10,8 @@ import org.covaid.core.def.IPerson;
 import org.covaid.core.def.IPoint;
 import org.covaid.core.environment.AbstractFieldDomain;
 import org.covaid.core.hub.IHub;
+import org.covaid.core.model.Contagion;
 import org.covaid.core.model.Point;
-import org.covaid.core.model.date.DateContagion;
 import org.covaid.core.model.date.DateHub;
 
 public class RawDomain extends AbstractFieldDomain{
@@ -45,10 +45,11 @@ public class RawDomain extends AbstractFieldDomain{
 	@Override
 	protected void onCreatePerson( IFieldDomain domain, IPerson<Date> person) {
 		IFieldEnvironment env = (IFieldEnvironment) super.getEnvironment();
-		DateContagion contagion = new DateContagion( IContagion.SupportedContagion.valueOf( env.getContagion()), 100 );
+		IContagion contagion = new Contagion( IContagion.SupportedContagion.valueOf( env.getContagion()), 100 );
 		if( index == 0 ) {
 			person.setPosition((int)domain.getField().getLength()/2, (int)domain.getField().getWidth()/2);
-			person.setContagion( env.getTimeStep( env.getDays()), contagion);
+			Date current = env.getTimeStep(env.getDays());
+			person.setContagion( current, current, contagion);
 		}
 		index++;
 	}
@@ -61,15 +62,16 @@ public class RawDomain extends AbstractFieldDomain{
 	protected void onMovePerson( IFieldDomain domain, Date date, IPerson<Date> person) {
 		//analyseHub(date, person);//Create a new hub if the person has a risk of contagion
 		IFieldEnvironment env = (IFieldEnvironment) super.getEnvironment();
-		DateContagion contagion = new DateContagion( IContagion.SupportedContagion.valueOf( env.getContagion()), 100 );
+		IContagion contagion = new Contagion( IContagion.SupportedContagion.valueOf( env.getContagion()), 100 );
 		Collection<IPerson<Date>> persons = domain.getPersons();
+		Date current = env.getTimeStep(env.getDays());
 		if( person.getContagiousness(contagion, date) > 10 ){
 			for( IPerson<Date> other: persons) {
 				double distance = person.getLocation().getDistance(other.getLocation());
 				if( contagion.getDistance() < distance)
 					continue;
 				if( other.getContagiousness(contagion, date) < person.getContagiousness(contagion, date))
-					other.setContagion( env.getTimeStep( env.getDays()), contagion);
+					other.setContagion( current, current, contagion);
 			}
 		}
 		persons.remove(person);

@@ -228,10 +228,10 @@ public class OrientDatabase {
 	
 	protected static void fill( Vertex vertex, StoredData<Date> data ) {
 		vertex.setProperty( StoredData.Attributes.IDENTIFIER.name(), data.getIdentifier());
-		Iterator<Map.Entry<IContagion<Date>, Date>> iterator = data.getContagiousness().entrySet().iterator();
+		Iterator<Map.Entry<IContagion, Date>> iterator = data.getContagiousness().entrySet().iterator();
 		OrientGraph graph = service.getGraph();
 		while( iterator.hasNext()) {
-			Map.Entry<IContagion<Date>, Date> entry = iterator.next();
+			Map.Entry<IContagion, Date> entry = iterator.next();
 			Vertex vc = graph.addVertex( Types.CONTAGION.toString() );
 			vc.setProperty( IContagion.Attributes.IDENTIFIER.name(), entry.getKey().getIdentifier());
 			vc.setProperty( IContagion.Attributes.CONTAGIOUSNESS.name(), String.valueOf( entry.getKey().getContagiousness()));

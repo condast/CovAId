@@ -9,6 +9,7 @@ import org.covaid.core.def.IContagion;
 import org.covaid.core.def.ILocation;
 import org.covaid.core.def.IPoint;
 import org.covaid.core.model.AbstractLocation;
+import org.covaid.core.operators.DateContagionOperator;
 
 public class DateLocation extends AbstractLocation<Date> implements ILocation<Date>{
 	
@@ -32,17 +33,17 @@ public class DateLocation extends AbstractLocation<Date> implements ILocation<Da
 	 * @param ypos
 	 */
 	public DateLocation( String identifier, int xpos, int ypos) {
-		super( identifier, xpos, ypos);
+		super( identifier, xpos, ypos, new DateContagionOperator());
 	}
 
 	@Override
 	public ILocation<Date> clone() {
 		IPoint point = super.toPoint();
 		ILocation<Date> result = new DateLocation( point );
-		Iterator<Map.Entry<IContagion<Date>, ContagionData<Date>>> iterator = super.getContagions().entrySet().iterator();
+		Iterator<Map.Entry<IContagion, ContagionData<Date>>> iterator = super.getContagions().entrySet().iterator();
 		while( iterator.hasNext() ) {
-			Map.Entry<IContagion<Date>, ContagionData<Date>> entry = iterator.next();
-			result.addContagion(entry.getValue().getTimeStep(), entry.getKey());
+			Map.Entry<IContagion, ContagionData<Date>> entry = iterator.next();
+			result.addContagion(entry.getValue().getMoment(), entry.getKey());
 		}
 		return result;
 	}

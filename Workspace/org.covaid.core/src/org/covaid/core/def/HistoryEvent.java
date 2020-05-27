@@ -7,13 +7,13 @@ public class HistoryEvent<T extends Object> extends EventObject {
 
 	private T date;
 	private IPoint location;
-	private IContagion<T> contagion;
+	private IContagion contagion;
 
 	public HistoryEvent( IHistory<T> source, T date, IPoint location) {
 		this( source, date, location, null );
 	}
 	
-	public HistoryEvent( IHistory<T> source, T date, IPoint location, IContagion<T> contagion) {
+	public HistoryEvent( IHistory<T> source, T date, IPoint location, IContagion contagion) {
 		super(source);
 		this.date = date;
 		this.location = location;
@@ -33,7 +33,7 @@ public class HistoryEvent<T extends Object> extends EventObject {
 		return location;
 	}
 
-	public IContagion<T> getContagion() {
+	public IContagion getContagion() {
 		return contagion;
 	}
 }

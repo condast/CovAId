@@ -23,20 +23,26 @@ public interface IPerson<T extends Object> extends Comparable<IPerson<T>>{
 
 	void setState(States state);
 
-	IContagion<T> getMonitor();
+	IContagion getMonitor();
 
 	T getCurrent();
 
 	boolean isHealthy();
 
-	void setContagion(T date, IContagion<T> contagion);
+	void setContagion(T current, T moment, IContagion contagion);
 
 	void setIll(T date);
 
 	void setIll(T date, String identifier);
 
-	void alert(T date, ILocation<T> point);
-
+	/**
+	 * alert possible listeners of a new contagion that was recorded at the given moment
+	 * @param step
+	 * @param location
+	 * @param contagion
+	 */
+	void alert(T current, T moment, IPoint location, IContagion contagion);
+	
 	/**
 	 * Create a snapshot of the current risk of contagiousness
 	 * @return
@@ -49,21 +55,21 @@ public interface IPerson<T extends Object> extends Comparable<IPerson<T>>{
 	 * @param step
 	 * @return
 	 */
-	double getContagiousness(IContagion<T> contagion, T step);
+	double getContagiousness(IContagion contagion, T step);
 
-	double getContagiousness(IContagion<T> contagion, T date, Map.Entry<T, ILocation<T>> entry);
+	double getContagiousness(IContagion contagion, T date, Map.Entry<T, ILocation<T>> entry);
 
 	/**
 	 * This is the measure in which you want to protect others
 	 * @return
 	 */
-	double getSafetyBubble(IContagion<T> contagion, T date);
+	double getSafetyBubble(IContagion contagion, T date);
 
 	/**
 	 * This is the measure in which are willing to take a risk
 	 * @return
 	 */
-	double getRiskBubble(IContagion<T> contagion);
+	double getRiskBubble(IContagion contagion);
 
 	/**
 	 * Update the person in normal circumstances

@@ -5,13 +5,18 @@ import java.util.EventObject;
 public class PersonEvent<T extends Object> extends EventObject {
 	private static final long serialVersionUID = 1L;
 
-	private T timeStep;
+	private T current;
+	private T moment;
 	private ILocation<T> snapshot;
 	
-	public PersonEvent(IPerson<T> source, T timeStep, ILocation<T> snapshot ) {
+	private IContagion contagion;
+	
+	public PersonEvent(IPerson<T> source, T current, T moment, IContagion contagion, ILocation<T> snapshot ) {
 		super(source);
+		this.current = current;
 		this.snapshot = snapshot;
-		this.timeStep = timeStep;
+		this.contagion = contagion;
+		this.moment = moment;
 	}
 	
 	@SuppressWarnings("unchecked")
@@ -23,7 +28,15 @@ public class PersonEvent<T extends Object> extends EventObject {
 		return snapshot;
 	}
 
+	public T getCurrent() {
+		return current;
+	}
+
 	public T getMoment() {
-		return timeStep;
+		return moment;
+	}
+
+	public IContagion getContagion() {
+		return contagion;
 	}
 }

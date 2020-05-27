@@ -12,8 +12,8 @@ import org.condast.commons.project.ProjectFolderUtils;
 import org.covaid.core.def.IMobile;
 import org.covaid.core.field.IFieldListener;
 import org.covaid.core.field.IFieldProvider;
+import org.covaid.core.model.Contagion;
 import org.covaid.core.model.Point;
-import org.covaid.core.model.date.DateContagion;
 import org.covaid.core.model.date.DateHistory;
 import org.covaid.core.model.date.DateLocation;
 import org.covaid.core.model.date.DateMobile;
@@ -87,7 +87,7 @@ public class Dispatcher extends AbstractPersistenceService {
 		OEntityManager om = (OEntityManager) manager;
 		try {
 			om.registerEntityClasses( Point.class, false);
-			om.registerEntityClasses( DateContagion.class, false);
+			om.registerEntityClasses( Contagion.class, false);
 			om.registerEntityClasses( DateLocation.class, false);
 			om.registerEntityClasses( DateHistory.class, false);
 			om.registerEntityClasses( DatePerson.class, false);

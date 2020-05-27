@@ -13,28 +13,31 @@ import org.covaid.core.data.frogger.LocationData;
 import org.covaid.core.def.IContagion;
 import org.covaid.core.def.ILocation;
 import org.covaid.core.def.IPoint;
+import org.covaid.core.operators.IContagionOperator;
 
 public abstract class AbstractLocation<T extends Object> extends Point implements ILocation<T>{
 	
 	public static final String S_ERR_ILLEGAL_RISK_VALUE = "The risk should be inbetween <0,100>: ";
 	
-	private Map<IContagion<T>, ContagionData<T>> contagions;
+	private Map<IContagion, ContagionData<T>> contagions;
 	
-	protected AbstractLocation( IPoint point) {
-		this( point.getXpos(), point.getYpos());
+	private IContagionOperator<T> operator;
+	
+	protected AbstractLocation( IPoint point, IContagionOperator<T> operator) {
+		this( point.getXpos(), point.getYpos(), operator);
 	}
 
-	protected AbstractLocation( IPoint point, Map<IContagion<T>, ContagionData<T>> contagions) {
-		this( point.getXpos(), point.getYpos());
+	protected AbstractLocation( IPoint point, Map<IContagion, ContagionData<T>> contagions, IContagionOperator<T> operator) {
+		this( point.getXpos(), point.getYpos(), operator );
 		this.contagions = contagions;
 	}
 
-	protected AbstractLocation( String identifier, IPoint point) {
-		this( identifier, point.getXpos(), point.getYpos());
+	protected AbstractLocation( String identifier, IPoint point, IContagionOperator<T> operator) {
+		this( identifier, point.getXpos(), point.getYpos(), operator);
 	}
 
-	protected AbstractLocation( int xpos, int ypos) {
-		this( createIdentifier(xpos, ypos), xpos, ypos);
+	protected AbstractLocation( int xpos, int ypos, IContagionOperator<T> operator) {
+		this( createIdentifier(xpos, ypos), xpos, ypos, operator);
 	}
 	
 	/**
@@ -44,18 +47,24 @@ public abstract class AbstractLocation<T extends Object> extends Point implement
 	 * @param xpos
 	 * @param ypos
 	 */
-	public AbstractLocation( String identifier, int xpos, int ypos) {
+	public AbstractLocation( String identifier, int xpos, int ypos, IContagionOperator<T> operator) {
 		super( identifier, xpos, ypos);
+		this.operator = operator;
 		contagions = new HashMap<>();
 	}
 
 	@Override
-	public void addContagion( T timestamp, IContagion<T> contagion ) {
+	public IContagionOperator<T> getOperator() {
+		return operator;
+	}
+
+	@Override
+	public void addContagion( T timestamp, IContagion contagion ) {
 		contagions.put( contagion, new ContagionData<T>( timestamp ));
 	}
 
 	@Override
-	public boolean addContagion( T timestamp, IContagion<T> contagion, double risk ) {
+	public boolean addContagion( T timestamp, IContagion contagion, double risk ) {
 		if(( risk < 0 ) || ( risk > ContagionData.MAX_CONTAGIOUSNESS )) {
 			throw new IllegalArgumentException( S_ERR_ILLEGAL_RISK_VALUE + risk);
 		}
@@ -66,77 +75,77 @@ public abstract class AbstractLocation<T extends Object> extends Point implement
 	}
 
 	@Override
-	public boolean removeContagion( IContagion<T> contagion ) {
+	public boolean removeContagion( IContagion contagion ) {
 		return ( contagions.remove(contagion) != null );
 	}
 
 	@Override
-	public boolean isInfected( IContagion<T> contagion ) {
+	public boolean isInfected( IContagion contagion, T step ) {
 		ContagionData<T> data = this.contagions.get( contagion);
-		return ( data == null)?false: contagion.isContagious( data.getTimeStep() );
+		operator.setCurrent(step);
+		operator.setContagion(contagion);
+		return operator.isInfected(data);
 	}
 
 	@Override
-	public boolean isHealthy() {
+	public boolean isHealthy( T step ) {
 		if( this.contagions.isEmpty())
 			return true;
-		Iterator<Map.Entry<IContagion<T>, ContagionData<T>>> iterator = this.contagions.entrySet().iterator();
-		while( iterator.hasNext() ) {
-			Map.Entry<IContagion<T>, ContagionData<T>> entry = iterator.next();
-			if( entry.getKey().isContagious(entry.getValue().getTimeStep()))
+		for( Map.Entry<IContagion, ContagionData<T>> entry: this.contagions.entrySet()) {
+			operator.setCurrent(step);
+			operator.setContagion(entry.getKey());
+			if( !operator.isHealthy(entry.getValue()))
 				return false;
 		}
 		return true;
 	}
 
 	@Override
-	public boolean isHealthy( IContagion<T> contagion) {
+	public boolean isHealthy( IContagion contagion, T step) {
 		if( this.contagions.isEmpty())
 			return true;
 		ContagionData<T> data = this.contagions.get( contagion);
-		return (data == null )?true: !contagion.isContagious( data.getTimeStep() );
+		operator.setCurrent(step);
+		operator.setContagion(contagion);
+		return (data == null )?true: !operator.isContagious( data.getMoment(), data.getRisk() );
 	}
 
 	@Override
-	public T getInfectionDate( IContagion<T> contagion ) {
+	public T getInfectionDate( IContagion contagion ) {
 		ContagionData<T> data = this.contagions.get( contagion);
-		return ( data == null )?null: data.getTimeStep();
+		return ( data == null )?null: data.getMoment();
 	}
 
-	protected Map<IContagion<T>, ContagionData<T>> getContagions() {
+	protected Map<IContagion, ContagionData<T>> getContagions() {
 		return contagions;
 	}
 
 	@Override
-	public IContagion<T> getContagion( String identifier ) {
-		for( IContagion<T> contagion: this.contagions.keySet() ){
-			if( contagion.getIdentifier().equals(identifier))
-				return contagion;
-		}
-		return null;
-	}
-
-	@Override
-	public double getContagion( IContagion<T> contagion, T step ) {
+	public synchronized double getContagion( IContagion contagion, T step ) {
 		ContagionData<T> data = this.contagions.get( contagion);
 		if ( data == null )
 			return 0;
 		T infection = getInfectionDate(contagion);
-		return ( infection == null )?0: data.getRisk() * contagion.getContagiousness(infection, step)/100;
+		operator.setCurrent(step);
+		operator.setContagion(contagion);
+		return ( infection == null )?0: data.getRisk() * operator.getContagiousness(infection)/100;
 	}
 
 	@Override
-	public double getRisk( IContagion<T> contagion, T step ) {
+	public double getRisk( IContagion contagion, T step ) {
 		if( step == null )
 			return ContagionData.MAX_CONTAGIOUSNESS;
+		if( this.contagions.isEmpty() )
+			return 0;
 		ContagionData<T> data = this.contagions.get( contagion );
 		if( data == null )
 			return 0;
-		return data.getRisk() * contagion.getContagiousness(data.getTimeStep(), step)/100;
+		operator.setCurrent(step);
+		return data.getRisk() * operator.getContagiousness(data.getMoment())/100;
 	}
 
 	@Override
-	public boolean setRisk( IContagion<T> contagion, T step, double risk ) {
+	public boolean setRisk( IContagion contagion, T step, double risk ) {
 		if(( risk < 0 ) || ( risk > ContagionData.MAX_CONTAGIOUSNESS )) {
 			throw new IllegalArgumentException( S_ERR_ILLEGAL_RISK_VALUE + risk);
 		}
@@ -151,20 +160,20 @@ public abstract class AbstractLocation<T extends Object> extends Point implement
 		return true;
 	}
 	
-	protected ContagionData<T> get( IContagion<T> contagion ) {
+	protected ContagionData<T> get( IContagion contagion ) {
 		return this.contagions.get(contagion);
 	}
 
-	@SuppressWarnings("unchecked")
 	@Override
-	public IContagion<T>[] getContagion() {
+	public IContagion[] getContagion() {
 		return this.contagions.keySet().toArray( new IContagion[ this.contagions.size()]);
 	}
 
 	@Override
 	public boolean isContagious( T step ) {
-		for( IContagion<T> contagion: this.contagions.keySet() ) {
-			if( contagion.isContagious( step ))
+		operator.setCurrent(step);
+		for( Map.Entry<IContagion, ContagionData<T>> contagion: this.contagions.entrySet() ) {
+			if( operator.isContagious( contagion.getValue().getMoment(), contagion.getValue().getRisk() ))
 				return true;
 		}
 		return false;
@@ -175,12 +184,13 @@ public abstract class AbstractLocation<T extends Object> extends Point implement
 	 * @param step
 	 * @return
 	 */
-	public Map<IContagion<T>, Double> getContagions( T step ){
-		Map<IContagion<T>, Double> results = new HashMap<>();
-		Iterator<Map.Entry<IContagion<T>, ContagionData<T>>> iterator = this.contagions.entrySet().iterator();
+	public Map<IContagion, Double> getContagions( T step ){
+		Map<IContagion, Double> results = new HashMap<>();
+		Iterator<Map.Entry<IContagion, ContagionData<T>>> iterator = this.contagions.entrySet().iterator();
+		operator.setCurrent(step);
 		while( iterator.hasNext() ) {
-			Map.Entry<IContagion<T>, ContagionData<T>> entry = iterator.next();
-			results.put(entry.getKey(), entry.getKey().getContagiousness(entry.getValue().getTimeStep(), step));
+			Map.Entry<IContagion, ContagionData<T>> entry = iterator.next();
+			results.put(entry.getKey(), operator.getContagiousness(entry.getValue().getMoment()));
 		}
 		return results;
 	}
@@ -194,9 +204,9 @@ public abstract class AbstractLocation<T extends Object> extends Point implement
 	 */
 	@Override
 	public boolean isWorse( ILocation<T> location ) {
-		Collection<IContagion<T>> results = new TreeSet<>( Arrays.asList( location.getContagion()));
+		Collection<IContagion> results = new TreeSet<>( Arrays.asList( location.getContagion()));
 		results.addAll(this.contagions.keySet());
-		for( IContagion<T> contagion: results ) {
+		for( IContagion contagion: results ) {
 			double compare = location.getContagion( contagion, location.getInfectionDate(contagion));
 			if( compare < getContagion( contagion, getInfectionDate(contagion) ))
 				return true;
@@ -210,16 +220,14 @@ public abstract class AbstractLocation<T extends Object> extends Point implement
 	 * @param location
 	 * @return
 	 */
-	@SuppressWarnings("unchecked")
 	@Override
-	public IContagion<T>[] getWorse( ILocation<T> location ) {
-		Collection<IContagion<T>> results = new ArrayList<>();
-		if( location.compareTo(this) != 0 )
-			return results.toArray( new IContagion[ results.size()]);
-		
-		for( IContagion<T> contagion: this.contagions.keySet() ) {
+	public IContagion[] getWorse( ILocation<T> location ) {
+		Collection<IContagion> results = new ArrayList<>();		
+		Collection<IContagion> test = new TreeSet<>( this.contagions.keySet());
+		test.addAll(Arrays.asList(location.getContagion()));
+		for( IContagion contagion: test ) {
 			double compare = location.getContagion( contagion, location.getInfectionDate(contagion));
-			if( compare  > contagion.getContagiousness())
+			if( compare  > this.getContagion(contagion, this.getInfectionDate(contagion)))
 				results.add(contagion);
 		}
 		return results.toArray( new IContagion[ results.size()]);
@@ -287,7 +295,7 @@ public abstract class AbstractLocation<T extends Object> extends Point implement
 	 */
 	public static <T extends Object> long getMaxContagionTime( ILocation<T> reference ) {
 		long result = 0;
-		for( IContagion<T> contagion: reference.getContagion() ) {
+		for( IContagion contagion: reference.getContagion() ) {
 			if( contagion.getIncubation() > result)
 				result = contagion.getIncubation();
 		}
@@ -301,9 +309,9 @@ public abstract class AbstractLocation<T extends Object> extends Point implement
 	 * @return
 	 */
 	public static <T extends Object> ILocation<T> createWorst( ILocation<T> destination ,ILocation<T> source, ILocation<T> check ) {
-		Collection<IContagion<T>> contagions = new TreeSet<>( Arrays.asList( source.getContagion()));
+		Collection<IContagion> contagions = new TreeSet<>( Arrays.asList( source.getContagion()));
 		contagions.addAll( Arrays.asList( check.getContagion()));
-		for( IContagion<T> contagion: contagions ) {
+		for( IContagion contagion: contagions ) {
 			double compare = check.getContagion( contagion, check.getInfectionDate(contagion) );
 			T infection = source.getInfectionDate(contagion);
 			T timestamp = null;

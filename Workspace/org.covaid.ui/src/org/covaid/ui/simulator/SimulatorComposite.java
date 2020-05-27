@@ -19,7 +19,7 @@ import org.covaid.core.environment.IEnvironmentListener;
 import org.covaid.core.environment.field.CovaidDomain;
 import org.covaid.core.environment.field.IFieldDomain;
 import org.covaid.core.environment.field.RawDomain;
-import org.covaid.core.model.date.DateContagion;
+import org.covaid.core.model.Contagion;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
@@ -98,7 +98,6 @@ public class SimulatorComposite extends Composite {
 			try {
 				if( environment != null )
 					lblDayValue.setText(String.valueOf( environment.getDayString(false)));
-				requestLayout();
 			}
 			catch( Exception ex ) {
 				ex.printStackTrace();
@@ -237,7 +236,7 @@ public class SimulatorComposite extends Composite {
 			@Override
 			public void widgetDefaultSelected(SelectionEvent e) {
 				Combo combo = (Combo) e.widget;
-				IContagion<Date> contagion = new DateContagion( IContagion.SupportedContagion.valueOf( combo.getText()), 100);
+				IContagion contagion = new Contagion( IContagion.SupportedContagion.valueOf( combo.getText()), 100);
 				lblContagiousnessValue.setText( String.format("%.2f", contagion.getContagiousness()) + "%");
 				lblDistanceValue.setText( contagion.getDistance() + " m" );
 				lblIncubationValue.setText( contagion.getIncubation() + " days" );
@@ -249,7 +248,7 @@ public class SimulatorComposite extends Composite {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
 				Combo combo = (Combo) e.widget;
-				IContagion<Date> contagion = new DateContagion( IContagion.SupportedContagion.valueOf( combo.getText()), 100);
+				IContagion contagion = new Contagion( IContagion.SupportedContagion.valueOf( combo.getText()), 100);
 				lblContagiousnessValue.setText( String.format("%.2f", contagion.getContagiousness()) + "%");
 				lblDistanceValue.setText( contagion.getDistance() + " m" );
 				lblIncubationValue.setText( contagion.getIncubation() + " days" );
@@ -460,7 +459,7 @@ public class SimulatorComposite extends Composite {
 			lblPopulationValue.setText(String.valueOf(environment.getPopulation()));
 			lblDayValue.setText(String.valueOf( environment.getDays()));
 			comboContagion.select( IContagion.SupportedContagion.valueOf( environment.getContagion()).ordinal());
-			IContagion<Date> contagion = new DateContagion( IContagion.SupportedContagion.valueOf( comboContagion.getText()), 100);
+			IContagion contagion = new Contagion( IContagion.SupportedContagion.valueOf( comboContagion.getText()), 100);
 			lblContagiousnessValue.setText( String.format("%.2f", contagion.getContagiousness()) + "%");
 			lblDistanceValue.setText( contagion.getDistance() + " m" );
 			lblIncubationValue.setText( contagion.getIncubation() + " days" );

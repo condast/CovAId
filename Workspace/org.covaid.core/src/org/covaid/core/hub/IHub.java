@@ -28,7 +28,7 @@ public interface IHub<T extends Object> extends Cloneable{
 	 * @param person
 	 * @return
 	 */
-	boolean encounter(IPerson<T> person, T step, IContagion<T> contagion);
+	boolean encounter(IPerson<T> person, T step, IContagion contagion);
 
 	/**
 	 * A snap shot is a representation of the current state of this location, with respect to
@@ -60,16 +60,16 @@ public interface IHub<T extends Object> extends Cloneable{
 
 	void removeListener(IHubListener<T> listener);
 
-	boolean isHealthy(IContagion<T> contagion);
+	boolean isHealthy(IContagion contagion);
 
-	double getContagion(IContagion<T> contagion, T step);
-
-	void updateTrace(IContagion<T> contagion, T timeStep, ITrace<T> guest);
+	double getContagion(IContagion contagion, T step);
 
 	/**
 	 * The long term prediction of the 
 	 * @param contagion
 	 * @return
 	 */
-	Map<T, Double> getPrediction(IContagion<T> contagion, T range);
+	Map<T, Double> getPrediction(IContagion contagion, T range);
+
+	void updateTrace(IContagion contagion, T current, ITrace<T> guest);
 }

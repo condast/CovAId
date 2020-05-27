@@ -11,6 +11,7 @@ import org.covaid.core.hub.AbstractHub;
 import org.covaid.core.hub.IHub;
 import org.covaid.core.hub.trace.AbstractTrace;
 import org.covaid.core.hub.trace.ITrace;
+import org.covaid.core.operators.DateContagionOperator;
 
 public class DateHub extends AbstractHub<Date> implements IHub<Date> {
 
@@ -22,8 +23,8 @@ public class DateHub extends AbstractHub<Date> implements IHub<Date> {
 		this(location, Calendar.getInstance().getTime(),  Calendar.getInstance().getTime() );
 	}
 
-	public DateHub( ILocation<Date> location, Date timeStep, Date history) {
-		super(location, timeStep, history, new Trace());
+	public DateHub( ILocation<Date> location, Date current, Date history) {
+		super(location, current, history, new Trace( current ));
 		super.getTrace().setHub(this);
 	}
 
@@ -70,8 +71,8 @@ public class DateHub extends AbstractHub<Date> implements IHub<Date> {
 	
 	private static class Trace extends AbstractTrace<Date> implements ITrace<Date>{
 
-		public Trace() {
-			super();
+		public Trace(Date current) {
+			super( current, new DateContagionOperator() );
 		}
 
 		@Override

@@ -5,28 +5,23 @@ import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Canvas;
 
-import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.Iterator;
-import java.util.Map;
 import java.util.logging.Logger;
 
 import org.condast.commons.data.plane.Field;
 import org.condast.commons.data.plane.IField;
-import org.condast.commons.data.util.Vector;
 import org.condast.commons.ui.session.AbstractSessionHandler;
 import org.condast.commons.ui.session.SessionEvent;
 import org.covaid.core.def.IContagion;
 import org.covaid.core.def.IFieldEnvironment;
 import org.covaid.core.def.IDomainListener;
-import org.covaid.core.def.ILocation;
 import org.covaid.core.def.IPerson;
 import org.covaid.core.def.IPoint;
 import org.covaid.core.environment.DomainEvent;
 import org.covaid.core.environment.IDomain;
 import org.covaid.core.environment.field.IFieldDomain;
-import org.covaid.core.model.date.DateContagion;
+import org.covaid.core.model.Contagion;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.PaintListener;
 import org.eclipse.swt.graphics.Color;
@@ -103,7 +98,7 @@ public class DomainComposite extends Composite {
 	protected void updatePerson( GC gc, IPerson<Date> person ) {
 		try {
 			IFieldEnvironment env = (IFieldEnvironment) domain.getEnvironment();
-			IContagion<Date> contagion = new DateContagion( IContagion.SupportedContagion.valueOf( env.getContagion()), 100);
+			IContagion contagion = new Contagion( IContagion.SupportedContagion.valueOf( env.getContagion()), 100);
 			Date date = env.getTimeStep( env.getDays());
 
 			double safety = person.getSafetyBubble(contagion, Calendar.getInstance().getTime());

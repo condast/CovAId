@@ -54,7 +54,7 @@ public abstract class AbstractHistory<T extends Object> implements IHistory<T> {
 	 * @param location
 	 */
 	@Override
-	public void alert( T step, IPoint location, IContagion<T> contagion, double contagiousness ) {
+	public void alert( T step, IPoint location, IContagion contagion, double contagiousness ) {
 		ILocation<T> current = createSnapShot(location);
 		ILocation<T> loc = createLocation(location.getIdentifier(), location );
 		loc.addContagion(step, contagion);
@@ -109,7 +109,7 @@ public abstract class AbstractHistory<T extends Object> implements IHistory<T> {
 	
 	protected abstract long getDifference( T first, T last );
 
-	protected abstract IContagion<T> createContagion( String identifier );
+	protected abstract IContagion createContagion( String identifier );
 
 	protected abstract ILocation<T> createLocation( String identifier, IPoint point );
 
@@ -140,13 +140,13 @@ public abstract class AbstractHistory<T extends Object> implements IHistory<T> {
 	 * @return
 	 */
 	@Override
-	public IContagion<T> getMonitor() {
+	public IContagion getMonitor() {
 		Iterator<Map.Entry<T, ILocation<T>>> iterator = this.history.entrySet().iterator();
 		double probability = 0;
-		IContagion<T> monitor = null;
+		IContagion monitor = null;
 		while( iterator.hasNext()) {
 			Map.Entry<T, ILocation<T>> entry = iterator.next();
-			for( IContagion<T> cont: entry.getValue().getContagion() ) {
+			for( IContagion cont: entry.getValue().getContagion() ) {
 				if( cont.getContagiousness() > probability)
 					monitor = cont;
 			}
@@ -160,7 +160,7 @@ public abstract class AbstractHistory<T extends Object> implements IHistory<T> {
 	 * @return
 	 */
 	@Override
-	public Vector<T, ILocation<T>> getMaxContagiousness( IContagion<T> contagion ) {
+	public Vector<T, ILocation<T>> getMaxContagiousness( IContagion contagion ) {
 		Iterator<Map.Entry<T, ILocation<T>>> iterator = this.history.entrySet().iterator();
 		double probability = 0;
 		Vector<T, ILocation<T>> result = null;
