@@ -1,5 +1,6 @@
 package org.covaid.core.def;
 
+import org.covaid.core.data.ContagionData;
 import org.covaid.core.data.frogger.LocationData;
 import org.covaid.core.operators.IContagionOperator;
 
@@ -104,4 +105,6 @@ public interface ILocation<T extends Object> extends IPoint{
 	LocationData<T> toLocationData();
 
 	IContagionOperator<T> getOperator();
+
+	ContagionData<T> get(IContagion contagion);
 }

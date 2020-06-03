@@ -1,6 +1,6 @@
 package org.covaid.core.data;
 
-public class ContagionData<T extends Object> {
+public class ContagionData<T extends Object> implements Cloneable{
 
 	public static final int MAX_CONTAGIOUSNESS = 100;
 	private T timeStep;
@@ -31,9 +31,14 @@ public class ContagionData<T extends Object> {
 	public void setRisk(double contagiousness) {
 		this.risk = contagiousness;
 	}
+	
+	@Override
+	public ContagionData<T> clone(){
+		return new ContagionData<T>( this.timeStep, this.risk );
+	}
 
 	@Override
 	public String toString() {
-		return "{" + timeStep.toString() + ", " + risk + "}";
+		return "{" + (( timeStep == null )? "null": timeStep.toString()) + ", " + risk + "}";
 	}
 }

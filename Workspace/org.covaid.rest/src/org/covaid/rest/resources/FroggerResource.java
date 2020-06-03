@@ -2,7 +2,14 @@ package org.covaid.rest.resources;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.google.gson.stream.JsonWriter;
 
+import java.io.BufferedWriter;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
+import java.io.Writer;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.Map;
@@ -15,8 +22,10 @@ import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
+import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import javax.ws.rs.core.StreamingOutput;
 
 import org.condast.commons.Utils;
 import org.condast.commons.strings.StringUtils;
@@ -456,7 +465,7 @@ public class FroggerResource {
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.TEXT_PLAIN)
 	@Path("/update")
-	public synchronized Response getUpdate( @QueryParam("id") long id, @QueryParam("token") long token, @QueryParam("identifier") String identifier,
+	public Response getUpdate( @QueryParam("id") long id, @QueryParam("token") long token, @QueryParam("identifier") String identifier,
 			@QueryParam("step") int step ) {
 		logger.fine( "Update information " + identifier );
 		Dispatcher dispatcher = Dispatcher.getInstance();
@@ -464,20 +473,22 @@ public class FroggerResource {
 		try{
 			if( StringUtils.isEmpty(identifier))
 				return Response.serverError().build();
-			lock.lock();
-			try {
-				Collection<HubData> hubs = dispatcher.getUpdate(identifier, step);
-				HubData[] results = hubs.toArray( new HubData[ hubs.size()]);
-				if( Utils.assertNull(results)) 
-					return Response.noContent().build();
-				GsonBuilder builder = new GsonBuilder();
-				Gson gson = builder.enableComplexMapKeySerialization().create();
-				String str = gson.toJson( results, HubData[].class);
-				response = Response.ok( str ).build();
-			}
-			finally {
-				lock.unlock();
-			}
+			Collection<HubData> hubs = dispatcher.getUpdate(identifier, step);
+			final HubData[] results = hubs.toArray( new HubData[ hubs.size()]);
+			if( Utils.assertNull(results)) 
+				return Response.noContent().build();
+			
+			StreamingOutput stream = new StreamingOutput() {
+	            @Override
+	            public void write(OutputStream os) throws IOException, WebApplicationException {
+	    			GsonBuilder builder = new GsonBuilder();
+	    			final Gson gson = builder.enableComplexMapKeySerialization().create();
+	                Writer writer = new BufferedWriter(new OutputStreamWriter(os));
+	                writer.write(gson.toJson( results, HubData[].class));
+	                writer.flush();
+	            }
+	        };
+			response = Response.ok(stream).build();
 		}
 		catch( Exception ex ){
 			logger.warning(ex.getMessage());
@@ -498,7 +509,7 @@ public class FroggerResource {
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
 	@Path("/surroundings")
-	public synchronized Response getSurroundings( @QueryParam("id") long id, @QueryParam("token") long token, @QueryParam("identifier") String identifier,
+	public Response getSurroundings( @QueryParam("id") long id, @QueryParam("token") long token, @QueryParam("identifier") String identifier,
 			@QueryParam("radius") int radius, @QueryParam("step") int step  ) {
 		logger.fine( "Get surroundings " + identifier );
 		Dispatcher dispatcher = Dispatcher.getInstance();

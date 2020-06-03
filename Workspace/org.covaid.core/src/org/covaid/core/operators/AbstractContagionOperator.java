@@ -20,6 +20,16 @@ public abstract class AbstractContagionOperator<T extends Object> implements ICo
 		this.contagion = contagion;
 	}
 	
+	/**
+	 * Returns true if the first is smaller than the last
+	 * @param first
+	 * @param last
+	 * @return
+	 */
+	public boolean isSmaller(T first, T last) {
+		return getDifference(first, last)<=0;
+	}
+
 	@Override
 	public T getCurrent() {
 		return current;
@@ -96,7 +106,7 @@ public abstract class AbstractContagionOperator<T extends Object> implements ICo
 	public boolean isContagious( ContagionData<T> data ) {
 		if( data == null )
 			return false;
-		double contagiousness = data.getRisk() * getContagiousness( data );
+		double contagiousness = getContagiousness( data );
 		return ( contagiousness > contagion.getThreshold() );
 	}
 
@@ -113,6 +123,8 @@ public abstract class AbstractContagionOperator<T extends Object> implements ICo
 	@Override
 	public double getContagiousness( T init) {
 		long diff = getDifference( init, current);
+		if( contagion == null )
+			return 0;
 		return 100*(( diff < contagion.getIncubation() )? 1: (double)contagion.getIncubation()/diff);
 	}
 
@@ -120,8 +132,16 @@ public abstract class AbstractContagionOperator<T extends Object> implements ICo
 	public double getContagiousness( ContagionData<T> data) {
 		if( data == null )
 			return 0;
-		long diff = getDifference( data.getMoment(), current);
+		long diff = getDifference( current, data.getMoment());
 		return data.getRisk()*(( diff < contagion.getIncubation() )? 1: (double)contagion.getIncubation()/diff);
+	}
+
+	@Override
+	public double getTransferContagiousness( ContagionData<T> data) {
+		if( data == null )
+			return 0;
+		long diff = getDifference( current, data.getMoment());
+		return ( diff == 0 )?data.getRisk(): data.getRisk()/(2 + diff );
 	}
 
 	@Override

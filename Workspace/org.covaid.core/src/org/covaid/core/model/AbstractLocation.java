@@ -160,7 +160,8 @@ public abstract class AbstractLocation<T extends Object> extends Point implement
 		return true;
 	}
 	
-	protected ContagionData<T> get( IContagion contagion ) {
+	@Override
+	public ContagionData<T> get( IContagion contagion ) {
 		return this.contagions.get(contagion);
 	}
 

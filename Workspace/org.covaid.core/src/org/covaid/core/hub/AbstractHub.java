@@ -51,7 +51,7 @@ public abstract class AbstractHub<T extends Object> extends Point implements IHu
 			return;
 		location = createSnapShot();
 		location = location.createWorst(check);
-		this.notifyListeners( new HubEvent<T>( this, this.trace, e.getCurrent(), e.getContagion()));
+		//this.notifyListeners( new HubEvent<T>( this, this.trace, e.getCurrent(), e.getContagion()));
 	};
 
 	protected AbstractHub( ILocation<T> location, T initial, T history, ITrace<T> trace ) {
@@ -267,9 +267,17 @@ public abstract class AbstractHub<T extends Object> extends Point implements IHu
 	 */
 	protected abstract boolean onRemovePersons( IPerson<T> person, T timeStep, T history, T encountered );
 	
+	/**
+	 * This trace has an increased risk of contagion. The guest should be a possible origin 
+	 */
 	@Override
-	public void updateTrace( IContagion contagion, T current, ITrace<T> guest ) {
-		trace.update(contagion, current, guest);
+	public void updateTrace( IContagion contagion, T current, IHub<T> guest ) {
+		trace.update(contagion, current, guest.getLocation());
+	}
+	
+	@Override
+	public Map<T, Double> getTraces(IContagion contagion, T range) {
+		return trace.getTraces(contagion, range);
 	}
 	
 	@Override
@@ -281,4 +289,8 @@ public abstract class AbstractHub<T extends Object> extends Point implements IHu
 		return location;
 	}
 
+	@Override
+	public String printTrace() {
+		return this.trace.toString();
+	}
 }

@@ -195,90 +195,110 @@ public class MobileWizard extends Composite {
 
 	private SessionHandler session;
 	
+	private boolean busy;
+	
 	private Logger logger = Logger.getLogger(this.getClass().getName());
 	
 	private PaintListener safetyListener = (e)->{
-		Canvas canvas = (Canvas) e.getSource();
-		Rectangle rect = canvas.getBounds();
-		int radius = Math.min(rect.width, rect.height)/3;
-		int riskRadius = radius;
-		double safety = ( this.mobile == null )?100:this.mobile.getRisk();
-		double amplify = ( this.mobile == null )? 1.5: 2*(1.01-safety/100);
-		int safetyRadius = (int) (amplify*radius);
+		busy = true;
 		GC gc = e.gc;
-		Color base = getDisplay().getSystemColor(SWT.COLOR_DARK_CYAN);
-		gc.setBackground(base);
-		
-		int topX = (rect.width-riskRadius)/2;
-		int topY = (rect.height-riskRadius)/2;
-		int centreX = rect.width/2;
-		int centreY = rect.height/2;
-		gc.fillOval(topX, topY, riskRadius, riskRadius);
-		gc.setLineWidth(4);
-		//gc.setLineStyle(SWT.LINE_DOT);
-		gc.setForeground(getDisplay().getSystemColor(SWT.COLOR_WHITE));
-		gc.drawOval((rect.width-safetyRadius)/2, (rect.height-safetyRadius)/2, safetyRadius, safetyRadius);
+		try {
+			Canvas canvas = (Canvas) e.getSource();
+			Rectangle rect = canvas.getBounds();
+			int radius = Math.min(rect.width, rect.height)/3;
+			int riskRadius = radius;
+			double safety = ( this.mobile == null )?100:this.mobile.getRisk();
+			double amplify = ( this.mobile == null )? 1.5: 2*(1.01-safety/100);
+			int safetyRadius = (int) (amplify*radius);
+			Color base = getDisplay().getSystemColor(SWT.COLOR_DARK_CYAN);
+			gc.setBackground(base);
 
-		//Fill in the hubs
-		if( !Utils.assertNull(hubs)) {
-			double step = riskRadius/DEFAULT_RADIUS;
-			int[] arr = {centreX,centreY,0,0,0,0,centreX,centreY};
-			for( int angle=0; angle<359; angle++ ) {
-				double phi = Math.toRadians( angle );
-				for(int length=DEFAULT_RADIUS; length>=0; length--) {
-					int xpos = (int) (length * Math.sin(phi));
-					int ypos = (int) (length * Math.cos(phi));
-					LocationData<Integer> data = hubs.get( new Point( xpos, ypos)); 
-					if( data == null )
-						continue;
-					IContagion contagion = new Contagion(SupportedContagion.COVID_19);
-					Map<Contagion, ContagionData<Integer>> contagions = data.getContagions();
-					if( Utils.assertNull(contagions))
-						continue;
-					Color colour = getColour(base, contagion, contagions.get(contagion).getRisk());
-					gc.setBackground(colour);
+			int topX = (rect.width-riskRadius)/2;
+			int topY = (rect.height-riskRadius)/2;
+			int centreX = rect.width/2;
+			int centreY = rect.height/2;
+			gc.fillOval(topX, topY, riskRadius, riskRadius);
+			gc.setLineWidth(4);
+			//gc.setLineStyle(SWT.LINE_DOT);
+			gc.setForeground(getDisplay().getSystemColor(SWT.COLOR_WHITE));
+			gc.drawOval((rect.width-safetyRadius)/2, (rect.height-safetyRadius)/2, safetyRadius, safetyRadius);
 
-					int x = (int) (length * step/2 * Math.sin(phi));
-					int y = (int) (length * step/2 * Math.cos(phi));
-					arr[2] = (int) (centreX + x); arr[3] = (int) (centreY + y); 
-					phi = Math.toRadians(angle+1);
-					x = (int) (length * step/2 * Math.sin(phi));
-					y = (int) (length * step/2 * Math.cos(phi));
-					arr[4] = (int) (centreX + x); arr[5] = (int) (centreY + y); 
-					gc.fillPolygon(arr);
+			//Fill in the hubs
+			if( !Utils.assertNull(hubs)) {
+				double step = riskRadius/DEFAULT_RADIUS;
+				int[] arr = {centreX,centreY,0,0,0,0,centreX,centreY};
+				for( int angle=0; angle<359; angle++ ) {
+					double phi = Math.toRadians( angle );
+					for(int length=DEFAULT_RADIUS; length>=0; length--) {
+						int xpos = (int) (length * Math.sin(phi));
+						int ypos = (int) (length * Math.cos(phi));
+						LocationData<Integer> data = hubs.get( new Point( xpos, ypos)); 
+						if( data == null )
+							continue;
+						IContagion contagion = new Contagion(SupportedContagion.COVID_19);
+						Map<Contagion, ContagionData<Integer>> contagions = data.getContagions();
+						if( Utils.assertNull(contagions))
+							continue;
+						Color colour = getColour(base, contagion, contagions.get(contagion).getRisk());
+						gc.setBackground(colour);
+
+						int x = (int) (length * step/2 * Math.sin(phi));
+						int y = (int) (length * step/2 * Math.cos(phi));
+						arr[2] = (int) (centreX + x); arr[3] = (int) (centreY + y); 
+						phi = Math.toRadians(angle+1);
+						x = (int) (length * step/2 * Math.sin(phi));
+						y = (int) (length * step/2 * Math.cos(phi));
+						arr[4] = (int) (centreX + x); arr[5] = (int) (centreY + y); 
+						gc.fillPolygon(arr);
+					}
 				}
 			}
+		}
+		catch( Exception ex ) {
+			ex.printStackTrace();
+		}
+		finally {
+			busy = false;
 		}
 		gc.dispose();
 	};
 
 	private PaintListener forecastListener = (e)->{
-		Canvas canvas = (Canvas) e.getSource();
-		Rectangle rect = canvas.getBounds();
+		busy = true;
 		GC gc = e.gc;
-		Color base = getDisplay().getSystemColor(SWT.COLOR_DARK_CYAN);
-		gc.setBackground(base);
-		int xStart = 10;
-		int yStart = rect.height/2;
-		int panning = 10;
-		int scaleX = (rect.width-2*panning)/DEFAULT_HISTORY;
-		int scaleY = (rect.height-2*panning)/100;
-		int step = (rect.width-2*panning)/DEFAULT_HISTORY;
-		gc.drawLine( xStart, panning, xStart, rect.height - panning );
-		gc.drawLine( xStart, yStart, rect.width, yStart );
-		for( int i=0; i<DEFAULT_HISTORY; i++ ) {
-			int x = xStart + i * step;
-			gc.drawLine(x, yStart-3, x, yStart+3);
-		}
-		gc.setForeground( base );
-		if( !Utils.assertNull(prediction )) {
-			Map.Entry<Integer, Double> current = null;
-			for( Map.Entry<Integer, Double> entry: prediction.entrySet()) {
-				int xpos = xStart+scaleX*entry.getKey();
-				int ypos = (int) ((current == null )?yStart: yStart -scaleY * current.getValue());
-				gc.drawLine(xpos, ypos, xpos+step, (int) (yStart + scaleY*entry.getValue()));
-				current = entry;
+		try {
+			Canvas canvas = (Canvas) e.getSource();
+			Rectangle rect = canvas.getBounds();
+			Color base = getDisplay().getSystemColor(SWT.COLOR_DARK_CYAN);
+			gc.setBackground(base);
+			int xStart = 10;
+			int yStart = rect.height/2;
+			int panning = 10;
+			int scaleX = (rect.width-2*panning)/DEFAULT_HISTORY;
+			int scaleY = (rect.height-2*panning)/100;
+			int step = (rect.width-2*panning)/DEFAULT_HISTORY;
+			gc.drawLine( xStart, panning, xStart, rect.height - panning );
+			gc.drawLine( xStart, yStart, rect.width, yStart );
+			for( int i=0; i<DEFAULT_HISTORY; i++ ) {
+				int x = xStart + i * step;
+				gc.drawLine(x, yStart-3, x, yStart+3);
 			}
+			gc.setForeground( base );
+			if( !Utils.assertNull(prediction )) {
+				Map.Entry<Integer, Double> current = null;
+				for( Map.Entry<Integer, Double> entry: prediction.entrySet()) {
+					int xpos = xStart+scaleX*entry.getKey();
+					int ypos = (int) ((current == null )?yStart: yStart -scaleY * current.getValue());
+					gc.drawLine(xpos, ypos, xpos+step, (int) (yStart + entry.getValue()));
+					current = entry;
+				}
+			}
+		}
+		catch( Exception ex ) {
+			ex.printStackTrace();
+		}
+		finally {
+			busy = false;
 		}
 		gc.dispose();
 	};
@@ -577,6 +597,7 @@ public class MobileWizard extends Composite {
 	}
 	
 	public void clear() {
+		this.busy = false;
 		this.graph.clear();
 		this.hubs.clear();
 		this.prediction.clear();
@@ -584,6 +605,8 @@ public class MobileWizard extends Composite {
 
 	public void poll() {
 		try {
+			if( busy )
+				return;
 			WebClient client = new WebClient();
 			client.addListener(session);
 			Map<String, String> params = authData.toMap();

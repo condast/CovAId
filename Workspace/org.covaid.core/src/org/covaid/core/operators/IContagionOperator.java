@@ -15,6 +15,14 @@ public interface IContagionOperator<T extends Object> extends Comparable<T>{
 	long getDifference(T first, T last);
 
 	/**
+	 * Returns true if the first is smaller than the last
+	 * @param first
+	 * @param last
+	 * @return
+	 */
+	boolean isSmaller(T first, T last);
+
+	/**
 	 * return true if the reference is in between the from value and the current value 
 	 * @param from
 	 * @return
@@ -101,4 +109,11 @@ public interface IContagionOperator<T extends Object> extends Comparable<T>{
 	boolean isInfected(ContagionData<T> data);
 
 	boolean isHealthy(ContagionData<T> data);
+
+	/**
+	 * The transferred contagion is transfered from one hub to another
+	 * @param data
+	 * @return
+	 */
+	double getTransferContagiousness(ContagionData<T> data);
 }

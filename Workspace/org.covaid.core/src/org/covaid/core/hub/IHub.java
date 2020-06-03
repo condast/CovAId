@@ -6,7 +6,6 @@ import org.covaid.core.def.IContagion;
 import org.covaid.core.def.ILocation;
 import org.covaid.core.def.IPerson;
 import org.covaid.core.def.IPoint;
-import org.covaid.core.hub.trace.ITrace;
 
 public interface IHub<T extends Object> extends Cloneable{
 
@@ -71,5 +70,12 @@ public interface IHub<T extends Object> extends Cloneable{
 	 */
 	Map<T, Double> getPrediction(IContagion contagion, T range);
 
-	void updateTrace(IContagion contagion, T current, ITrace<T> guest);
+	/**
+	 * This trace has an increased risk of contagion. The guest should be a possible origin 
+	 */
+	void updateTrace(IContagion contagion, T current, IHub<T> guest);
+
+	String printTrace();
+
+	Map<T, Double> getTraces(IContagion contagion, T range);
 }

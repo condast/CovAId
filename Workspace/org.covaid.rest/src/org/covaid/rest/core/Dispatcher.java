@@ -11,11 +11,14 @@ import org.covaid.core.def.IContagion;
 import org.covaid.core.def.ILocation;
 import org.covaid.core.def.IMobile;
 import org.covaid.core.environment.AbstractEnvironment;
+import org.covaid.core.environment.EnvironmentEvent;
 import org.covaid.core.environment.IEnvironment;
+import org.covaid.core.environment.IEnvironmentListener;
 import org.covaid.core.environment.frogger.FroggerDomain;
 import org.covaid.core.environment.frogger.FroggerDomain.Hubs;
 import org.covaid.orientdb.object.AbstractPersistenceService;
 
+import com.google.gson.Gson;
 import com.orientechnologies.orient.core.entity.OEntityManager;
 
 public class Dispatcher extends AbstractPersistenceService {
@@ -190,6 +193,25 @@ public class Dispatcher extends AbstractPersistenceService {
 		private static final int FROGGER_SPEED = 1500;//1.5 sec
 		
 		private FroggerDomain domain;
+		
+		private String snapshot;
+		
+		
+		private IEnvironmentListener<Integer> listener = new IEnvironmentListener<Integer>() {
+
+			@Override
+			public void notifyChanged(EnvironmentEvent<Integer> event) {
+				Gson gson = new Gson();
+				switch( event.getEvent()) {
+				case NEW_DAY:
+					break;
+				default:
+					break;// TODO Auto-generated method stub
+				}
+				
+			}
+		};
+			
 		
 		protected Environment( String name) {
 			super(name, FROGGER_SPEED);

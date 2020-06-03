@@ -2,9 +2,12 @@ package org.covaid.core.model.date;
 
 import java.util.Calendar;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
+import org.covaid.core.data.ContagionData;
+import org.covaid.core.def.IContagion;
 import org.covaid.core.def.ILocation;
 import org.covaid.core.def.IPerson;
 import org.covaid.core.hub.AbstractHub;
@@ -78,6 +81,22 @@ public class DateHub extends AbstractHub<Date> implements IHub<Date> {
 		@Override
 		protected Date onGetAverage(Date first, Date second) {
 			return null;
+		}
+
+		@Override
+		public Map<Date, Double> getTraces(IContagion contagion, Date range) {
+			Map<ILocation<Date>, ContagionData<Date>> map = super.getTraceMap(contagion, range);
+			Map<Date, Double> results = new HashMap<>();
+			for( Map.Entry<ILocation<Date>, ContagionData<Date>> entry: map.entrySet()) {
+				int step = entry.getKey().getYpos();
+				Double risk = results.get(step);
+				if( risk == null )
+					risk = entry.getValue().getRisk();
+				else
+					risk = ( risk + entry.getValue().getRisk())/2;
+				results.put(entry.getValue().getMoment(), risk);
+			}
+			return results;
 		}
 
 	}

@@ -1,17 +1,18 @@
 package org.covaid.core.model;
 
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
 import org.condast.commons.Utils;
 import org.covaid.core.contagion.IntegerContagionOperator;
+import org.covaid.core.data.ContagionData;
 import org.covaid.core.def.IContagion;
 import org.covaid.core.def.ILocation;
 import org.covaid.core.def.IPerson;
 import org.covaid.core.def.IPoint;
 import org.covaid.core.hub.AbstractHub;
 import org.covaid.core.hub.trace.AbstractTrace;
-import org.covaid.core.hub.trace.ITrace;
 
 public class Hub extends AbstractHub<Integer> {
 
@@ -37,7 +38,7 @@ public class Hub extends AbstractHub<Integer> {
 	 * @param person
 	 */
 	public Hub( IPerson<Integer> person, int timeStep, int history ) {
-		this( person.getLocation(), 0, history );
+		this( person.getLocation(), timeStep, history );
 	}
 
 	/**
@@ -83,6 +84,13 @@ public class Hub extends AbstractHub<Integer> {
 		return ( timeStep - encountered ) > history;
 	}
 
+	
+	@Override
+	public Map<Integer, Double> getPrediction(IContagion contagion, Integer range) {
+		Map<Integer, Double> base = super.getPrediction(contagion, range);
+		return base;
+	}
+
 	@Override
 	public Hub clone(){
 		Hub hub = new Hub( super.getLocation() );
@@ -94,7 +102,7 @@ public class Hub extends AbstractHub<Integer> {
 		return hub;
 	}
 	
-	private static class Trace extends AbstractTrace<Integer> implements ITrace<Integer>{
+	private static class Trace extends AbstractTrace<Integer>{
 
 		public Trace( Integer current ) {
 			super( current, new IntegerContagionOperator() );
@@ -107,5 +115,21 @@ public class Hub extends AbstractHub<Integer> {
 			return (l+f)/2;
 		}
 
+		public Map<Integer, Double> getTraces(IContagion contagion, Integer range) {
+			Map<ILocation<Integer>, ContagionData<Integer>> map = super.getTraceMap(contagion, range);
+			Map<Integer, Double> results = new HashMap<>();
+			for( Map.Entry<ILocation<Integer>, ContagionData<Integer>> entry: map.entrySet()) {
+				int step = entry.getKey().getYpos();
+				if( step < getCurrent() - range )
+					continue;
+				Double risk = results.get(step);
+				if( risk == null )
+					risk = entry.getValue().getRisk();
+				else
+					risk = ( risk + entry.getValue().getRisk())/2;
+				results.put(step, risk);
+			}
+			return results;
+		}
 	}
 }
