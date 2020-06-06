@@ -2,11 +2,13 @@ package org.covaid.core.environment.frogger;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Calendar;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.TreeMap;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
@@ -61,16 +63,20 @@ public class FroggerDomain extends AbstractDomain<Integer> implements IDomain<In
 	private TimelineCollection<Integer, Double> average;
 	private int AverageStep;
 	
-	private LocationData<Integer>[] surroundings;
+	private LocationData[] surroundings;
 	private int surroundingsStep;
 	private int radius;
 	
 	private int timeStep;
 	
+	private boolean clear;
+	
 	private Logger logger = Logger.getLogger(this.getClass().getName());
 	
 	private IHubListener<Integer> hubListener = (e)->{
 		try {
+			if( !super.hasStarted() || clear )
+				return;
 			IHub<Integer> worse = e.getHub();
 			StringBuilder builder = new StringBuilder();
 			builder.append( "Updating" + worse );
@@ -78,6 +84,7 @@ public class FroggerDomain extends AbstractDomain<Integer> implements IDomain<In
 				if( worse.equals( hub ))
 					continue;
 				worse.updateTrace( e.getContagion(), e.getCurrent(), hub );
+				hub.updateTrace(contagion, e.getCurrent(), worse);
 			}
 			builder.append( worse.printTrace());
 			logger.fine(builder.toString());
@@ -99,7 +106,7 @@ public class FroggerDomain extends AbstractDomain<Integer> implements IDomain<In
 		super( name );
 		this.timeStep = 0;
 		this.contagion = new Contagion( supported);
-		persons = new ArrayList<>();
+		persons = new CopyOnWriteArrayList<>();
 		this.snapshot = new ArrayList<>();
 		hubs = new TreeMap<>( (o1, o2)->{
 			int compare = o1.getYpos() - o2.getYpos();
@@ -107,6 +114,7 @@ public class FroggerDomain extends AbstractDomain<Integer> implements IDomain<In
 		});
 		this.maxTime = maxTime;
 		this.average = new TimelineCollection<>();
+		this.clear = false;
 	}
 
 	/**
@@ -164,8 +172,17 @@ public class FroggerDomain extends AbstractDomain<Integer> implements IDomain<In
 
 	@Override
 	public void clear() {
+		this.clear = true;
+		if( this.centre != null ) {
+			this.centre.clear();
+			this.protect = new Location( centre.toPoint());
+		}
+		this.snapshot = new ArrayList<>();
+		this.average.clear();
 		this.persons.clear();
 		this.hubs.clear();
+		this.surroundings = null;
+		this.clear = false;
 	}
 
 	public void setInfected(int infected) {
@@ -184,18 +201,30 @@ public class FroggerDomain extends AbstractDomain<Integer> implements IDomain<In
 	@Override
 	public synchronized void movePerson(Integer timeStep) {
 
+		StringBuilder builder = new StringBuilder();
+		builder.append("STEP: " + timeStep + ":\t");
+		Calendar calendar = Calendar.getInstance();
+		long time = calendar.getTimeInMillis();
 		//first advance the population by moving the persons one place
 		//logger.info( "TIMESTEP: " + timeStep +", " + this.hubs.size());
+
 		this.timeStep = (timeStep == null )?0: timeStep;
+		builder.append("population " + this.persons.size() + ",\t\t");
 		for( IPerson<Integer> person: this.persons ) {
 			IPoint point = person.getLocation().clone();
 			int xpos = moveX( person );
-			int ypos = person.getLocation().getYpos();
-			person.setPosition(xpos, ypos+1 );
+			int ypos = 1 + person.getLocation().getYpos();
+			if(( ypos == this.centre.getYpos()) && (this.hubs.get(centre)==null)){
+				xpos = centre.getXpos();
+			}
+			person.setPosition(xpos, ypos );
 			IHub<Integer> hub = encounter( person, timeStep );
 			hub.addPrevious(hubs.get( point ));
 		}
-		
+		calendar = Calendar.getInstance();
+		long diff = calendar.getTimeInMillis() - time;
+		builder.append( diff + "\t");
+
 		//Then create a new population
 		for( int i=0; i< super.getPopulation(); i++) {
 			int x = (int) ((double)width * Math.random());
@@ -205,6 +234,10 @@ public class FroggerDomain extends AbstractDomain<Integer> implements IDomain<In
 			persons.add(person);
 			encounter( person, timeStep );
 		}
+		calendar = Calendar.getInstance();
+		diff = calendar.getTimeInMillis() - time;
+		builder.append( diff + "\t");
+
 		//Then set the infections
 		for( IPerson<Integer> person: persons) {
 			double contagion = 100*Math.random();
@@ -212,7 +245,10 @@ public class FroggerDomain extends AbstractDomain<Integer> implements IDomain<In
 			if( contagion < this.infected )
 				person.setContagion( timeStep, moment, this.contagion );
 		}
-		
+		calendar = Calendar.getInstance();
+		diff = calendar.getTimeInMillis() - time;
+		builder.append( diff + "\t");
+
 		//Last clear old values and update the hubs
 		Iterator<Map.Entry<IPoint, Hub>> iterator = this.hubs.entrySet().iterator();
 		Collection<IPoint> remove = new ArrayList<>();
@@ -224,22 +260,42 @@ public class FroggerDomain extends AbstractDomain<Integer> implements IDomain<In
 				entry.getValue().update(timeStep);
 			}
 		}
-		
+		calendar = Calendar.getInstance();
+		diff = calendar.getTimeInMillis() - time;
+		builder.append( diff + "\t");
+
 		for( IPoint point: remove)
 			this.hubs.remove( point);
 		persons.removeIf(person -> person.getLocation().getYpos() > this.maxTime);
 		this.hubs.entrySet().removeIf(entry->entry.getKey().getYpos() > DEFAULT_MAX_TIME);
+		calendar = Calendar.getInstance();
+		diff = calendar.getTimeInMillis() - time;
+		builder.append( diff + "\t");
 		
 		handleProtection(timeStep);
+		calendar = Calendar.getInstance();
+		diff = calendar.getTimeInMillis() - time;
+		builder.append( diff + "\t");
+
 		calculateAverage();
+		calendar = Calendar.getInstance();
+		diff = calendar.getTimeInMillis() - time;
+		builder.append( diff + "\t");
+
 		this.calculateSurroundings(radius, this.surroundingsStep);
-		logger.info("Hubs: " + this.hubs.size());
+		calendar = Calendar.getInstance();
+		diff = calendar.getTimeInMillis() - time;
+		builder.append( diff + "\t");
+		
+		logger.fine( builder.toString());
 	}
 
 	protected IHub<Integer> encounter( IPerson<Integer> person, int step ) {
 		Hub hub = this.hubs.get(person.getLocation());
 		if( hub == null ) {
 			hub = new Hub( person, step, DEFAULT_MAX_TIME );
+			if( hub.getLocation().toPoint().equals( this.centre))
+				hub.enableTrace( true );
 			hub.addListener(hubListener);
 			this.hubs.put(hub.getLocation(), hub);
 		}
@@ -311,14 +367,13 @@ public class FroggerDomain extends AbstractDomain<Integer> implements IDomain<In
 		IHub<Integer> hub = this.hubs.get(point);
 		if( hub == null)
 			return new HashMap<>();
-		return hub.getTraces(contagion, range);
+		return hub.getPrediction(contagion, range, this.hubs);
 	}
 	
-	@SuppressWarnings("unchecked")
-	public LocationData<Integer>[] getProtected() {
-		LocationData<Integer>[] results = new LocationData[2];
-		results[0] = centre.toLocationData();
-		results[1] = protect.toLocationData();
+	public LocationData[] getProtected() {
+		LocationData[] results = new LocationData[2];
+		results[0] = new LocationData( centre);
+		results[1] = new LocationData( protect );
 		return results;
 	}
 
@@ -374,7 +429,7 @@ public class FroggerDomain extends AbstractDomain<Integer> implements IDomain<In
 		this.snapshot = Arrays.asList( HubData.getHubs(results, step));
 	}
 
-	protected LocationData<Integer>[] calculateSurroundings( int radius, Integer step) {
+	protected LocationData[] calculateSurroundings( int radius, Integer step) {
 		Collection<Hub> results = new ArrayList<>();
 		Iterator<Map.Entry<IPoint, Hub>> iterator = this.hubs.entrySet().iterator();
 		while( iterator.hasNext()) {
@@ -388,7 +443,7 @@ public class FroggerDomain extends AbstractDomain<Integer> implements IDomain<In
 		return surroundings;
 	}
 
-	public LocationData<Integer>[] getSurroundings( int radius, Integer step) {
+	public LocationData[] getSurroundings( int radius, Integer step) {
 		this.radius = radius;
 		this.surroundingsStep = step;
 		return this.surroundings;

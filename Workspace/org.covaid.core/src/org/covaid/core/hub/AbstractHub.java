@@ -51,7 +51,7 @@ public abstract class AbstractHub<T extends Object> extends Point implements IHu
 			return;
 		location = createSnapShot();
 		location = location.createWorst(check);
-		//this.notifyListeners( new HubEvent<T>( this, this.trace, e.getCurrent(), e.getContagion()));
+		this.notifyListeners( new HubEvent<T>( this, this.trace, e.getCurrent(), e.getContagion()));
 	};
 
 	protected AbstractHub( ILocation<T> location, T initial, T history, ITrace<T> trace ) {
@@ -86,7 +86,17 @@ public abstract class AbstractHub<T extends Object> extends Point implements IHu
 	protected ITrace<T> getTrace() {
 		return trace;
 	}
-		
+
+	@Override
+	public void enableTrace( boolean enabled ) {
+		this.trace.setEnabled(enabled);
+	}
+	
+	@Override
+	public boolean isTraceEnabled() {
+		return this.trace.isEnabled();
+	}
+	
 	@Override
 	public Map<T, Double> getPrediction( IContagion contagion, T range ){
 		return this.trace.getPrediction(contagion, range);
@@ -280,6 +290,12 @@ public abstract class AbstractHub<T extends Object> extends Point implements IHu
 		return trace.getTraces(contagion, range);
 	}
 	
+	
+	@Override
+	public Map<T, Double> getPrediction(IContagion contagion, T range, Map<IPoint, ? extends IHub<T>> hubs) {
+		return this.trace.getPrediction(contagion, range, hubs);
+	}
+
 	@Override
 	public ILocation<T> update( T timeStep ) {	
 		this.timeStep = timeStep;

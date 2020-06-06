@@ -1,7 +1,8 @@
 package org.covaid.core.def;
 
+import java.util.Map;
+
 import org.covaid.core.data.ContagionData;
-import org.covaid.core.data.frogger.LocationData;
 import org.covaid.core.operators.IContagionOperator;
 
 public interface ILocation<T extends Object> extends IPoint{
@@ -102,9 +103,14 @@ public interface ILocation<T extends Object> extends IPoint{
 	 */
 	boolean setRisk(IContagion contagion, T step, double risk);
 
-	LocationData<T> toLocationData();
-
 	IContagionOperator<T> getOperator();
 
 	ContagionData<T> get(IContagion contagion);
+	
+	/**
+	 * clears all the dynamic data of the location
+	 */
+	public void clear();
+
+	Map<IContagion, ContagionData<T>> getContagions();
 }

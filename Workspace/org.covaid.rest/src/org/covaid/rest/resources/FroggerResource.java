@@ -2,10 +2,8 @@ package org.covaid.rest.resources;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import com.google.gson.stream.JsonWriter;
 
 import java.io.BufferedWriter;
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
@@ -310,7 +308,7 @@ public class FroggerResource {
 		try{
 			if( StringUtils.isEmpty(identifier))
 				return Response.serverError().build();
-			LocationData<Integer>[] results = dispatcher.getProtected(identifier);
+			LocationData[] results = dispatcher.getProtected(identifier);
 			if( Utils.assertNull(results))
 				return Response.noContent().build();
 			GsonBuilder builder = new GsonBuilder();
@@ -338,7 +336,7 @@ public class FroggerResource {
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.TEXT_PLAIN)
 	@Path("/prediction")
-	public Response getPredicition( @QueryParam("id") long id, @QueryParam("token") long token, @QueryParam("identifier") String identifier,
+	public Response getPrediction( @QueryParam("id") long id, @QueryParam("token") long token, @QueryParam("identifier") String identifier,
 			@QueryParam("range") int range) {
 		logger.fine( "Get Prediction " + identifier );
 		Dispatcher dispatcher = Dispatcher.getInstance();
@@ -519,7 +517,7 @@ public class FroggerResource {
 				return Response.serverError().build();
 			lock.lock();
 			try {
-				LocationData<Integer>[] results = dispatcher.getSurroundings(identifier, radius, step);
+				LocationData[] results = dispatcher.getSurroundings(identifier, radius, step);
 				if( Utils.assertNull(results)) 
 					return Response.noContent().build();
 				GsonBuilder builder = new GsonBuilder();

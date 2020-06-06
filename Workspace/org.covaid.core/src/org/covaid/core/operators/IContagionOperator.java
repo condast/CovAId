@@ -27,7 +27,7 @@ public interface IContagionOperator<T extends Object> extends Comparable<T>{
 	 * @param from
 	 * @return
 	 */
-	public boolean isLastEntry( T from, T reference );
+	public boolean isInRange( T from, T reference );
 
 	/**
 	 * result = first-last 

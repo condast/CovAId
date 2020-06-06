@@ -22,6 +22,8 @@ public interface IEnvironment<T extends Object> {
 	int getDays();
 
 	void start();
+	
+	public boolean hasStarted();
 
 	boolean pause();
 

@@ -4,11 +4,13 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.TreeMap;
+import java.util.concurrent.ConcurrentSkipListMap;
 import java.util.logging.Logger;
 
 import org.covaid.core.data.ContagionData;
 import org.covaid.core.def.IContagion;
 import org.covaid.core.def.ILocation;
+import org.covaid.core.def.IPoint;
 import org.covaid.core.hub.IHub;
 import org.covaid.core.operators.IContagionOperator;
 
@@ -18,21 +20,34 @@ public abstract class AbstractTrace<T extends Object> implements ITrace<T>{
 	private T current;
 	private IContagionOperator<T> operator;
 	
-	private Map<ILocation<T>, HubTrace> traces;
+	private Map<IPoint, HubTrace> traces;
+	
+	private boolean enabled;
 	
 	private Logger logger = Logger.getLogger(this.getClass().getName());
 	
-	protected AbstractTrace( T current, IContagionOperator<T> operator) {
-		traces = new TreeMap<>();
+	protected AbstractTrace( T current, IContagionOperator<T> operator, boolean enabled) {
+		traces = new ConcurrentSkipListMap<>();
 		this.operator = operator;
 		this.current = current;
+		this.enabled = enabled;
 	}
 
 	protected AbstractTrace( IHub<T> hub, T current, IContagionOperator<T> operator) {
-		this( current, operator );
+		this( current, operator, false );
 		this.hub = hub;
 	}
 	
+	@Override
+	public boolean isEnabled() {
+		return enabled;
+	}
+
+	@Override
+	public void setEnabled(boolean enabled) {
+		this.enabled = enabled;
+	}
+
 	@Override
 	public void setHub(IHub<T> hub) {
 		this.hub = hub;
@@ -49,29 +64,49 @@ public abstract class AbstractTrace<T extends Object> implements ITrace<T>{
 	}
 	
 	@Override
-	public Map<T, Double> getPrediction( IContagion contagion, T range ){
+	public synchronized Map<T, Double> getPrediction( IContagion contagion, T range ){
 		Map<T, Double> results = new TreeMap<>( new TimeComparator());
 		this.operator.setCurrent(current);
-		for( Map.Entry<ILocation<T>, HubTrace> entry: this.traces.entrySet()) {
+		for( Map.Entry<IPoint, HubTrace> entry: this.traces.entrySet()) {
 			ContagionData<T> data = entry.getValue().get(contagion);
-			if( !operator.isLastEntry(range, data.getMoment()))
+			if(( data == null ) || !operator.isInRange(range, data.getMoment()))
 				continue;
 			Double check = results.get(data.getMoment());
 			double risk = ( check==null)?0: check;
 			if( data.getRisk() > risk)
-				results.put( operator.subtract(data.getMoment(), range), data.getRisk());
+				results.put( operator.subtract(current, data.getMoment()), data.getRisk());
 		}
 		if( results.isEmpty())
 			return results;
 		return results;
 	}
 
-	protected Map<ILocation<T>, ContagionData<T>> getTraceMap( IContagion contagion, T range ){
-		Map<ILocation<T>, ContagionData<T>> results = new TreeMap<>();
+	@Override
+	public synchronized Map<T, Double> getPrediction( IContagion contagion, T range, Map<IPoint,? extends IHub<T>> hubs ){
+		Map<T, Double> results = new TreeMap<>( new TimeComparator());
 		this.operator.setCurrent(current);
-		for( Map.Entry<ILocation<T>, HubTrace> entry: this.traces.entrySet()) {
+		for( Map.Entry<IPoint, HubTrace> entry: this.traces.entrySet()) {
 			ContagionData<T> data = entry.getValue().get(contagion);
-			if( !operator.isLastEntry(range, data.getMoment()))
+			if(( data == null ) || !operator.isInRange(range, data.getMoment()))
+				continue;
+			IHub<T> hub = hubs.get(entry.getKey());
+			if(( hub == null ) || hub.getLocation().isHealthy(contagion, current))
+				continue;
+			Double drisk = hub.getLocation().getRisk(contagion, current);
+			double risk = ( drisk == null )?0: drisk*data.getRisk()/100;
+			T time = operator.subtract(current, data.getMoment());
+			time = operator.subtract(range, time);
+			results.put( time,risk);
+		}
+		return results;
+	}
+
+	protected Map<IPoint, ContagionData<T>> getTraceMap( IContagion contagion, T range ){
+		Map<IPoint, ContagionData<T>> results = new TreeMap<>();
+		this.operator.setCurrent(current);
+		for( Map.Entry<IPoint, HubTrace> entry: this.traces.entrySet()) {
+			ContagionData<T> data = entry.getValue().get(contagion);
+			if( !operator.isInRange(range, data.getMoment()))
 				continue;
 			results.put(entry.getKey(), data);
 		}
@@ -84,6 +119,8 @@ public abstract class AbstractTrace<T extends Object> implements ITrace<T>{
 	@Override
 	public boolean update( IContagion contagion, T current, ILocation<T> guest ) {
 		//If the guest is not infected, then ignore it
+		if( !enabled )
+			return false;
 		if( !guest.isInfected(contagion, current))
 			return false;
 		this.current = current;
@@ -100,10 +137,11 @@ public abstract class AbstractTrace<T extends Object> implements ITrace<T>{
 			return false;
 		
 		logger.fine("compare guest " + guest.toString() + ": " + data.toString() + "-" + compare.toString());
-		HubTrace ct = this.traces.get( guest);
+		HubTrace ct = this.traces.get( guest.toPoint());
 		if( ct == null )
 			ct = addHubTrace( guest );
 		ct.update(contagion, current, guest);
+		
 		logger.fine(toString());
 		return true;
 	}
@@ -142,6 +180,8 @@ public abstract class AbstractTrace<T extends Object> implements ITrace<T>{
 				calc = onGetAverage(current, data.getMoment());
 			}else{
 				diff = Math.abs( operator.getDifference(source.getMoment(), data.getMoment()));
+				if( diff == 0 )
+					diff = 1;
 				risk = ( source.getRisk() + operator.getTransferContagiousness( data ) )/diff;
 				calc = onGetAverage(source.getMoment(), data.getMoment());
 			}

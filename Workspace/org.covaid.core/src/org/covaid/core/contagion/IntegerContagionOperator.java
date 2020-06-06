@@ -5,8 +5,8 @@ import org.covaid.core.operators.AbstractContagionOperator;
 
 public class IntegerContagionOperator extends AbstractContagionOperator<Integer> {
 
-	public IntegerContagionOperator(Integer init, IContagion contagion) {
-		super(init, contagion);
+	public IntegerContagionOperator(Integer current, IContagion contagion) {
+		super(current, contagion);
 	}
 
 	public IntegerContagionOperator() {
@@ -26,8 +26,12 @@ public class IntegerContagionOperator extends AbstractContagionOperator<Integer>
 		return ( result < 0)? first: result;
 	}
 
+	/**
+	 * Returns true if the reference is within the current time and the range
+	 * reference >= current-range AND reference <= current
+	 */
 	@Override
-	public boolean isLastEntry(Integer from, Integer reference) {
-		return ( reference >= ( super.getCurrent() - from )) && ( reference <= super.getCurrent());
+	public boolean isInRange(Integer range, Integer reference) {
+		return ( reference >= ( super.getCurrent() - range )) && ( reference <= super.getCurrent());
 	}
 }

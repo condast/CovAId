@@ -46,6 +46,10 @@ public abstract class AbstractDomain<T extends Object> implements IDomain<T>{
 		this.population = 1;
 	}
 
+	protected boolean hasStarted() {
+		return ( this.environment != null ) && this.environment.hasStarted();
+	}
+
 	@Override
 	public void addListener( IDomainListener<T> listener ) {
 		this.listeners.add(listener);

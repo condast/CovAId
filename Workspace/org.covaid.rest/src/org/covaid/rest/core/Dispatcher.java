@@ -11,14 +11,11 @@ import org.covaid.core.def.IContagion;
 import org.covaid.core.def.ILocation;
 import org.covaid.core.def.IMobile;
 import org.covaid.core.environment.AbstractEnvironment;
-import org.covaid.core.environment.EnvironmentEvent;
 import org.covaid.core.environment.IEnvironment;
-import org.covaid.core.environment.IEnvironmentListener;
 import org.covaid.core.environment.frogger.FroggerDomain;
 import org.covaid.core.environment.frogger.FroggerDomain.Hubs;
 import org.covaid.orientdb.object.AbstractPersistenceService;
 
-import com.google.gson.Gson;
 import com.orientechnologies.orient.core.entity.OEntityManager;
 
 public class Dispatcher extends AbstractPersistenceService {
@@ -114,7 +111,7 @@ public class Dispatcher extends AbstractPersistenceService {
 		return true;
 	}
 
-	public LocationData<Integer>[] getProtected(String identifier) {
+	public LocationData[] getProtected(String identifier) {
 		Environment result = this.environments.get( identifier);
 		if( result == null )
 			return null;
@@ -142,7 +139,7 @@ public class Dispatcher extends AbstractPersistenceService {
 		return env.getUpdate( step );
 	}
 
-	public LocationData<Integer>[] getSurroundings( String identifier, int radius, int step ) {
+	public LocationData[] getSurroundings( String identifier, int radius, int step ) {
 		Environment env = (Environment) this.environments.get( identifier);
 		if( env == null )
 			return null;
@@ -194,25 +191,6 @@ public class Dispatcher extends AbstractPersistenceService {
 		
 		private FroggerDomain domain;
 		
-		private String snapshot;
-		
-		
-		private IEnvironmentListener<Integer> listener = new IEnvironmentListener<Integer>() {
-
-			@Override
-			public void notifyChanged(EnvironmentEvent<Integer> event) {
-				Gson gson = new Gson();
-				switch( event.getEvent()) {
-				case NEW_DAY:
-					break;
-				default:
-					break;// TODO Auto-generated method stub
-				}
-				
-			}
-		};
-			
-		
 		protected Environment( String name) {
 			super(name, FROGGER_SPEED);
 			this.domain = new FroggerDomain( name, this);
@@ -253,7 +231,7 @@ public class Dispatcher extends AbstractPersistenceService {
 			domain.setProtection(protection);
 		}
 
-		public LocationData<Integer>[] getProtected() {
+		public LocationData[] getProtected() {
 			return domain.getProtected();
 		}
 
@@ -269,7 +247,7 @@ public class Dispatcher extends AbstractPersistenceService {
 			return domain.getUpdate( step );
 		}
 
-		public LocationData<Integer>[] getSurroundings( int radius, int step ){
+		public LocationData[] getSurroundings( int radius, int step ){
 			return domain.getSurroundings(radius, step);
 		}
 	}

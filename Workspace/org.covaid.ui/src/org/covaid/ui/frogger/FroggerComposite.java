@@ -51,7 +51,7 @@ public class FroggerComposite extends Composite {
 	public static final int DEFAULT_WIDTH = 100;//metres
 	public static final int DEFAULT_HISTORY = 16;//day, looking ahead of what is coming
 
-	public static final int DEFAULT_TEST_TIME = 1400;//seconds. After this the dimulation will stop
+	public static final int DEFAULT_TEST_TIME = 60;//seconds. After this the simulation will stop
 
 	private enum Requests{
 
@@ -250,7 +250,7 @@ public class FroggerComposite extends Composite {
 				}
 			}
 		});
-		btnPause.setEnabled(this.data != null );
+		btnPause.setEnabled(false );
 		
 		btnClear = new Button(grpPlay, SWT.NONE);
 		btnClear.setText( Requests.CLEAR.toString());
@@ -543,19 +543,23 @@ public class FroggerComposite extends Composite {
 				return;
 			Gson gson = new Gson();
 			ResponseEvent<Requests, StringBuilder> response = sevent.getData();
-			switch( sevent.getData().getRequest()) {
+			Requests request = sevent.getData().getRequest(); 
+			switch( request) {
 			case REGISTER:
 				break;
 			case START:
 				started = true;
 				paused = false;
 				btnStart.setText( Requests.STOP.toString());
-				btnClear.setEnabled(true);
+				btnPause.setEnabled(true );
+				btnClear.setEnabled(false);
 				break;
 			case STOP:
 				started = false;
 				paused = false;
 				btnStart.setText(Requests.START.toString());
+				btnPause.setEnabled(false );
+				btnClear.setEnabled(true);
 				break;
 			case PAUSE:
 				paused = !paused;
@@ -578,7 +582,7 @@ public class FroggerComposite extends Composite {
 			default:
 				break;
 			}
-			notifyListers( new UpdateEvent( this ));
+			notifyListers( new UpdateEvent( this, request.name() ));
 			if(!busy )
 				canvas.redraw();	
 			lbldayValue.setText( String.format("%4d", timeStep));

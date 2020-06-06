@@ -22,6 +22,9 @@ public class MobileComposite extends Composite {
 	};
 
 	private IUpdateListener updateListener = (e)->{
+		if( "CLEAR".equals( e.getIdentifier())){
+			wizard.clear();
+		}
 		//froggerComposite.setInput(e.getAuthenticationData());
 	};
 

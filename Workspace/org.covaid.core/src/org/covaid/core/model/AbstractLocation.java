@@ -9,7 +9,6 @@ import java.util.Map;
 import java.util.TreeSet;
 
 import org.covaid.core.data.ContagionData;
-import org.covaid.core.data.frogger.LocationData;
 import org.covaid.core.def.IContagion;
 import org.covaid.core.def.ILocation;
 import org.covaid.core.def.IPoint;
@@ -116,7 +115,8 @@ public abstract class AbstractLocation<T extends Object> extends Point implement
 		return ( data == null )?null: data.getMoment();
 	}
 
-	protected Map<IContagion, ContagionData<T>> getContagions() {
+	@Override
+	public Map<IContagion, ContagionData<T>> getContagions() {
 		return contagions;
 	}
 
@@ -254,12 +254,6 @@ public abstract class AbstractLocation<T extends Object> extends Point implement
 		return new Point( this.getXpos(), this.getYpos());
 	}
 	
-	@SuppressWarnings({ "rawtypes", "unchecked" })
-	@Override
-	public LocationData<T> toLocationData() {
-		return new LocationData((Point) this.toPoint(), this.contagions );
-	}
-	
 	/**
 	 * move this location to the given point
 	 * @param point
@@ -270,6 +264,11 @@ public abstract class AbstractLocation<T extends Object> extends Point implement
 		super.setPosition(point.getXpos(), point.getYpos());
 	}
 	
+	@Override
+	public void clear() {
+		contagions.clear();	
+	}
+
 	@Override
 	public int hashCode() {
 		return toString().hashCode();

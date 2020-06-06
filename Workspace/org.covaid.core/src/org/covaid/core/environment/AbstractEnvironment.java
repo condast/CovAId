@@ -157,6 +157,11 @@ public abstract class AbstractEnvironment<T extends Object> implements IEnvironm
  	}
 	
 	@Override
+	public boolean hasStarted() {
+		return started;
+	}
+
+	@Override
 	public void stop() {
 		this.started = false;;
 	}

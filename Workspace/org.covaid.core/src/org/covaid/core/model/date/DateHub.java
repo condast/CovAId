@@ -10,6 +10,7 @@ import org.covaid.core.data.ContagionData;
 import org.covaid.core.def.IContagion;
 import org.covaid.core.def.ILocation;
 import org.covaid.core.def.IPerson;
+import org.covaid.core.def.IPoint;
 import org.covaid.core.hub.AbstractHub;
 import org.covaid.core.hub.IHub;
 import org.covaid.core.hub.trace.AbstractTrace;
@@ -27,7 +28,7 @@ public class DateHub extends AbstractHub<Date> implements IHub<Date> {
 	}
 
 	public DateHub( ILocation<Date> location, Date current, Date history) {
-		super(location, current, history, new Trace( current ));
+		super(location, current, history, new Trace( current, false ));
 		super.getTrace().setHub(this);
 	}
 
@@ -74,8 +75,8 @@ public class DateHub extends AbstractHub<Date> implements IHub<Date> {
 	
 	private static class Trace extends AbstractTrace<Date> implements ITrace<Date>{
 
-		public Trace(Date current) {
-			super( current, new DateContagionOperator() );
+		public Trace(Date current, boolean enabled) {
+			super( current, new DateContagionOperator(), enabled );
 		}
 
 		@Override
@@ -85,11 +86,11 @@ public class DateHub extends AbstractHub<Date> implements IHub<Date> {
 
 		@Override
 		public Map<Date, Double> getTraces(IContagion contagion, Date range) {
-			Map<ILocation<Date>, ContagionData<Date>> map = super.getTraceMap(contagion, range);
+			Map<IPoint, ContagionData<Date>> map = super.getTraceMap(contagion, range);
 			Map<Date, Double> results = new HashMap<>();
-			for( Map.Entry<ILocation<Date>, ContagionData<Date>> entry: map.entrySet()) {
-				int step = entry.getKey().getYpos();
-				Double risk = results.get(step);
+			for( Map.Entry<IPoint, ContagionData<Date>> entry: map.entrySet()) {
+				//int step = entry.getKey().getYpos();
+				Double risk = results.get(range);
 				if( risk == null )
 					risk = entry.getValue().getRisk();
 				else

@@ -21,7 +21,7 @@ public class Hub extends AbstractHub<Integer> {
 	}
 	
 	public Hub(IPoint location, int current, int history) {
-		super(new Location( location.getIdentifier(), location.getXpos(), location.getYpos()), current, history, new Trace( current));
+		super(new Location( location.getIdentifier(), location.getXpos(), location.getYpos()), current, history, new Trace( current, false));
 		super.getTrace().setHub(this);
 	}
 
@@ -104,8 +104,8 @@ public class Hub extends AbstractHub<Integer> {
 	
 	private static class Trace extends AbstractTrace<Integer>{
 
-		public Trace( Integer current ) {
-			super( current, new IntegerContagionOperator() );
+		public Trace( Integer current, boolean enabled ) {
+			super( current, new IntegerContagionOperator(), enabled );
 		}
 
 		@Override
@@ -116,9 +116,9 @@ public class Hub extends AbstractHub<Integer> {
 		}
 
 		public Map<Integer, Double> getTraces(IContagion contagion, Integer range) {
-			Map<ILocation<Integer>, ContagionData<Integer>> map = super.getTraceMap(contagion, range);
+			Map<IPoint, ContagionData<Integer>> map = super.getTraceMap(contagion, range);
 			Map<Integer, Double> results = new HashMap<>();
-			for( Map.Entry<ILocation<Integer>, ContagionData<Integer>> entry: map.entrySet()) {
+			for( Map.Entry<IPoint, ContagionData<Integer>> entry: map.entrySet()) {
 				int step = entry.getKey().getYpos();
 				if( step < getCurrent() - range )
 					continue;

@@ -30,7 +30,7 @@ public class DateContagionOperator extends AbstractContagionOperator<Date> {
 	}
 
 	@Override
-	public boolean isLastEntry(Date from, Date reference) {
+	public boolean isInRange(Date from, Date reference) {
 		return ( reference.before( from ) && reference.after( super.getCurrent()));
 	}
 

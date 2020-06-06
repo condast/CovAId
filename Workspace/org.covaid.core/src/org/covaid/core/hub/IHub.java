@@ -71,6 +71,13 @@ public interface IHub<T extends Object> extends Cloneable{
 	Map<T, Double> getPrediction(IContagion contagion, T range);
 
 	/**
+	 * Create a prediction of the risk of infection by comparing the hubs with the traces 
+	 * @param hubs
+	 * @return
+	 */
+	Map<T, Double> getPrediction(IContagion contagion, T range, Map<IPoint, ? extends IHub<T>> hubs);
+
+	/**
 	 * This trace has an increased risk of contagion. The guest should be a possible origin 
 	 */
 	void updateTrace(IContagion contagion, T current, IHub<T> guest);
@@ -78,4 +85,8 @@ public interface IHub<T extends Object> extends Cloneable{
 	String printTrace();
 
 	Map<T, Double> getTraces(IContagion contagion, T range);
+
+	void enableTrace(boolean enabled);
+
+	boolean isTraceEnabled();
 }
