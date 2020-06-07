@@ -24,7 +24,7 @@ public class BasicApplication implements ApplicationConfiguration {
         //properties.put( WebClient.THEME_ID, S_COVAID_THEME );
         
         application.setOperationMode( OperationMode.SWT_COMPATIBILITY );       
-        application.addEntryPoint( S_ENTRY_POINT, BasicEntryPoint.class, properties);
-        application.addEntryPoint( S_MOBILE_ENTRY_POINT, MobileEntryPoint.class, properties);
+        application.addEntryPoint( S_ENTRY_POINT, MobileEntryPoint.class, properties);
+        application.addEntryPoint( S_MOBILE_ENTRY_POINT, BasicEntryPoint.class, properties);
      }
 }
