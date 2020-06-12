@@ -1,5 +1,4 @@
-//const UPDATE_URL = 'http://localhost:10080/moodle/module/update';
-const UPDATE_URL = 'https://www.condast.com:8080/covaid/rest/module/update';
+const UPDATE_URL = '${context.commons.test}/js/push/notification/update';
 
 /**
  * Show the push notification
@@ -17,7 +16,7 @@ self.addEventListener('push', function(event) {
 	console.log( options.title);
 	if ( options.actions.length > maxVisibleActions) { 
 		options.body = 'This notification will only display' +
-		'${ maxVisibleActions} actions.';
+		'${maxVisibleActions} actions.';
 	}
 
 	//	Keep the service worker alive until the notification is created.

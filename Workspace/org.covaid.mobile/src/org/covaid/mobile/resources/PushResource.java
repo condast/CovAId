@@ -19,10 +19,9 @@ import javax.ws.rs.core.Response.Status;
 import org.condast.commons.messaging.push.ISubscription;
 import org.condast.commons.strings.StringUtils;
 import org.covaid.mobile.core.Dispatcher;
-import org.covaid.mobile.push.Push;
 
 //Sets the path to alias + path
-@Path("/push")
+@Path("/push/rest")
 public class PushResource{
 
 	public static final String S_ERR_UNKNOWN_REQUEST = "An invalid request was rertrieved: ";
@@ -73,9 +72,9 @@ public class PushResource{
 	public Response subscribe( @QueryParam("id") long id, @QueryParam("token") String token, String subscription ) {
 		try{
 			logger.info( "Subscription request for " + id + ": " + subscription );
-			ISubscription sub = Push.subscribe(id, token, subscription);
+			//ISubscription sub = Push.subscribe(id, token, subscription);
 			//service.start(id, 0);
-			return ( sub == null )? Response.status( Status.BAD_REQUEST).build(): 
+			return /*( sub == null )? Response.status( Status.BAD_REQUEST).build():*/ 
 				Response.ok().build();
 		}
 		catch( Exception ex ){

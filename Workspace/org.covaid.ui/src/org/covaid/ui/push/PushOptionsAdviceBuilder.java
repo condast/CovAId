@@ -1,13 +1,12 @@
-package org.covaid.mobile.push;
+package org.covaid.ui.push;
 
 import java.util.Iterator;
 import java.util.Map;
 
 import org.condast.commons.strings.StringUtils;
-import org.condast.js.commons.push.PushOptionsBuilder;
-import org.covaid.mobile.LanguagePack;
-import org.covaid.mobile.LanguagePack.Fields;
-import org.covaid.mobile.core.IAdvice;
+import org.condast.js.push.core.advice.IAdvice;
+import org.condast.js.push.core.builder.PushOptionsBuilder;
+import org.covaid.ui.LanguagePack;
 
 public class PushOptionsAdviceBuilder extends PushOptionsBuilder {
 
@@ -22,7 +21,7 @@ public class PushOptionsAdviceBuilder extends PushOptionsBuilder {
 		String description = advice.getDescription();
 		String body = StringUtils.isEmpty(description)? LanguagePack.Fields.SUCCESS1.name(): description;
 
-		addOption( Options.TITLE, language.getString( advice.getMember()) + " " + Fields.SAYS.toString() + ":") ;		
+		addOption( Options.TITLE, language.getString( advice.getMember()) + " " + LanguagePack.Fields.SAYS.toString() + ":") ;		
 		addOption( Options.BODY, language.getString(body));
 		addOption( Options.DATA, advice );
 		//addOption( Options.ICON, TeamImages.Team.getPath(advice));

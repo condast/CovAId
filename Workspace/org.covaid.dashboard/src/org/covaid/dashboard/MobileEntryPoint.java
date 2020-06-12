@@ -1,6 +1,8 @@
 package org.covaid.dashboard;
 
 import java.util.Locale;
+
+import org.condast.js.push.ui.PushWidget;
 import org.covaid.ui.mobile.MobileComposite;
 import org.eclipse.rap.rwt.RWT;
 import org.eclipse.rap.rwt.application.AbstractEntryPoint;
@@ -12,6 +14,8 @@ public class MobileEntryPoint extends AbstractEntryPoint {
 	private static final long serialVersionUID = 1L;
 
 	public static final String S_COVAID = "covaid";
+
+	private PushWidget pushWidget;
 
 	@Override
 	protected void createContents(Composite parent) {
@@ -25,7 +29,8 @@ public class MobileEntryPoint extends AbstractEntryPoint {
 	        parent.setLayout(new FillLayout());       
 	        Composite root = new MobileComposite( parent, SWT.None );
 			root.setData( RWT.CUSTOM_VARIANT, S_COVAID );
-			
+			pushWidget = new PushWidget( root, SWT.None );
+			pushWidget.setUrl("http://localhost:10080/covaid/mobile/push");
 		}
 		catch( Exception ex ){
 			ex.printStackTrace();

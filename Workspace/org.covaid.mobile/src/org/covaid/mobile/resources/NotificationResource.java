@@ -20,7 +20,7 @@ import org.covaid.mobile.model.Notification;
 import org.covaid.mobile.service.DoctorService;
 import org.covaid.mobile.service.NotificationService;
 
-@Path("/push")
+@Path("/notification")
 public class NotificationResource {
 
 	private Logger logger = Logger.getLogger(this.getClass().getName());

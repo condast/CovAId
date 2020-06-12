@@ -1,4 +1,4 @@
-package org.covaid.mobile;
+package org.covaid.dashboard;
 
 import java.util.Random;
 

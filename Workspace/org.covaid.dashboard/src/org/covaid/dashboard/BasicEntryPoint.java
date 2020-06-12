@@ -40,7 +40,7 @@ public class BasicEntryPoint extends AbstractEntryPoint {
 	private AuthenticationDispatcher authentication = AuthenticationDispatcher.getInstance(); 
 
 	private Dispatcher dispatcher = Dispatcher.getInstance();
-	
+		
 	private IActivateListener alistener = new IActivateListener() {
 
 		@Override
@@ -125,7 +125,6 @@ public class BasicEntryPoint extends AbstractEntryPoint {
 	        builder.removeListener(listener);
 	        Composite root = builder.getRoot();
 			root.setData( RWT.CUSTOM_VARIANT, S_COVAID );
-			
 		}
 		catch( Exception ex ){
 			ex.printStackTrace();

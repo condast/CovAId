@@ -28,6 +28,8 @@ import org.condast.commons.ui.xy.AbstractXYGraph;
 import org.condast.js.commons.controller.AbstractJavascriptController;
 import org.condast.js.commons.eval.IEvaluationListener;
 import org.condast.js.commons.wizard.AbstractHtmlParser;
+import org.condast.js.push.core.advice.IAdvice;
+import org.condast.js.push.core.advice.IAdvice.AdviceTypes;
 import org.covaid.core.data.ContagionData;
 import org.covaid.core.data.TimelineCollection;
 import org.covaid.core.data.TimelineData;
@@ -41,6 +43,9 @@ import org.covaid.core.mobile.RegistrationEvent;
 import org.covaid.core.model.Contagion;
 import org.covaid.core.model.Point;
 import org.covaid.core.model.date.DateMobile;
+import org.covaid.ui.images.CovaidImages;
+import org.covaid.ui.images.CovaidImages.Images;
+import org.covaid.ui.push.Push;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.browser.Browser;
 import org.eclipse.swt.browser.BrowserFunction;
@@ -95,7 +100,8 @@ public class MobileWizard extends Composite {
 
 	public enum Contexts{
 		REST,
-		MOBILE;
+		MOBILE,
+		PUSH;
 		
 		public String getPath() {
 			return MOBILE.equals(this)? S_COVAID_MOBILE_CONTEXT: S_COVAID_CONTEXT;
@@ -197,6 +203,11 @@ public class MobileWizard extends Composite {
 	private SessionHandler session;
 	
 	private boolean busy;
+
+	private long idCounter;
+	private int token;
+
+	private Push push = Push.getInstance();
 	
 	private Logger logger = Logger.getLogger(this.getClass().getName());
 	
@@ -391,11 +402,14 @@ public class MobileWizard extends Composite {
 			@Override
 			protected String onHandleAuthentication( String id, AuthenticationData.Authentication authentication) {
 				StringBuilder builder = new StringBuilder();
-				if( authData == null )
-					return builder.toString();
-				builder.append("=");
 				switch( authentication ) {
+				case TOKEN:
+					builder.append( token );
+					break;
 				case IDENTIFIER:
+					if( authData == null )
+						return builder.toString();
+					builder.append("=");
 					builder.append("'");
 					builder.append( authData.getIdentifier());
 					builder.append("'");
@@ -429,6 +443,13 @@ public class MobileWizard extends Composite {
 				String result = null;
 				try {
 					switch( function ) {
+					case WORKER:
+						result = String.valueOf(++idCounter);
+						token = Long.toHexString(idCounter).hashCode();
+						break;
+					case VAPID:
+						result = push.getPublicKey();
+						break;
 					case SCRIPT:
 						StringBuilder builder = new StringBuilder();
 						builder.append( "var mobile-id = ");
@@ -578,7 +599,7 @@ public class MobileWizard extends Composite {
 		redraw();
 		requestLayout();
 	}
-
+	
 	public void poll() {
 		try {
 			if( busy )
@@ -747,6 +768,11 @@ public class MobileWizard extends Composite {
 				break;
 			case GET:
 				mobile = gson.fromJson( event.getResponse(), DateMobile.class );
+				if( mobile.getHealth() < 20) {
+					CovaidImages image = CovaidImages.getInstance();
+					IAdvice advice = push.createAdvice(1l, AdviceTypes.SUCCESS, "Doctor", CovaidImages.Images.getPath( Images.DOCTOR), CovaidImages.Images.getPath( Images.DOCTOR), "Shall I schedule an appointment?", 10);
+					push.sendPushMessage(advice);
+				}
 				notifyRegistrationEvent( new RegistrationEvent<Date>(browser, IMobileRegistration.RegistrationTypes.REGISTER, authData, mobile));
 				break;
 			case REMOVE:

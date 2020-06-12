@@ -153,6 +153,7 @@
 </setAttribute>
 <setAttribute key="selected_workspace_bundles">
 <setEntry value="nl.martijndwars.webpush@default:default"/>
+<setEntry value="org.apache.oltu@default:default"/>
 <setEntry value="org.condast.commons.authentication.ui@default:default"/>
 <setEntry value="org.condast.commons.authentication@default:default"/>
 <setEntry value="org.condast.commons.bugzilla@default:default"/>
@@ -172,6 +173,7 @@
 <setEntry value="org.covaid.rest@default:default"/>
 <setEntry value="org.covaid.ui@default:default"/>
 <setEntry value="org.openlayer.map@default:default"/>
+<setEntry value="test.condast.commons.js.push@default:default"/>
 <setEntry value="test.covaid.mobile@default:default"/>
 </setAttribute>
 <booleanAttribute key="show_selected_only" value="false"/>

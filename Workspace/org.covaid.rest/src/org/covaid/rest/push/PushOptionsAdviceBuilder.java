@@ -4,7 +4,7 @@ import java.util.Iterator;
 import java.util.Map;
 
 import org.condast.commons.strings.StringUtils;
-import org.condast.js.commons.push.PushOptionsBuilder;
+import org.condast.js.push.core.builder.PushOptionsBuilder;
 import org.covaid.rest.LanguagePack;
 import org.covaid.rest.LanguagePack.Fields;
 import org.covaid.rest.core.IAdvice;

@@ -1,6 +1,7 @@
 const MOBILE_DEFAULT = '${context.covaid.mobile}';
+const SUBSCRIBE_URL = '${context.commons.push}/subscribe';
 
-const MOBILE_CREATE_URL = MOBILE_DEFAULT + 'create';
+const MOBILE_CREATE_URL = MOBILE_DEFAULT + '/create';
 
 var timer= setInterval( progressFunction, 5000 );
 

@@ -1,14 +1,14 @@
 const MOBILE_DEFAULT = '${context.covaid.mobile}';
 
 
-const MOBILE_CREATE_URL = MOBILE_DEFAULT + 'create';
-const MOBILE_SET_HEALTH = MOBILE_DEFAULT + 'health';
-const MOBILE_SET_SAFETY = MOBILE_DEFAULT + 'safety';
-const MOBILE_SET_EMAIL = MOBILE_DEFAULT + 'email';
-const MOBILE_HEALTH_ADVICE = MOBILE_DEFAULT + 'health';
+const MOBILE_CREATE_URL = MOBILE_DEFAULT + '/create';
+const MOBILE_SET_HEALTH = MOBILE_DEFAULT + '/health';
+const MOBILE_SET_SAFETY = MOBILE_DEFAULT + '/safety';
+const MOBILE_SET_EMAIL = MOBILE_DEFAULT + '/email';
+const MOBILE_HEALTH_ADVICE = MOBILE_DEFAULT + '/health';
 
-var id ${authentication.mobile.id};
-var token ${authentication.mobile.token};
+var id =${authentication.mobile.id};
+var token =${authentication.mobile.token};
 var identifier ${authentication.mobile.identifier};
 
 function updateHealth() {

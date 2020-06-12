@@ -32,9 +32,13 @@ public class CovaidImages extends AbstractImages{
 
 	public static final String S_PNG = ".png";
 
+	public static final String S_DEFAULT_LOCATION = "/covaid/images/";
+
 	public enum Images{
 		COVID_SEARCH,
-		COVID_19;
+		COVID_19,
+		DOCTOR,
+		DOCTOR_CORONAVIRUS;
 
 		public static String getResource( Images image ){
 			return getResource( image, ImageSize.NORMAL );
@@ -51,11 +55,25 @@ public class CovaidImages extends AbstractImages{
 				buffer.append( image.name().toLowerCase());
 				buffer.append( S_PNG);
 				break;
+			case DOCTOR:
+				buffer.append( image.name().toLowerCase());
+				buffer.append( S_PNG);
+				break;
+			case DOCTOR_CORONAVIRUS:
+				buffer.append( image.name().toLowerCase());
+				buffer.append( S_PNG);
+				break;
 			default:
 				buffer.append( ImageSize.getLocation(image.name(), size));
 				break;
 			}
 			return buffer.toString();
+		}
+		
+		public static String getPath( Images image ){
+			String name = image.name().toLowerCase();
+			String str = "huge/" + name + "-128.png";
+			return S_DEFAULT_LOCATION + str;
 		}
 	}
 	
@@ -153,5 +171,4 @@ public class CovaidImages extends AbstractImages{
 		ImageData scaledData = imageData.scaledTo( parent.getBounds().width, parent.getBounds().height );
 		return new Image(Display.getCurrent(), scaledData );
 	}
-
 }

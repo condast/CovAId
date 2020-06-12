@@ -14,10 +14,9 @@
 <intAttribute key="default_start_level" value="4"/>
 <setAttribute key="deselected_workspace_bundles">
 <setEntry value="org.condast.commons.legal"/>
-<setEntry value="org.condast.commons.test"/>
 <setEntry value="org.condast.js.react"/>
 <setEntry value="org.google.geo.mapping.ui"/>
-<setEntry value="test.condast.com"/>
+<setEntry value="test.condast.commons"/>
 <setEntry value="test.covaid.core"/>
 <setEntry value="test.covaid.mobile"/>
 </setAttribute>
@@ -40,6 +39,7 @@
 <booleanAttribute key="org.eclipse.rap.launch.useManualPort" value="true"/>
 <booleanAttribute key="org.eclipse.rap.launch.useSessionTimeout" value="false"/>
 <stringAttribute key="pde.version" value="3.3"/>
+<booleanAttribute key="restart" value="true"/>
 <setAttribute key="selected_target_bundles">
 <setEntry value="com.fasterxml.jackson.core.jackson-annotations@default:default"/>
 <setEntry value="com.fasterxml.jackson.core.jackson-core@default:default"/>
@@ -53,7 +53,6 @@
 <setEntry value="com.orientechnologies.orientdb-object@default:default"/>
 <setEntry value="com.orientechnologies.orientdb-server@default:default"/>
 <setEntry value="com.orientechnologies.orientdb-tools@default:default"/>
-<setEntry value="com.squareup.okhttp3@default:default"/>
 <setEntry value="com.squareup.okio@default:default"/>
 <setEntry value="com.sun.jna.platform@default:default"/>
 <setEntry value="com.sun.jna@default:default"/>
@@ -64,10 +63,8 @@
 <setEntry value="javax.jms@default:default"/>
 <setEntry value="javax.mail.glassfish@default:default"/>
 <setEntry value="javax.persistence@default:default"/>
-<setEntry value="javax.resource@default:default"/>
 <setEntry value="javax.servlet.jsp@default:default"/>
 <setEntry value="javax.servlet@default:default"/>
-<setEntry value="javax.transaction@default:false"/>
 <setEntry value="javax.validation.api@default:default"/>
 <setEntry value="javax.ws.rs@default:default"/>
 <setEntry value="javax.xml.bind@default:default"/>
@@ -83,8 +80,6 @@
 <setEntry value="org.apache.felix.gogo.runtime@default:default"/>
 <setEntry value="org.apache.felix.gogo.shell@default:default"/>
 <setEntry value="org.apache.felix.scr@1:true"/>
-<setEntry value="org.apache.httpcomponents.httpclient@default:default"/>
-<setEntry value="org.apache.httpcomponents.httpcore@default:default"/>
 <setEntry value="org.apache.logging.log4j.api@default:default"/>
 <setEntry value="org.apache.logging.log4j.core@default:default"/>
 <setEntry value="org.codehaus.jettison.jettison@default:default"/>
@@ -121,8 +116,6 @@
 <setEntry value="org.eclipse.persistence.jpa.jpql@default:default"/>
 <setEntry value="org.eclipse.persistence.jpa@default:default"/>
 <setEntry value="org.eclipse.persistence.nosql@default:false"/>
-<setEntry value="org.eclipse.persistence.oracle.nosql@default:false"/>
-<setEntry value="org.eclipse.persistence.oracle@default:false"/>
 <setEntry value="org.eclipse.rap.jface@default:default"/>
 <setEntry value="org.eclipse.rap.nebula.widgets.richtext@default:default"/>
 <setEntry value="org.eclipse.rap.rwt.osgi@default:default"/>
@@ -138,19 +131,7 @@
 <setEntry value="org.glassfish.jersey.core.jersey-client@default:default"/>
 <setEntry value="org.glassfish.jersey.core.jersey-common@default:default"/>
 <setEntry value="org.glassfish.jersey.core.jersey-server@default:default"/>
-<setEntry value="org.mongodb.mongo-java-driver@default:default"/>
 <setEntry value="org.slf4j.api@default:default"/>
-<setEntry value="org.springframework.aop@default:default"/>
-<setEntry value="org.springframework.beans@default:default"/>
-<setEntry value="org.springframework.context@default:default"/>
-<setEntry value="org.springframework.core@default:default"/>
-<setEntry value="org.springframework.expression@default:default"/>
-<setEntry value="org.springframework.jdbc@default:default"/>
-<setEntry value="org.springframework.orm@default:default"/>
-<setEntry value="org.springframework.oxm@default:default"/>
-<setEntry value="org.springframework.transaction@default:default"/>
-<setEntry value="org.springframework.web@default:default"/>
-<setEntry value="osgi.enterprise@default:default"/>
 </setAttribute>
 <setAttribute key="selected_workspace_bundles">
 <setEntry value="nl.martijndwars.webpush@default:default"/>
@@ -161,11 +142,13 @@
 <setEntry value="org.condast.commons.data@default:default"/>
 <setEntry value="org.condast.commons.messaging@default:default"/>
 <setEntry value="org.condast.commons.persistence@default:default"/>
+<setEntry value="org.condast.commons.test@default:default"/>
 <setEntry value="org.condast.commons.tinkerpop@default:default"/>
 <setEntry value="org.condast.commons.ui@default:default"/>
 <setEntry value="org.condast.commons@default:default"/>
 <setEntry value="org.condast.js.bootstrap@default:default"/>
 <setEntry value="org.condast.js.commons@default:default"/>
+<setEntry value="org.condast.js.push@default:default"/>
 <setEntry value="org.covaid.commons.support@default:default"/>
 <setEntry value="org.covaid.core@default:default"/>
 <setEntry value="org.covaid.dashboard@default:default"/>
@@ -174,6 +157,7 @@
 <setEntry value="org.covaid.rest@default:default"/>
 <setEntry value="org.covaid.ui@default:default"/>
 <setEntry value="org.openlayer.map@default:default"/>
+<setEntry value="test.condast.commons.js.push@default:default"/>
 </setAttribute>
 <booleanAttribute key="show_selected_only" value="false"/>
 <booleanAttribute key="tracing" value="false"/>

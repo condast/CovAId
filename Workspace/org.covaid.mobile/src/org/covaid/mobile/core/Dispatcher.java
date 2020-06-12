@@ -6,6 +6,7 @@ import java.nio.file.Files;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Properties;
 
 import org.condast.commons.data.plane.IField;
 import org.condast.commons.project.ProjectFolderUtils;
@@ -24,7 +25,7 @@ import org.covaid.orientdb.object.IOrientEntityManagerFactory;
 
 import com.orientechnologies.orient.core.entity.OEntityManager;
 
-public class Dispatcher extends AbstractPersistenceService {
+public class Dispatcher extends AbstractPersistenceService{
 
 	//Needs to be the same as in the persistence.xml file
 	private static final String S_COVAID_SERVICE_ID = "org.covaid.mobile.service"; 
@@ -39,6 +40,8 @@ public class Dispatcher extends AbstractPersistenceService {
 	
 	private IFieldProvider provider;
 	
+	private Properties config;
+	
 	private Dispatcher() {
 		super( S_COVAID_SERVICE_ID, S_COVAID_SERVICE );
 		mobiles = new HashMap<>();
@@ -48,6 +51,10 @@ public class Dispatcher extends AbstractPersistenceService {
 		return dispatcher;
 	}
 	
+	public Properties getConfig() {
+		return config;
+	}
+
 	public void addMobile( IMobile<Date> mobile ) {
 		this.mobiles.put(mobile.getIdentifier(), mobile);
 	}
