@@ -10,14 +10,6 @@
             description="Login module voor CovAId">
       </loginModule>
     </extension>
-    <extension
-         point="org.eclipse.equinox.http.registry.servlets">
-      <servlet
-            alias="/covaid/mobile/push"
-            class="org.covaid.dashboard.push.PushServlet"
-            load-on-startup="true">
-     </servlet>
-   </extension>
   <extension
          point="org.eclipse.equinox.http.registry.resources">
       <resource

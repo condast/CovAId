@@ -28,6 +28,9 @@ import org.condast.commons.ui.xy.AbstractXYGraph;
 import org.condast.js.commons.controller.AbstractJavascriptController;
 import org.condast.js.commons.eval.IEvaluationListener;
 import org.condast.js.commons.wizard.AbstractHtmlParser;
+import org.condast.js.push.core.IPushListener;
+import org.condast.js.push.core.IPushListener.Calls;
+import org.condast.js.push.core.advice.Advice;
 import org.condast.js.push.core.advice.IAdvice;
 import org.condast.js.push.core.advice.IAdvice.AdviceTypes;
 import org.covaid.core.data.ContagionData;
@@ -46,6 +49,7 @@ import org.covaid.core.model.date.DateMobile;
 import org.covaid.ui.images.CovaidImages;
 import org.covaid.ui.images.CovaidImages.Images;
 import org.covaid.ui.push.Push;
+import org.eclipse.rap.rwt.scripting.ClientListener;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.browser.Browser;
 import org.eclipse.swt.browser.BrowserFunction;
@@ -71,6 +75,7 @@ public class MobileWizard extends Composite {
 
 	public static final String S_COVAID_CONTEXT = "covaid/rest";
 	public static final String S_COVAID_MOBILE_CONTEXT = "covaid/mobile/rest";
+	public static final String S_COVAID_PUSH_CONTEXT = "covaid/mobile/push";
 
 	public static final int DEFAULT_WIDTH = 100;//metres
 	public static final int DEFAULT_HISTORY = 16;//day, looking ahead of what is coming
@@ -206,6 +211,7 @@ public class MobileWizard extends Composite {
 
 	private long idCounter;
 	private int token;
+	private long subscriptionId;
 
 	private Push push = Push.getInstance();
 	
@@ -309,6 +315,9 @@ public class MobileWizard extends Composite {
 		config = new Config();
 		this.link = Links.DOWNLOAD;
 		createPage(parent, style | SWT.NO_SCROLL);
+		this.browser.addListener(SWT.Show, new ClientListener("var handleEvent = function( event ){\r\n" + 
+				"console.log(\"All resources finished loading!\");\r\n" + 
+				"			registerServiceWorker(12);\r\n};"));
 		this.contagionCombo.setItems(SupportedContagion.getItems());
 		this.contagionCombo.select(SupportedContagion.COVID_19.ordinal());
 		this.controller = new CanvasController( this.browser );
@@ -590,6 +599,10 @@ public class MobileWizard extends Composite {
 			listener.notifyMobileRegistration(event);
 	}
 	
+	public void setSubscriptionId(long subscriptionId) {
+		this.subscriptionId = subscriptionId;
+	}
+
 	public void clear() {
 		this.busy = false;
 		this.riskGraph.clear();
@@ -741,7 +754,40 @@ public class MobileWizard extends Composite {
 			return xpos;
 		}	
 	}
-	
+
+	private class PushWebClient extends AbstractHttpRequest<IPushListener.Calls, StringBuilder>{
+		
+		public PushWebClient() {
+			super( config.getServerContext() + S_COVAID_PUSH_CONTEXT);
+		}
+
+		public void sendPost(Calls request, Map<String, String> parameters, IAdvice advice) throws Exception {
+			Gson gson = new Gson();
+			super.sendPost(request, parameters, gson.toJson(advice, Advice.class));
+		}
+
+
+		@Override
+		protected String onHandleResponse(ResponseEvent<IPushListener.Calls, StringBuilder> event, StringBuilder data)
+				throws IOException {
+			switch( event.getRequest()) {
+			case SEND:
+				break;
+			default:
+				break;
+			}
+			canvasSafety.redraw();
+			return null;
+		}
+
+		@Override
+		protected void onHandleResponseFail(HttpStatus status, ResponseEvent<IPushListener.Calls, StringBuilder> event)
+				throws IOException {
+			logger.info("REQUEST: " + event.getRequest() + ", STATUS: " + status);
+			super.onHandleResponseFail(status, event);
+		}
+	}
+
 	private class MobileWebClient extends AbstractHttpRequest<Requests, StringBuilder>{
 	
 		public MobileWebClient() {
@@ -769,9 +815,17 @@ public class MobileWizard extends Composite {
 			case GET:
 				mobile = gson.fromJson( event.getResponse(), DateMobile.class );
 				if( mobile.getHealth() < 20) {
-					CovaidImages image = CovaidImages.getInstance();
-					IAdvice advice = push.createAdvice(1l, AdviceTypes.SUCCESS, "Doctor", CovaidImages.Images.getPath( Images.DOCTOR), CovaidImages.Images.getPath( Images.DOCTOR), "Shall I schedule an appointment?", 10);
-					push.sendPushMessage(advice);
+					PushWebClient pushClient = new PushWebClient(); 
+					//CovaidImages image = CovaidImages.getInstance();
+					IAdvice advice = push.createAdvice(subscriptionId, 1l, AdviceTypes.PROGRESS, "Doctor: ", "Shall I schedule an appointment?", CovaidImages.Images.getPath( Images.DOCTOR_CORONAVIRUS), CovaidImages.Images.getPath( Images.DOCTOR_CORONAVIRUS), 10);
+					advice.addNotification( IAdvice.Notifications.DONT_CARE,  CovaidImages.Images.getPath(Images.COVID_19 ));
+					advice.addNotification( IAdvice.Notifications.THANKS,  CovaidImages.Images.getPath( Images.DOCTOR_CORONAVIRUS));
+					try {
+						Map<String, String> params = authData.toMap();
+						pushClient.sendPost(Calls.SEND, params, advice);
+					} catch (Exception e) {
+						e.printStackTrace();
+					}
 				}
 				notifyRegistrationEvent( new RegistrationEvent<Date>(browser, IMobileRegistration.RegistrationTypes.REGISTER, authData, mobile));
 				break;
@@ -951,7 +1005,7 @@ public class MobileWizard extends Composite {
 		public static final String S_INITIALISTED_ID = "CanvasInitialisedId";
 
 		public static final String S_CALLBACK_ID = "CallBackId";
-		private String S_REFRESH_CANVAS = "refreshCanvas";
+		private String S_REFRESH_CANVAS = "refreshCanvas";//function name in javascript
 
 		private BrowserFunction callback;
 

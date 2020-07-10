@@ -14,7 +14,7 @@ import org.condast.commons.authentication.core.IAuthenticationManager;
 import org.condast.commons.authentication.core.ILoginProvider;
 import org.condast.commons.authentication.module.AbstractLoginModule;
 import org.condast.commons.authentication.user.ILoginUser;
-import org.covaid.core.user.IUserRegistration;
+import org.covaid.core.user.DoctorData;
 import org.covaid.dashboard.core.Dispatcher;
 
 /*
@@ -83,7 +83,7 @@ public class CovaidLoginModule extends AbstractLoginModule {
 	private static final String S_LOGIN_SUCCESSFUL = "LOGIN SUCCESSFUL: ";
 	private static final String S_ERR_NO_MODULE_LOADED = "COULD NOT LOAD MODULE AS A DECLARATIVE SERVICE!!!";
 
-	private IAuthenticationManager<IUserRegistration> manager = AuthenticationManager.getInstance();
+	private IAuthenticationManager<DoctorData> manager = AuthenticationManager.getInstance();
 	private LoginUserCallback lcb;
 	
 	private Logger logger = Logger.getLogger( this.getClass().getName());
@@ -128,7 +128,7 @@ public class CovaidLoginModule extends AbstractLoginModule {
 		logger.info( S_COMMITING);
 		Subject subject = super.getSubject();
 		Dispatcher dispatcher = Dispatcher.getInstance();
-		IUserRegistration registration = null;//dispatcher.createRegistrationManager(lcb.getUser());
+		DoctorData registration = null;//dispatcher.createRegistrationManager(lcb.getUser());
 		manager.setData(registration);
 		logger.info( S_LOGIN_SUCCESSFUL + ( registration != null ));
 		//subject.getPublicCredentials().add(USERS);

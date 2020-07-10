@@ -459,7 +459,7 @@ public class SimulatorComposite extends Composite {
 			lblPopulationValue.setText(String.valueOf(environment.getPopulation()));
 			lblDayValue.setText(String.valueOf( environment.getDays()));
 			comboContagion.select( IContagion.SupportedContagion.valueOf( environment.getContagion()).ordinal());
-			IContagion contagion = new Contagion( IContagion.SupportedContagion.valueOf( comboContagion.getText()), 100);
+			IContagion contagion = new Contagion( IContagion.SupportedContagion.valueOf( StringStyler.styleToEnum( comboContagion.getText())), 100);
 			lblContagiousnessValue.setText( String.format("%.2f", contagion.getContagiousness()) + "%");
 			lblDistanceValue.setText( contagion.getDistance() + " m" );
 			lblIncubationValue.setText( contagion.getIncubation() + " days" );

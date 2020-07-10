@@ -1,27 +1,12 @@
 package org.covaid.dashboard;
 
 //Lists the packages that are needed, but are not detected by dependency analysis
-import javax.persistence.*;
-import org.condast.commons.preferences.*;
-import org.condast.commons.authentication.ui.menu.*;
-import org.condast.commons.persistence.service.*;
-
-import org.covaid.ui.map.MapBrowser;
-import org.covaid.ui.mobile.MobileWizard;
-import org.covaid.ui.simulator.SimulatorComposite;
-import org.eclipse.core.commands.*;
+import javax.servlet.*;
+import javax.servlet.http.*;
 import org.eclipse.equinox.security.auth.*;
-import org.eclipse.equinox.security.auth.module.*;
-import org.condast.commons.ui.controller.*;
-import org.condast.js.commons.controller.*;
-import org.eclipse.swt.graphics.*;
-import com.google.gson.*;
-import org.eclipse.rap.rwt.service.*;
-import org.condast.commons.ui.logger.*;
-import org.condast.commons.data.router.*;
-import org.condast.js.*;
+import org.covaid.core.environment.*;
 
-import org.eclipse.jface.window.*;
+import org.eclipse.rap.rwt.service.*;
 
 @SuppressWarnings("unused")
 public interface IHiddenPackages {

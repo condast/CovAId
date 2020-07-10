@@ -8,6 +8,7 @@ import org.condast.commons.data.plane.Field;
 import org.condast.commons.data.plane.IField;
 import org.condast.commons.strings.StringStyler;
 import org.covaid.core.def.IFieldEnvironment;
+import org.covaid.core.doctor.IDoctorDataProvider;
 import org.covaid.core.environment.field.CovaidDomain;
 import org.covaid.core.environment.field.FieldEnvironment;
 import org.covaid.core.environment.field.RawDomain;
@@ -53,8 +54,10 @@ public class Dispatcher implements IFieldProvider{
 	
 	private IField field;
 	
-	private Collection<IFieldListener> listeners;
-	
+	private Collection<IFieldListener> fieldListeners;
+
+	private Collection<IDoctorDataProvider> providers;
+
 	private static Dispatcher dispatcher = new Dispatcher();
 
 	private Dispatcher() {
@@ -62,31 +65,39 @@ public class Dispatcher implements IFieldProvider{
 		environment.addDomain( new RawDomain());
 		environment.addDomain( new CovaidDomain());
 		field = new Field(new LatLng(0,0), DEFAULT_LENGTH, DEFAULT_WIDTH);
-		this.listeners = new ArrayList<>();
+		this.fieldListeners = new ArrayList<>();
+		this.providers = new ArrayList<>();
 	}
 	
 	public static Dispatcher getInstance() {
 		return dispatcher;
 	}
 
-	
 	@Override
 	public void addFieldListener(IFieldListener listener) {
-		this.listeners.add(listener);
+		this.fieldListeners.add(listener);
 	}
 
 	@Override
 	public void removeFieldListener(IFieldListener listener) {
-		this.listeners.remove(listener);
+		this.fieldListeners.remove(listener);
 	}
 	
 	protected void notifyFieldChange( FieldChangeEvent event ) {
-		for( IFieldListener listener: this.listeners )
+		for( IFieldListener listener: this.fieldListeners )
 			listener.notifyFieldChange(event);
 	}
 
 	public IField getField() {
 		return field;
+	}
+
+	public void addProvider(IDoctorDataProvider provider) {
+		this.providers.add(provider);
+	}
+
+	public void removeProvider(IDoctorDataProvider provider) {
+		this.providers.remove(provider);
 	}
 
 	public void addComposite( Composites type, Composite composite ) {

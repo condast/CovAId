@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<scr:component xmlns:scr="http://www.osgi.org/xmlns/scr/v1.1.0" name="org.covaid.mobile.doctor.data">
+   <service>
+      <provide interface="org.covaid.core.doctor.IDoctorDataProvider"/>
+   </service>
+   <implementation class="org.covaid.mobile.ds.DoctorDataProvider"/>
+</scr:component>

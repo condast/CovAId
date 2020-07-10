@@ -1,4 +1,4 @@
-package org.covaid.ui.push;
+package org.covaid.mobile.push;
 
 import java.io.IOException;
 import java.util.Properties;
@@ -52,7 +52,7 @@ public class Push extends AbstractPush{
 		return serverContext+ CONTEXT +"/" + service ;		
 	}
 	
-	public IAdvice createAdvice( long userId, long adviceId, IAdvice.AdviceTypes type, String advice, String text, String icon, String badge, int repeat) {
-		return new Advice( userId, adviceId, advice, type, text, icon, badge, repeat );
+	public IAdvice createAdvice( long userId, long adviceId, IAdvice.AdviceTypes type, String member, String text, String icon, String badge, int repeat) {
+		return new Advice( userId, adviceId, member, type, text, icon, badge, repeat );
 	}
 }

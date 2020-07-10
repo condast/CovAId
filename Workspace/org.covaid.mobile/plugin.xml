@@ -11,5 +11,10 @@
     			    value="org.covaid.mobile.RestApplication">
 		</init-param>
       </servlet>
+      <servlet
+            alias="/covaid/mobile/push"
+            class="org.covaid.mobile.push.PushServlet"
+            load-on-startup="true">
+     </servlet>
    </extension>
 </plugin>

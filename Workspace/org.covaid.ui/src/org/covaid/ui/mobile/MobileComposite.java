@@ -60,6 +60,10 @@ public class MobileComposite extends Composite {
 	    timer.scheduleAtFixedRate(timerTask, 0, 1000);
 	}
 
+	public void setSubscriptionId(long subscriptionId) {
+		this.wizard.setSubscriptionId(subscriptionId);
+	}
+
 	@Override
 	protected void checkSubclass() {
 		// Disable the check that prevents subclassing of SWT components

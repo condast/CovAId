@@ -12,7 +12,6 @@ import org.condast.commons.xml.AbstractXMLBuilder;
 import org.condast.commons.xml.BuildEvent;
 import org.condast.commons.xml.IBuildListener;
 import org.condast.commons.xml.AbstractXMLBuilder.Selection;
-import org.covaid.dashboard.authentication.AuthenticationDispatcher;
 import org.covaid.dashboard.authentication.AuthenticationManager;
 import org.covaid.dashboard.core.Dispatcher;
 import org.eclipse.rap.rwt.RWT;
@@ -37,8 +36,6 @@ public class BasicEntryPoint extends AbstractEntryPoint {
 	private IActivateWidget debug;
 	private RWTUiSessionHandler handler;
 	
-	private AuthenticationDispatcher authentication = AuthenticationDispatcher.getInstance(); 
-
 	private Dispatcher dispatcher = Dispatcher.getInstance();
 		
 	private IActivateListener alistener = new IActivateListener() {

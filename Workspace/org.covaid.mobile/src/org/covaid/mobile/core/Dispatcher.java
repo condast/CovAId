@@ -3,6 +3,8 @@ package org.covaid.mobile.core;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -11,6 +13,9 @@ import java.util.Properties;
 import org.condast.commons.data.plane.IField;
 import org.condast.commons.project.ProjectFolderUtils;
 import org.covaid.core.def.IMobile;
+import org.covaid.core.doctor.DoctorDataEvent;
+import org.covaid.core.doctor.IDoctorDataListener;
+import org.covaid.core.doctor.IDoctorDataProvider;
 import org.covaid.core.field.IFieldListener;
 import org.covaid.core.field.IFieldProvider;
 import org.covaid.core.model.Contagion;
@@ -25,7 +30,7 @@ import org.covaid.orientdb.object.IOrientEntityManagerFactory;
 
 import com.orientechnologies.orient.core.entity.OEntityManager;
 
-public class Dispatcher extends AbstractPersistenceService{
+public class Dispatcher extends AbstractPersistenceService implements IDoctorDataProvider{
 
 	//Needs to be the same as in the persistence.xml file
 	private static final String S_COVAID_SERVICE_ID = "org.covaid.mobile.service"; 
@@ -42,9 +47,12 @@ public class Dispatcher extends AbstractPersistenceService{
 	
 	private Properties config;
 	
+	private Collection<IDoctorDataListener> listeners;
+	
 	private Dispatcher() {
 		super( S_COVAID_SERVICE_ID, S_COVAID_SERVICE );
 		mobiles = new HashMap<>();
+		listeners = new ArrayList<>();
 	}
 
 	public static Dispatcher getInstance() {
@@ -132,5 +140,20 @@ public class Dispatcher extends AbstractPersistenceService{
 
 	public IField getField() {
 		return this.provider.getField();
+	}
+
+	public void notifyDoctorDoctorChanged(DoctorDataEvent event) {
+		for( IDoctorDataListener listener: this.listeners )
+			listener.notifyDoctorDoctorChanged(event);	
+	}
+
+	@Override
+	public void addDoctorDataListener(IDoctorDataListener listener) {
+		this.listeners.add(listener);
+	}
+
+	@Override
+	public void removeDoctorDataListener(IDoctorDataListener listener) {
+		this.listeners.remove(listener);
 	}
 }

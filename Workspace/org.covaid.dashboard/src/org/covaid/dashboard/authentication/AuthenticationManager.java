@@ -8,11 +8,11 @@ import org.condast.commons.authentication.core.AbstractAuthenticationManager;
 import org.condast.commons.authentication.core.IAuthenticationManager;
 import org.condast.commons.authentication.core.ILoginProvider;
 import org.condast.commons.authentication.user.ILoginUser;
-import org.covaid.core.user.IUserRegistration;
+import org.covaid.core.user.DoctorData;
 
-public class AuthenticationManager extends AbstractAuthenticationManager<IUserRegistration> {
+public class AuthenticationManager extends AbstractAuthenticationManager<DoctorData> {
 
-	private static final String S_CALLBACK_ID = "ARNAC";
+	private static final String S_CALLBACK_ID = "COVAID";
 
 	private static AuthenticationManager manager = new AuthenticationManager();
 	
@@ -22,7 +22,7 @@ public class AuthenticationManager extends AbstractAuthenticationManager<IUserRe
 		super(S_CALLBACK_ID);
 	}
 
-	public static IAuthenticationManager<IUserRegistration> getInstance() {
+	public static IAuthenticationManager<DoctorData> getInstance() {
 		return manager;
 	}
 	
@@ -41,7 +41,7 @@ public class AuthenticationManager extends AbstractAuthenticationManager<IUserRe
 	}
 
 	@Override
-	protected void onLogout(IUserRegistration userData) {
+	protected void onLogout(DoctorData userData) {
 		// Check if the user is already logged off
 		if( getData() == null )
 			return;

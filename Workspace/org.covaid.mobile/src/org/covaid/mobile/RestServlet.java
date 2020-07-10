@@ -7,6 +7,7 @@ import org.condast.commons.messaging.http.AbstractServletWrapper;
 import org.condast.commons.messaging.rest.CorsFilter;
 import org.covaid.mobile.resources.PushResource;
 import org.covaid.mobile.resources.MobileResource;
+import org.covaid.mobile.resources.NotificationResource;
 import org.glassfish.jersey.server.ResourceConfig;
 import org.glassfish.jersey.servlet.ServletContainer;
 
@@ -33,7 +34,7 @@ public class RestServlet extends AbstractServletWrapper {
 		private RestApplication() {
 			register( CorsFilter.class );
 			register( MobileResource.class );
-			register( PushResource.class );
+			register( NotificationResource.class );
 		}
 	}
 }

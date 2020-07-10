@@ -3,7 +3,7 @@ package org.covaid.core.user;
 import org.condast.commons.authentication.user.ILoginUser;
 import org.covaid.core.def.IUserData;
 
-public interface IUserRegistration {
+public interface DoctorData {
 
 	enum RegistrationEvents{
 		CONFIGURATION_ADDED,

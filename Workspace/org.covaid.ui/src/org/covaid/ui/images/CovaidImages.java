@@ -35,6 +35,8 @@ public class CovaidImages extends AbstractImages{
 	public static final String S_DEFAULT_LOCATION = "/covaid/images/";
 
 	public enum Images{
+		CHECK,
+		UNCHECK,
 		COVID_SEARCH,
 		COVID_19,
 		DOCTOR,
@@ -60,7 +62,7 @@ public class CovaidImages extends AbstractImages{
 				buffer.append( S_PNG);
 				break;
 			case DOCTOR_CORONAVIRUS:
-				buffer.append( image.name().toLowerCase());
+				buffer.append( image.name().replace("_", "-").toLowerCase());
 				buffer.append( S_PNG);
 				break;
 			default:
@@ -71,7 +73,7 @@ public class CovaidImages extends AbstractImages{
 		}
 		
 		public static String getPath( Images image ){
-			String name = image.name().toLowerCase();
+			String name = image.name().replace("_", "-").toLowerCase();
 			String str = "huge/" + name + "-128.png";
 			return S_DEFAULT_LOCATION + str;
 		}

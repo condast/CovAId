@@ -16,7 +16,6 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 
-import org.condast.commons.messaging.push.ISubscription;
 import org.condast.commons.strings.StringUtils;
 import org.covaid.mobile.core.Dispatcher;
 
