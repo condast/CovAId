@@ -7,7 +7,10 @@ import org.condast.commons.data.latlng.LatLng;
 import org.condast.commons.data.plane.Field;
 import org.condast.commons.data.plane.IField;
 import org.condast.commons.strings.StringStyler;
+import org.covaid.core.data.DoctorData;
 import org.covaid.core.def.IFieldEnvironment;
+import org.covaid.core.doctor.DoctorDataEvent;
+import org.covaid.core.doctor.IDoctorDataListener;
 import org.covaid.core.doctor.IDoctorDataProvider;
 import org.covaid.core.environment.field.CovaidDomain;
 import org.covaid.core.environment.field.FieldEnvironment;
@@ -56,7 +59,30 @@ public class Dispatcher implements IFieldProvider{
 	
 	private Collection<IFieldListener> fieldListeners;
 
-	private Collection<IDoctorDataProvider> providers;
+	private Collection<DoctorData> data;
+	
+	private Collection<IDoctorDataListener> dlisteners;
+
+	private IDoctorDataListener dlistener = new IDoctorDataListener(){
+
+		@Override
+		public void notifyDoctorDoctorChanged(DoctorDataEvent event) {
+			switch( event.getType()) {
+			case ADD:
+				data.add(event.getData());
+				break;
+			case REMOVE:
+				data.remove(event.getData());
+				break;
+			default:
+				break;
+			}
+			for( IDoctorDataListener listener: dlisteners )
+				listener.notifyDoctorDoctorChanged(event);
+		}	
+	};
+	
+	private Collection<IDoctorDataProvider> providers;	
 
 	private static Dispatcher dispatcher = new Dispatcher();
 
@@ -67,6 +93,8 @@ public class Dispatcher implements IFieldProvider{
 		field = new Field(new LatLng(0,0), DEFAULT_LENGTH, DEFAULT_WIDTH);
 		this.fieldListeners = new ArrayList<>();
 		this.providers = new ArrayList<>();
+		this.data = new ArrayList<>();
+		this.dlisteners = new ArrayList<>();
 	}
 	
 	public static Dispatcher getInstance() {
@@ -92,11 +120,25 @@ public class Dispatcher implements IFieldProvider{
 		return field;
 	}
 
+	public Collection<DoctorData> getData(){
+		return this.data;
+	}
+
+	public void addDoctorListener(IDoctorDataListener listener) {
+		this.dlisteners.add(listener);
+	}
+
+	public void removeDoctorListener(IDoctorDataListener listener) {
+		this.dlisteners.remove(listener);
+	}
+	
 	public void addProvider(IDoctorDataProvider provider) {
 		this.providers.add(provider);
+		provider.addDoctorDataListener(dlistener);
 	}
 
 	public void removeProvider(IDoctorDataProvider provider) {
+		provider.removeDoctorDataListener(dlistener);
 		this.providers.remove(provider);
 	}
 

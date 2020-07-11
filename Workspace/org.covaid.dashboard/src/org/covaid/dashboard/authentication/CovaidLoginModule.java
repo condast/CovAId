@@ -14,7 +14,7 @@ import org.condast.commons.authentication.core.IAuthenticationManager;
 import org.condast.commons.authentication.core.ILoginProvider;
 import org.condast.commons.authentication.module.AbstractLoginModule;
 import org.condast.commons.authentication.user.ILoginUser;
-import org.covaid.core.user.DoctorData;
+import org.covaid.core.data.DoctorData;
 import org.covaid.dashboard.core.Dispatcher;
 
 /*

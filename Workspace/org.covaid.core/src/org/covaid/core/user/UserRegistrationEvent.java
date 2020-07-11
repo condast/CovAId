@@ -2,16 +2,18 @@ package org.covaid.core.user;
 
 import java.util.EventObject;
 
+import org.covaid.core.data.DoctorData;
 import org.covaid.core.def.IUserData;
+import org.covaid.core.doctor.IDoctorDataListener;
 
 public class UserRegistrationEvent extends EventObject {
 	private static final long serialVersionUID = 1L;
 
-	private DoctorData.RegistrationEvents type;
+	private IDoctorDataListener.DocterDataEvents type;
 	
 	private IUserData userData;
 	
-	public UserRegistrationEvent(DoctorData source, DoctorData.RegistrationEvents type, IUserData userData ) {
+	public UserRegistrationEvent(DoctorData source, IDoctorDataListener.DocterDataEvents type, IUserData userData ) {
 		super(source);
 		this.type = type;
 		this.userData = userData;
@@ -21,7 +23,7 @@ public class UserRegistrationEvent extends EventObject {
 		return (DoctorData) super.getSource();
 	}
 	
-	public DoctorData.RegistrationEvents getType() {
+	public IDoctorDataListener.DocterDataEvents getType() {
 		return type;
 	}
 

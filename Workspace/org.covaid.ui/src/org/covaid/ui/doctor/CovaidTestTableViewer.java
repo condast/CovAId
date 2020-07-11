@@ -1,12 +1,14 @@
 package org.covaid.ui.doctor;
 
-import java.util.Arrays;
+import java.util.ArrayList;
 import java.util.Collection;
 
 import org.condast.commons.strings.StringStyler;
 import org.condast.commons.ui.widgets.AbstractTableViewerWithDelete;
 import org.condast.commons.ui.widgets.IStoreWithDelete;
 import org.covaid.core.data.DoctorData;
+import org.covaid.core.doctor.DoctorDataEvent;
+import org.covaid.core.doctor.IDoctorDataListener;
 import org.covaid.ui.images.CovaidImages;
 import org.eclipse.jface.viewers.ISelectionChangedListener;
 import org.eclipse.jface.viewers.ITableLabelProvider;
@@ -41,9 +43,12 @@ public class CovaidTestTableViewer extends AbstractTableViewerWithDelete<DoctorD
 			}
 		}
 	}
-	
+
+	private Collection<IDoctorDataListener> dlisteners;
+
 	public CovaidTestTableViewer(Composite parent,int style ) {
 		super(parent,style, true );
+		this.dlisteners = new ArrayList<>();
 	}
 
 	public void addSelectionChangeListener( ISelectionChangedListener listener ) {
@@ -54,6 +59,14 @@ public class CovaidTestTableViewer extends AbstractTableViewerWithDelete<DoctorD
 	public void removeSelectionChangeListener( ISelectionChangedListener listener ) {
 		TableViewer viewer = super.getViewer();
 		viewer.remove(listener);
+	}
+
+	public void addDoctorListener(IDoctorDataListener listener) {
+		this.dlisteners.add(listener);
+	}
+
+	public void removeDoctorListener(IDoctorDataListener listener) {
+		this.dlisteners.remove(listener);
 	}
 
 	@Override
@@ -67,9 +80,9 @@ public class CovaidTestTableViewer extends AbstractTableViewerWithDelete<DoctorD
 		super.createDeleteColumn( Columns.values().length, deleteStr, 10 );	
 		viewer.setLabelProvider( new DoctorDataLabelProvider() );
 	}
-		
-	public void setInput( DoctorData data ){
-		super.setInput( Arrays.asList( data ));
+
+	public void setInput( Collection<DoctorData> data ){
+		super.setInput( data );
 	}
 	
 	public int getSelectionIndex( DoctorData vessel ) {
@@ -108,6 +121,9 @@ public class CovaidTestTableViewer extends AbstractTableViewerWithDelete<DoctorD
 	
 	@Override
 	protected boolean onDeleteButton( Collection<DoctorData> deleted ) {
+		for( IDoctorDataListener listener: this.dlisteners )
+			for( DoctorData data: deleted )
+				listener.notifyDoctorDoctorChanged( new DoctorDataEvent(this, IDoctorDataListener.DocterDataEvents.REMOVE, data));
 		return true;
 	}
 

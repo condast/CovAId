@@ -15,9 +15,8 @@
 <setAttribute key="deselected_workspace_bundles">
 <setEntry value="org.condast.commons.legal"/>
 <setEntry value="org.condast.js.react"/>
-<setEntry value="org.covaid.orientdb"/>
 <setEntry value="org.google.geo.mapping.ui"/>
-<setEntry value="test.condast.com"/>
+<setEntry value="test.condast.commons"/>
 <setEntry value="test.covaid.core"/>
 </setAttribute>
 <booleanAttribute key="includeOptional" value="true"/>
@@ -73,6 +72,7 @@
 <setEntry value="javax.xml.soap@default:default"/>
 <setEntry value="javax.xml.ws@default:default"/>
 <setEntry value="javax.xml@default:default"/>
+<setEntry value="oevm.javax.portlet@default:default"/>
 <setEntry value="oevm.org.aopalliance@default:default"/>
 <setEntry value="org.apache.commons.codec*1.10.0.v20151023-1447@default:default"/>
 <setEntry value="org.apache.commons.fileupload@default:default"/>
@@ -126,6 +126,7 @@
 <setEntry value="org.eclipse.rap.nebula.widgets.richtext@default:default"/>
 <setEntry value="org.eclipse.rap.rwt.osgi@default:default"/>
 <setEntry value="org.eclipse.rap.rwt@default:default"/>
+<setEntry value="org.eclipse.virgo.web.servlet.adapter@default:default"/>
 <setEntry value="org.glassfish.hk2.api@default:default"/>
 <setEntry value="org.glassfish.hk2.external.javax.inject@default:default"/>
 <setEntry value="org.glassfish.hk2.locator@default:default"/>
@@ -166,10 +167,12 @@
 <setEntry value="org.condast.commons@default:default"/>
 <setEntry value="org.condast.js.bootstrap@default:default"/>
 <setEntry value="org.condast.js.commons@default:default"/>
+<setEntry value="org.condast.js.push@default:default"/>
 <setEntry value="org.covaid.commons.support@default:default"/>
 <setEntry value="org.covaid.core@default:default"/>
 <setEntry value="org.covaid.dashboard@default:default"/>
 <setEntry value="org.covaid.mobile@default:default"/>
+<setEntry value="org.covaid.orientdb@default:default"/>
 <setEntry value="org.covaid.rest@default:default"/>
 <setEntry value="org.covaid.ui@default:default"/>
 <setEntry value="org.openlayer.map@default:default"/>

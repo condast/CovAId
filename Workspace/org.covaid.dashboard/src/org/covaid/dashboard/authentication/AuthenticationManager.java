@@ -8,7 +8,7 @@ import org.condast.commons.authentication.core.AbstractAuthenticationManager;
 import org.condast.commons.authentication.core.IAuthenticationManager;
 import org.condast.commons.authentication.core.ILoginProvider;
 import org.condast.commons.authentication.user.ILoginUser;
-import org.covaid.core.user.DoctorData;
+import org.covaid.core.data.DoctorData;
 
 public class AuthenticationManager extends AbstractAuthenticationManager<DoctorData> {
 
@@ -45,7 +45,7 @@ public class AuthenticationManager extends AbstractAuthenticationManager<DoctorD
 		// Check if the user is already logged off
 		if( getData() == null )
 			return;
-		ILoginUser user = getData().getUser();
+		ILoginUser user = null;//getData().getUser();
 		setData(userData);
 		provider.logout( user.getId(), user.getToken() );
 	}	

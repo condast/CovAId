@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
@@ -74,7 +75,12 @@ public class Dispatcher extends AbstractPersistenceService implements IDoctorDat
 	public IMobile<Date> getMobile( String identifier ){
 		return this.mobiles.get(identifier);
 	}
-	
+
+	public IMobile<Date> getMobile( int mobileId ){
+		List<IMobile<Date>> list = new ArrayList<IMobile<Date>>( this.mobiles.values());
+		return list.get(mobileId-1);
+	}
+
 	@Override
 	protected Map<String, String> onPrepareManager() {
 		File dir = new File( ProjectFolderUtils.getDefaultUserDir( Activator.BUNDLE_ID));

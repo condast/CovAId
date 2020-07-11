@@ -1,9 +1,23 @@
 package org.covaid.mobile.push;
 
+import java.util.Date;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
 import org.condast.commons.config.Config;
 import org.condast.commons.strings.StringStyler;
+import org.condast.commons.strings.StringUtils;
 import org.condast.js.commons.parser.AbstractFileParser;
 import org.condast.js.push.core.AbstractPushServlet;
+import org.condast.js.push.core.IPushListener;
+import org.condast.js.push.core.IPushListener.Calls;
+import org.condast.js.push.core.advice.IAdvice;
+import org.covaid.core.data.DoctorData;
+import org.covaid.core.def.IMobile;
+import org.covaid.core.doctor.DoctorDataEvent;
+import org.covaid.core.doctor.IDoctorDataListener.DocterDataEvents;
+import org.covaid.mobile.core.Dispatcher;
 
 public class PushServlet extends AbstractPushServlet {
 	private static final long serialVersionUID = 1L;
@@ -16,8 +30,7 @@ public class PushServlet extends AbstractPushServlet {
 		PUSH,
 		MOBILE,
 		LOCAL,
-		HOME;
-		
+		HOME;	
 	}
 	private Config config;
 	
@@ -51,5 +64,31 @@ public class PushServlet extends AbstractPushServlet {
 	@Override
 	protected String onGetPublicKey(String id, AbstractFileParser.Attributes attr) {
 		return push.getPublicKey();
+	}
+	
+	protected boolean onUpdate( Calls call, HttpServletRequest req, HttpServletResponse resp ) {
+		String type = req.getParameter(IPushListener.Attributes.NOTIFICATION.toString());
+		IAdvice.Notifications notification = IAdvice.Notifications.valueOf( StringStyler.styleToEnum(type)); 
+		boolean result = false;
+		switch( notification ) {
+		case DONT_CARE:
+			try {
+				Dispatcher dispatcher = Dispatcher.getInstance(); 
+				String mobileId = req.getParameter(IPushListener.Attributes.ID.toString());
+				int id = StringUtils.isEmpty(mobileId)?0: Integer.parseInt(mobileId);
+				IMobile<Date> mobile = dispatcher.getMobile(id);
+				DoctorData data = new DoctorData(id, true);
+				dispatcher.notifyDoctorDoctorChanged( new DoctorDataEvent(this,  DocterDataEvents.ADD, data));
+			}
+			catch( Exception ex) {
+				ex.printStackTrace();
+			}
+			result = true;
+			break;
+		default:
+			result = super.onUpdate(call, req, resp);
+			break;
+		}
+		return result;
 	}
 }
