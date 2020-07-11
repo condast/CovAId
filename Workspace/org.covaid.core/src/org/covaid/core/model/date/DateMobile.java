@@ -5,6 +5,7 @@ import java.util.Date;
 
 import org.condast.commons.data.plane.IField;
 import org.condast.commons.data.util.Vector;
+import org.condast.commons.strings.StringUtils;
 import org.covaid.core.def.IContagion;
 import org.covaid.core.def.IHistoryListener;
 import org.covaid.core.def.ILocation;
@@ -78,6 +79,11 @@ public class DateMobile implements IMobile<Date>, IFieldListener {
 		this.location = location;
 		this.history = new DateHistory();
 		this.history.addListener(listener);
+	}
+
+	@Override
+	public long getId() {
+		return StringUtils.isEmpty(identifier)?-1:this.identifier.hashCode();
 	}
 
 	@Override

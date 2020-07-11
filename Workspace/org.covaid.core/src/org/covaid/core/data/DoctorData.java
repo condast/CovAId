@@ -1,27 +1,73 @@
 package org.covaid.core.data;
 
+import java.util.Calendar;
+import java.util.Date;
+
+import org.condast.commons.strings.StringStyler;
 import org.covaid.core.def.IMobile;
 
-public class DoctorData {
+public class DoctorData implements Comparable<DoctorData>{
 
-	private long id;
-	private boolean covaid;
+	public enum States{
+		APPOINTMENT,
+		NEGATIVE,
+		POSITIVE;
 
-	public DoctorData( IMobile<?> mobile, boolean covaid) {
-		this( Long.parseLong(mobile.getIdentifier()), covaid );
+		@Override
+		public String toString() {
+			return StringStyler.prettyString( super.toString());
+		}
+		
+		public static String[] getItems() {
+			String[] results = new String[values().length];
+			for( int i=0; i<values().length;i++) {
+				results[i] = values()[i].toString();
+			}
+			return results;
+		}
+		
+		public static States getState( int ordinal ) {
+			return values()[ordinal];
+		}
 	}
 	
-	public DoctorData(long id, boolean covaid) {
+	private long id;
+	private Date date;
+	private States state;
+
+	public DoctorData( IMobile<?> mobile, States state) {
+		this( mobile.getId(), state );
+	}
+
+	public DoctorData( IMobile<?> mobile) {
+		this( mobile.getId(), States.APPOINTMENT );
+	}
+	
+	public DoctorData(long id, States state) {
 		super();
 		this.id = id;
-		this.covaid = covaid;
+		this.state = state;
+		this.date = Calendar.getInstance().getTime();
 	}
 
 	public long getId() {
 		return id;
 	}
 
-	public boolean hasCovaid() {
-		return covaid;
+	public States getState() {
+		return state;
+	}
+
+	public void setState(States state) {
+		this.state = state;
+	}
+
+	public Date getDate() {
+		return date;
+	}
+
+	@Override
+	public int compareTo(DoctorData o) {
+		return (this.id==o.getId())?0:this.id<o.getId()?-1:1;
 	}
 }

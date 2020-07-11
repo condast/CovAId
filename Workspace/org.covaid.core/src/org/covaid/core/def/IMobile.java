@@ -24,6 +24,8 @@ public interface IMobile<T extends Object> {
 		}	
 	}
 
+	long getId();
+	
 	String getIdentifier();
 
 	double getHealth();

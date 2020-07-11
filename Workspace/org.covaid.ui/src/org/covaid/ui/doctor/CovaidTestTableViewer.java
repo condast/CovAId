@@ -1,15 +1,20 @@
 package org.covaid.ui.doctor;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collection;
-
+import org.condast.commons.date.DateFormatter;
 import org.condast.commons.strings.StringStyler;
 import org.condast.commons.ui.widgets.AbstractTableViewerWithDelete;
 import org.condast.commons.ui.widgets.IStoreWithDelete;
 import org.covaid.core.data.DoctorData;
+import org.covaid.core.data.DoctorData.States;
 import org.covaid.core.doctor.DoctorDataEvent;
 import org.covaid.core.doctor.IDoctorDataListener;
 import org.covaid.ui.images.CovaidImages;
+import org.eclipse.jface.viewers.CellEditor;
+import org.eclipse.jface.viewers.ComboBoxCellEditor;
+import org.eclipse.jface.viewers.EditingSupport;
 import org.eclipse.jface.viewers.ISelectionChangedListener;
 import org.eclipse.jface.viewers.ITableLabelProvider;
 import org.eclipse.jface.viewers.TableViewer;
@@ -25,6 +30,7 @@ public class CovaidTestTableViewer extends AbstractTableViewerWithDelete<DoctorD
 	private static final long serialVersionUID = 1L;
 
 	private enum Columns{
+		DATE,
 		ID,
 		ILL;
 
@@ -35,11 +41,12 @@ public class CovaidTestTableViewer extends AbstractTableViewerWithDelete<DoctorD
 
 		public static int getWeight( Columns column ){
 			switch( column ){
+			case DATE:
 			case ID:
 			case ILL:
-				return 30;
+				return 50;
 			default:
-				return 10;
+				return 30;
 			}
 		}
 	}
@@ -79,17 +86,20 @@ public class CovaidTestTableViewer extends AbstractTableViewerWithDelete<DoctorD
 		String deleteStr = Buttons.DELETE.toString();
 		super.createDeleteColumn( Columns.values().length, deleteStr, 10 );	
 		viewer.setLabelProvider( new DoctorDataLabelProvider() );
+		viewer.addDoubleClickListener((e)->{
+			
+		});
 	}
 
 	public void setInput( Collection<DoctorData> data ){
 		super.setInput( data );
 	}
 	
-	public int getSelectionIndex( DoctorData vessel ) {
-		Collection<IStoreWithDelete<DoctorData>> vessels = this.getStoreInput();
+	public int getSelectionIndex( DoctorData data ) {
+		Collection<IStoreWithDelete<DoctorData>> ddata = this.getStoreInput();
 		int index = 0;
-		for( IStoreWithDelete<DoctorData> rvessel: vessels ) {
-			if( rvessel.getStore().equals( vessel))
+		for( IStoreWithDelete<DoctorData> dd: ddata ) {
+			if( dd.getStore().equals( data))
 				return index;
 			index++;
 		}
@@ -129,6 +139,8 @@ public class CovaidTestTableViewer extends AbstractTableViewerWithDelete<DoctorD
 
 	private TableViewerColumn createColumn( final Columns column ) {
 		TableViewerColumn result = super.createColumn( column.toString(), column.ordinal(), Columns.getWeight(column) );
+		if( Columns.ILL.equals(column))
+			result.setEditingSupport(new StatesEditingSupport( super.getViewer()));
 		return result;
 	}
 	
@@ -150,11 +162,15 @@ public class CovaidTestTableViewer extends AbstractTableViewerWithDelete<DoctorD
 			IStoreWithDelete<DoctorData> swd = (IStoreWithDelete<DoctorData>) element;
 			DoctorData data = swd.getStore();
 			switch( column){
+			case DATE:
+				SimpleDateFormat formatter = new SimpleDateFormat("dd MMM yyyy HH:mm:ss");
+				retval = formatter.format(data.getDate());
+				break;		
 			case ID:
 				retval = String.valueOf( data.getId());
 				break;
 			case ILL:
-				retval = String.valueOf( data.hasCovaid());
+				retval = data.getState().toString();
 				break;
 			default:
 				break;				
@@ -176,13 +192,62 @@ public class CovaidTestTableViewer extends AbstractTableViewerWithDelete<DoctorD
 			CovaidImages images = CovaidImages.getInstance();
 			switch( column){
 			case ILL:
-				image = data.hasCovaid()? images.getImage( CovaidImages.Images.CHECK): image;
+				image = images.getImage( CovaidImages.Images.APPOINTMENT);
+				switch( data.getState()) {
+				case POSITIVE:
+					image = images.getImage( CovaidImages.Images.ILL);					
+					break;
+				case NEGATIVE:
+					image = images.getImage( CovaidImages.Images.HEALTHY);					
+					break;
+				default:
+					break;
+				}
 				break;
 			default:
-				image = super.getColumnImage(arg0, columnIndex);
 				break;				
 			}
 			return image;
 		}
+	}
+	
+	private static class StatesEditingSupport extends EditingSupport {
+		private static final long serialVersionUID = 1L;
+		private final TableViewer viewer;
+	    private final CellEditor editor;
+
+	    public StatesEditingSupport(TableViewer viewer) {
+	        super(viewer);
+	        this.viewer = viewer;
+	        this.editor = new ComboBoxCellEditor(viewer.getTable(), DoctorData.States.getItems(), SWT.DROP_DOWN | SWT.READ_ONLY);
+	        this.editor.setValue(0);
+	    }
+
+	    @Override
+	    protected CellEditor getCellEditor(Object element) {
+	        return editor;
+	    }
+
+	    @Override
+	    protected boolean canEdit(Object element) {
+	        return true;
+	    }
+
+	    @SuppressWarnings("unchecked")
+		@Override
+	    protected Object getValue(Object element) {
+	        StoreWithDelete store = (StoreWithDelete) element;
+	    	DoctorData data = store.getStore();
+	        return data.getState().ordinal();
+	    }
+
+	    @Override
+	    protected void setValue(Object element, Object value) {
+	        @SuppressWarnings("unchecked")
+			StoreWithDelete store = (StoreWithDelete) element;
+	    	DoctorData data = store.getStore();
+	        data.setState(States.getState((int) value));
+	        viewer.update(element, null);
+	    }
 	}
 }

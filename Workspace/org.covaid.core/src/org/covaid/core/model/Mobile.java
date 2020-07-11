@@ -1,6 +1,7 @@
 package org.covaid.core.model;
 
 import org.condast.commons.data.util.Vector;
+import org.condast.commons.strings.StringUtils;
 import org.covaid.core.data.StoredNode;
 import org.covaid.core.def.IContagion;
 import org.covaid.core.def.IHistory;
@@ -42,6 +43,11 @@ public class Mobile<T extends Object> implements IMobile<T> {
 		this.node = new StoredNode<T>(identifier );
 		this.location = location;
 		this.history = history;
+	}
+	
+	@Override
+	public long getId() {
+		return StringUtils.isEmpty(identifier)?-1:this.identifier.hashCode();
 	}
 
 	@Override

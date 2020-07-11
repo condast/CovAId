@@ -817,7 +817,7 @@ public class MobileWizard extends Composite {
 				if( mobile.getHealth() < 20) {
 					PushWebClient pushClient = new PushWebClient(); 
 					//CovaidImages image = CovaidImages.getInstance();
-					IAdvice advice = push.createAdvice(subscriptionId, 1l, AdviceTypes.PROGRESS, "Doctor: ", "Shall I schedule an appointment?", CovaidImages.Images.getPath( Images.DOCTOR_CORONAVIRUS), CovaidImages.Images.getPath( Images.DOCTOR_CORONAVIRUS), 0);
+					IAdvice advice = push.createAdvice(subscriptionId, mobile.getId(), mobile.getIdentifier(), "Doctor", AdviceTypes.PROGRESS, "Shall I schedule an appointment?", CovaidImages.Images.getPath( Images.DOCTOR_CORONAVIRUS), CovaidImages.Images.getPath( Images.DOCTOR_CORONAVIRUS), 0);
 					advice.addNotification( IAdvice.Notifications.THANKS,  CovaidImages.Images.getPath( Images.DOCTOR_CORONAVIRUS));
 					advice.addNotification( IAdvice.Notifications.DONT_CARE,  CovaidImages.Images.getPath(Images.COVID_19 ));
 					try {

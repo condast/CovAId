@@ -2,6 +2,7 @@ package org.covaid.dashboard.core;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.TreeSet;
 
 import org.condast.commons.data.latlng.LatLng;
 import org.condast.commons.data.plane.Field;
@@ -93,7 +94,7 @@ public class Dispatcher implements IFieldProvider{
 		field = new Field(new LatLng(0,0), DEFAULT_LENGTH, DEFAULT_WIDTH);
 		this.fieldListeners = new ArrayList<>();
 		this.providers = new ArrayList<>();
-		this.data = new ArrayList<>();
+		this.data = new TreeSet<>();
 		this.dlisteners = new ArrayList<>();
 	}
 	

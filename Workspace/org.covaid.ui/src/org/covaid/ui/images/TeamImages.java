@@ -53,7 +53,7 @@ public class TeamImages extends AbstractImages {
 		}
 
 		public static String getPath( IAdvice advice ){
-			Team member = Team.valueOf(advice.getMember().toUpperCase());
+			Team member = Team.valueOf(advice.getTitle().toUpperCase());
 			String str;
 			switch( member ) {
 			case AMANDA:

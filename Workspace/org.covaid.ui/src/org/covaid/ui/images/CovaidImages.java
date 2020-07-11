@@ -35,6 +35,9 @@ public class CovaidImages extends AbstractImages{
 	public static final String S_DEFAULT_LOCATION = "/covaid/images/";
 
 	public enum Images{
+		APPOINTMENT,
+		ILL,
+		HEALTHY,
 		CHECK,
 		UNCHECK,
 		COVID_SEARCH,
@@ -92,7 +95,7 @@ public class CovaidImages extends AbstractImages{
 	}
 	
 	@Override
-	public void initialise(){
+	protected void initialise(){
 		for( Images image: Images.values())
 			setImage( Images.getResource(image) );
 	}

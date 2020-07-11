@@ -7,7 +7,6 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.condast.commons.config.Config;
 import org.condast.commons.strings.StringStyler;
-import org.condast.commons.strings.StringUtils;
 import org.condast.js.commons.parser.AbstractFileParser;
 import org.condast.js.push.core.AbstractPushServlet;
 import org.condast.js.push.core.IPushListener;
@@ -74,10 +73,9 @@ public class PushServlet extends AbstractPushServlet {
 		case DONT_CARE:
 			try {
 				Dispatcher dispatcher = Dispatcher.getInstance(); 
-				String mobileId = req.getParameter(IPushListener.Attributes.ID.toString());
-				int id = StringUtils.isEmpty(mobileId)?0: Integer.parseInt(mobileId);
-				IMobile<Date> mobile = dispatcher.getMobile(id);
-				DoctorData data = new DoctorData(id, true);
+				String mobileId = req.getParameter(IPushListener.Attributes.IDENTIFIER.toString());
+				IMobile<Date> mobile = dispatcher.getMobile(mobileId);
+				DoctorData data = new DoctorData(mobile);
 				dispatcher.notifyDoctorDoctorChanged( new DoctorDataEvent(this,  DocterDataEvents.ADD, data));
 			}
 			catch( Exception ex) {

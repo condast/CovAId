@@ -52,7 +52,7 @@ public class Push extends AbstractPush{
 		return serverContext+ CONTEXT +"/" + service ;		
 	}
 	
-	public IAdvice createAdvice( long userId, long adviceId, IAdvice.AdviceTypes type, String advice, String text, String icon, String badge, int repeat) {
-		return new Advice( userId, adviceId, advice, type, text, icon, badge, repeat );
+	public IAdvice createAdvice( long userId, long adviceId, String identifier, String member, IAdvice.AdviceTypes type, String text, String icon, String badge, int repeat) {
+		return new Advice( userId, adviceId, identifier, member, type, text, icon, badge, repeat );
 	}
 }
