@@ -14,7 +14,7 @@ import org.osgi.service.component.annotations.ReferencePolicy;
  * @author Kees
  *
  */
-@Component( name="org.covaid.mobile.entity.service",
+@Component( name="org.covaid.rest.entity.service",
 immediate=true)
 public class EntityManagerService extends AbstractFactoryService<IOrientEntityManagerFactory>{
 
