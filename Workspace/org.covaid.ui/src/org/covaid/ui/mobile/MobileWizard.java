@@ -6,17 +6,17 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.TreeMap;
 import java.util.logging.Logger;
 
 import org.condast.commons.Utils;
-import org.condast.commons.auth.AuthenticationData;
-import org.condast.commons.auth.AuthenticationData.Authentication;
 import org.condast.commons.config.Config;
 import org.condast.commons.messaging.http.AbstractHttpRequest;
 import org.condast.commons.messaging.http.IHttpClientListener;
+import org.condast.commons.messaging.http.IHttpRequest.HttpStatus;
 import org.condast.commons.messaging.http.ResponseEvent;
 import org.condast.commons.number.NumberUtils;
 import org.condast.commons.strings.StringStyler;
@@ -27,6 +27,11 @@ import org.condast.commons.ui.xy.AbstractMultiXYGraph;
 import org.condast.commons.ui.xy.AbstractXYGraph;
 import org.condast.js.commons.controller.AbstractJavascriptController;
 import org.condast.js.commons.eval.IEvaluationListener;
+import org.condast.js.commons.parser.AbstractResourceParser;
+import org.condast.js.commons.parser.AbstractResourceParser.Attributes;
+import org.condast.js.commons.parser.AbstractResourceParser.Functions;
+import org.condast.js.commons.utils.AuthenticationData;
+import org.condast.js.commons.utils.AuthenticationData.Authentication;
 import org.condast.js.commons.wizard.AbstractHtmlParser;
 import org.condast.js.push.core.IPushListener;
 import org.condast.js.push.core.IPushListener.Calls;
@@ -376,9 +381,10 @@ public class MobileWizard extends Composite {
 					e.printStackTrace();
 				}
 			}
+
 			
 			@Override
-			protected String onHandleLabel(String id, Attributes attr) {
+			protected String onHandleLabel(String id, AbstractResourceParser.Attributes attr) {
 				String result = attr.toString();
 				switch( attr ) {
 				default:
@@ -430,8 +436,9 @@ public class MobileWizard extends Composite {
 				return builder.toString();
 			}
 
+			
 			@Override
-			protected String onHandleValues(Functions function, String id, Attributes attr) {
+			protected String onHandleValues(Functions function, String id, AbstractResourceParser.Attributes attr) {
 				int result = 0;
 				Labels label = Labels.valueOf(id.toUpperCase());
 				switch( attr ) {
@@ -448,7 +455,7 @@ public class MobileWizard extends Composite {
 			}
 			
 			@Override
-			protected String onHandleFunction(Functions function, String id, Attributes attr) {
+			protected String onHandleFunction(Functions function, String id, AbstractResourceParser.Attributes attr) {
 				String result = null;
 				try {
 					switch( function ) {
@@ -659,7 +666,7 @@ public class MobileWizard extends Composite {
 		super.dispose();
 	}
 
-	private class PredictionGraph extends AbstractXYGraph<Integer, Double>{
+	private class PredictionGraph extends AbstractXYGraph<Double>{
 		private static final long serialVersionUID = 1L;
 
 		int xprev;
@@ -671,11 +678,6 @@ public class MobileWizard extends Composite {
 			yprev=-1;
 		}
 		
-		@Override
-		protected Integer onGetXValue(int xpos) {
-			return xpos;
-		}
-
 		@Override
 		protected Color onSetForeground(GC gc) {
 			Color color = getDisplay().getSystemColor( SWT.COLOR_GREEN);
@@ -689,18 +691,19 @@ public class MobileWizard extends Composite {
 		}
 
 		@Override
-		protected int onPaint(GC gc, int xZero, int yZero, Integer xpos, Double value) {
+		protected int onGetXValue(int xpos, int xmax) {
+			return 0;
+		}
+
+		@Override
+		protected int onPaint(GC gc, int xprev, int yprev, int xcor, int xpos, Double value) {
 			busy = true;
-			if( xprev < 0 )
-				xprev = xZero;
-			if( yprev < 0 )
-				yprev = yZero;
 			Rectangle rect = getCanvasBounds();
 			double scaleX = rect.width/DEFAULT_HISTORY;
 			double scaleY = (double)rect.height/100;
-			int x = ( xpos == null )?xZero: (int)(xZero+scaleX*xpos);
+			int x = (int) (xpos+scaleX*xpos);
 			int scale = (value == null )?0: (int)NumberUtils.clip( 50, scaleY * 15* value);
-			int y = yZero-scale;
+			int y = scale;
 			try {
 				gc.drawLine(xprev, yprev, x+1, y);
 				xprev = x;
@@ -781,10 +784,10 @@ public class MobileWizard extends Composite {
 		}
 
 		@Override
-		protected void onHandleResponseFail(HttpStatus status, ResponseEvent<IPushListener.Calls, StringBuilder> event)
+		protected void onHandleResponseFail(String id, HttpStatus status, ResponseEvent<IPushListener.Calls, StringBuilder> event)
 				throws IOException {
 			logger.info("REQUEST: " + event.getRequest() + ", STATUS: " + status);
-			super.onHandleResponseFail(status, event);
+			super.onHandleResponseFail(id, status, event);
 		}
 	}
 
@@ -795,12 +798,12 @@ public class MobileWizard extends Composite {
 		}
 
 		@Override
-		protected void sendGet(Requests request, Map<String, String> parameters ) throws Exception {
+		protected void sendGet(Requests request, Map<String, String> parameters ) throws IOException {
 			super.sendGet(request, parameters);
 		}
 
 		@Override
-		protected void sendGet(Requests request, Map<String, String> parameters, StringBuilder data) throws Exception {
+		protected void sendGet(Requests request, Map<String, String> parameters, StringBuilder data) throws IOException {
 			super.sendGet(request, parameters, data);
 		}
 	
@@ -840,10 +843,10 @@ public class MobileWizard extends Composite {
 		}
 
 		@Override
-		protected void onHandleResponseFail(HttpStatus status, ResponseEvent<Requests, StringBuilder> event)
+		protected void onHandleResponseFail(String id, HttpStatus status, ResponseEvent<Requests, StringBuilder> event)
 				throws IOException {
 			logger.info("REQUEST: " + event.getRequest() + ", STATUS: " + status);
-			super.onHandleResponseFail(status, event);
+			super.onHandleResponseFail(id, status, event);
 		}
 	}
 
@@ -853,13 +856,12 @@ public class MobileWizard extends Composite {
 			super( config.getServerContext() + S_COVAID_CONTEXT );
 		}
 
-		@Override
-		protected void sendGet(Requests request, Map<String, String> parameters ) throws Exception {
+		protected void sendGet(Requests request, Map<String, String> parameters ) throws IOException {
 			super.sendGet(request, parameters);
 		}
 
 		@Override
-		protected void sendGet(Requests request, Map<String, String> parameters, StringBuilder data) throws Exception {
+		protected void sendGet(Requests request, Map<String, String> parameters, StringBuilder data) throws IOException {
 			super.sendGet(request, parameters, data);
 		}
 	
@@ -869,15 +871,16 @@ public class MobileWizard extends Composite {
 			return event.getResponse();
 		}
 		
+
 		@Override
-		protected void onHandleResponseFail(HttpStatus status, ResponseEvent<Requests, StringBuilder> event)
+		protected void onHandleResponseFail(String id, HttpStatus status, ResponseEvent<Requests, StringBuilder> event)
 				throws IOException {
 			switch( event.getRequest()){
 			case PREDICTION:
 			case SURROUNDINGS:
 				break;
 			default:
-				super.onHandleResponseFail(status, event);
+				super.onHandleResponseFail(id, status, event);
 				break;
 			}	
 		}
@@ -954,7 +957,7 @@ public class MobileWizard extends Composite {
 				break;
 			case PREDICTION:
 				Map<Integer, Double> prediction = convertToType(gson, response.getResponse());				
-				forecastGraph.setInput( prediction );
+				forecastGraph.setInput( (List<Double>) prediction.values() );
 				forecastGraph.requestLayout();
 				break;
 			case SURROUNDINGS:

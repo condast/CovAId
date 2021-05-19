@@ -9,7 +9,6 @@ import java.util.Map;
 import java.util.TreeMap;
 
 import org.condast.commons.Utils;
-import org.condast.commons.auth.AuthenticationData;
 import org.condast.commons.config.Config;
 import org.condast.commons.messaging.http.AbstractHttpRequest;
 import org.condast.commons.messaging.http.IHttpClientListener;
@@ -17,6 +16,7 @@ import org.condast.commons.messaging.http.ResponseEvent;
 import org.condast.commons.strings.StringStyler;
 import org.condast.commons.ui.session.AbstractSessionHandler;
 import org.condast.commons.ui.session.SessionEvent;
+import org.condast.js.commons.utils.AuthenticationData;
 import org.covaid.core.data.ContagionData;
 import org.covaid.core.data.frogger.HubData;
 import org.covaid.core.def.IContagion;
@@ -500,13 +500,12 @@ public class FroggerComposite extends Composite {
 			super( config.getServerContext() + S_COVAID_CONTEXT );
 		}
 
-		@Override
-		protected void sendGet(Requests request, Map<String, String> parameters ) throws Exception {
-			super.sendGet(request, parameters);
+		protected void sendGet(Requests request, Map<String, String> parameters ) throws IOException {
+			super.sendGet(request, parameters, null);
 		}
 
 		@Override
-		protected void sendGet(Requests request, Map<String, String> parameters, StringBuilder data) throws Exception {
+		protected void sendGet(Requests request, Map<String, String> parameters, StringBuilder data) throws IOException {
 			super.sendGet(request, parameters, data);
 		}
 	

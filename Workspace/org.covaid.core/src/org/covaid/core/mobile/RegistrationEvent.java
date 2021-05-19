@@ -1,7 +1,7 @@
 package org.covaid.core.mobile;
 
 import java.util.EventObject;
-import org.condast.commons.auth.AuthenticationData;
+import org.condast.js.commons.utils.AuthenticationData;
 import org.covaid.core.def.IMobile;
 
 public class RegistrationEvent<T extends Object> extends EventObject {

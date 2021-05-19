@@ -1,166 +1,155 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <launchConfiguration type="org.eclipse.rap.ui.launch.RAPLauncher">
-<booleanAttribute key="append.args" value="true"/>
-<booleanAttribute key="askclear" value="false"/>
-<booleanAttribute key="automaticAdd" value="true"/>
-<booleanAttribute key="automaticValidate" value="true"/>
-<stringAttribute key="bootstrap" value=""/>
-<stringAttribute key="checked" value="[NONE]"/>
-<booleanAttribute key="clearConfig" value="false"/>
-<booleanAttribute key="clearws" value="false"/>
-<stringAttribute key="configLocation" value="${workspace_loc}/.metadata/.plugins/org.eclipse.pde.core/org.covaid"/>
-<booleanAttribute key="default" value="true"/>
-<booleanAttribute key="default_auto_start" value="true"/>
-<intAttribute key="default_start_level" value="4"/>
-<setAttribute key="deselected_workspace_bundles">
-<setEntry value="org.condast.commons.legal"/>
-<setEntry value="org.condast.js.react"/>
-<setEntry value="org.google.geo.mapping.ui"/>
-<setEntry value="test.condast.commons"/>
-<setEntry value="test.covaid.core"/>
-<setEntry value="test.covaid.mobile"/>
-</setAttribute>
-<booleanAttribute key="includeOptional" value="true"/>
-<booleanAttribute key="org.eclipse.jdt.launching.ATTR_USE_START_ON_FIRST_THREAD" value="true"/>
-<stringAttribute key="org.eclipse.jdt.launching.JRE_CONTAINER" value="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.8"/>
-<stringAttribute key="org.eclipse.jdt.launching.PROGRAM_ARGUMENTS" value="-os ${target.os} -ws ${target.ws} -arch ${target.arch} -nl ${target.nl} -consoleLog -console"/>
-<stringAttribute key="org.eclipse.jdt.launching.SOURCE_PATH_PROVIDER" value="org.eclipse.pde.ui.workbenchClasspathProvider"/>
-<stringAttribute key="org.eclipse.jdt.launching.VM_ARGUMENTS" value="-Declipse.ignoreApp=true -Dosgi.noShutdown=true&#13;&#10;-Dorg.eclipse.equinox.http.jetty.log.stderr.threshold=info&#13;&#10;-Dorg.osgi.framework.system.packages.extra=sun.misc"/>
-<stringAttribute key="org.eclipse.rap.launch.browserMode" value="EXTERNAL"/>
-<stringAttribute key="org.eclipse.rap.launch.contextpath" value="/"/>
-<stringAttribute key="org.eclipse.rap.launch.dataLocation" value="${workspace_loc}/.metadata/.plugins/org.eclipse.rap.tools.launch/org.covaid"/>
-<booleanAttribute key="org.eclipse.rap.launch.developmentMode" value="true"/>
-<booleanAttribute key="org.eclipse.rap.launch.openBrowser" value="true"/>
-<intAttribute key="org.eclipse.rap.launch.port" value="10080"/>
-<stringAttribute key="org.eclipse.rap.launch.servletPath" value="/covaid"/>
-<intAttribute key="org.eclipse.rap.launch.sessionTimeout" value="0"/>
-<booleanAttribute key="org.eclipse.rap.launch.useDefaultDataLocation" value="true"/>
-<booleanAttribute key="org.eclipse.rap.launch.useManualContextPath" value="false"/>
-<booleanAttribute key="org.eclipse.rap.launch.useManualPort" value="true"/>
-<booleanAttribute key="org.eclipse.rap.launch.useSessionTimeout" value="false"/>
-<stringAttribute key="pde.version" value="3.3"/>
-<booleanAttribute key="restart" value="true"/>
-<setAttribute key="selected_target_bundles">
-<setEntry value="com.fasterxml.jackson.core.jackson-annotations@default:default"/>
-<setEntry value="com.fasterxml.jackson.core.jackson-core@default:default"/>
-<setEntry value="com.fasterxml.jackson.core.jackson-databind@default:default"/>
-<setEntry value="com.google.gson@default:default"/>
-<setEntry value="com.googlecode.concurrentlinkedhashmap.lru@default:default"/>
-<setEntry value="com.orientechnologies.orientdb-client@default:default"/>
-<setEntry value="com.orientechnologies.orientdb-community@default:default"/>
-<setEntry value="com.orientechnologies.orientdb-core@default:default"/>
-<setEntry value="com.orientechnologies.orientdb-graphdb@default:default"/>
-<setEntry value="com.orientechnologies.orientdb-object@default:default"/>
-<setEntry value="com.orientechnologies.orientdb-server@default:default"/>
-<setEntry value="com.orientechnologies.orientdb-tools@default:default"/>
-<setEntry value="com.squareup.okio@default:default"/>
-<setEntry value="com.sun.jna.platform@default:default"/>
-<setEntry value="com.sun.jna@default:default"/>
-<setEntry value="javassist@default:default"/>
-<setEntry value="javax.activation@default:default"/>
-<setEntry value="javax.annotation-api@default:default"/>
-<setEntry value="javax.el@default:default"/>
-<setEntry value="javax.jms@default:default"/>
-<setEntry value="javax.mail.glassfish@default:default"/>
-<setEntry value="javax.persistence@default:default"/>
-<setEntry value="javax.servlet.jsp@default:default"/>
-<setEntry value="javax.servlet@default:default"/>
-<setEntry value="javax.validation.api@default:default"/>
-<setEntry value="javax.ws.rs@default:default"/>
-<setEntry value="javax.xml.bind@default:default"/>
-<setEntry value="javax.xml.soap@default:default"/>
-<setEntry value="javax.xml.ws@default:default"/>
-<setEntry value="javax.xml@default:default"/>
-<setEntry value="oevm.org.aopalliance@default:default"/>
-<setEntry value="org.apache.commons.codec*1.10.0.v20151023-1447@default:default"/>
-<setEntry value="org.apache.commons.fileupload@default:default"/>
-<setEntry value="org.apache.commons.io@default:default"/>
-<setEntry value="org.apache.commons.logging@default:default"/>
-<setEntry value="org.apache.felix.gogo.command@default:default"/>
-<setEntry value="org.apache.felix.gogo.runtime@default:default"/>
-<setEntry value="org.apache.felix.gogo.shell@default:default"/>
-<setEntry value="org.apache.felix.scr@1:true"/>
-<setEntry value="org.apache.logging.log4j.api@default:default"/>
-<setEntry value="org.apache.logging.log4j.core@default:default"/>
-<setEntry value="org.codehaus.jettison.jettison@default:default"/>
-<setEntry value="org.eclipse.core.commands@default:default"/>
-<setEntry value="org.eclipse.core.contenttype@default:default"/>
-<setEntry value="org.eclipse.core.jobs@default:default"/>
-<setEntry value="org.eclipse.core.runtime@default:true"/>
-<setEntry value="org.eclipse.equinox.app@default:default"/>
-<setEntry value="org.eclipse.equinox.common@2:true"/>
-<setEntry value="org.eclipse.equinox.console@default:default"/>
-<setEntry value="org.eclipse.equinox.ds@1:true"/>
-<setEntry value="org.eclipse.equinox.http.jetty@default:default"/>
-<setEntry value="org.eclipse.equinox.http.registry@default:default"/>
-<setEntry value="org.eclipse.equinox.http.servlet@default:default"/>
-<setEntry value="org.eclipse.equinox.preferences@default:default"/>
-<setEntry value="org.eclipse.equinox.region@default:default"/>
-<setEntry value="org.eclipse.equinox.registry@default:default"/>
-<setEntry value="org.eclipse.equinox.security@default:default"/>
-<setEntry value="org.eclipse.equinox.util@default:default"/>
-<setEntry value="org.eclipse.jetty.continuation@default:default"/>
-<setEntry value="org.eclipse.jetty.http@default:default"/>
-<setEntry value="org.eclipse.jetty.io@default:default"/>
-<setEntry value="org.eclipse.jetty.security@default:default"/>
-<setEntry value="org.eclipse.jetty.server@default:default"/>
-<setEntry value="org.eclipse.jetty.servlet@default:default"/>
-<setEntry value="org.eclipse.jetty.util@default:default"/>
-<setEntry value="org.eclipse.osgi.services@default:default"/>
-<setEntry value="org.eclipse.osgi.util@default:default"/>
-<setEntry value="org.eclipse.osgi@-1:true"/>
-<setEntry value="org.eclipse.persistence.antlr@default:default"/>
-<setEntry value="org.eclipse.persistence.asm@default:default"/>
-<setEntry value="org.eclipse.persistence.core@default:default"/>
-<setEntry value="org.eclipse.persistence.extension@default:false"/>
-<setEntry value="org.eclipse.persistence.jpa.jpql@default:default"/>
-<setEntry value="org.eclipse.persistence.jpa@default:default"/>
-<setEntry value="org.eclipse.persistence.nosql@default:false"/>
-<setEntry value="org.eclipse.rap.jface@default:default"/>
-<setEntry value="org.eclipse.rap.nebula.widgets.richtext@default:default"/>
-<setEntry value="org.eclipse.rap.rwt.osgi@default:default"/>
-<setEntry value="org.eclipse.rap.rwt@default:default"/>
-<setEntry value="org.glassfish.hk2.api@default:default"/>
-<setEntry value="org.glassfish.hk2.external.javax.inject@default:default"/>
-<setEntry value="org.glassfish.hk2.locator@default:default"/>
-<setEntry value="org.glassfish.hk2.osgi-resource-locator@default:default"/>
-<setEntry value="org.glassfish.hk2.utils@default:default"/>
-<setEntry value="org.glassfish.javax.json@default:default"/>
-<setEntry value="org.glassfish.jersey.bundles.repackaged.jersey-guava@default:default"/>
-<setEntry value="org.glassfish.jersey.containers.jersey-container-servlet-core@default:default"/>
-<setEntry value="org.glassfish.jersey.core.jersey-client@default:default"/>
-<setEntry value="org.glassfish.jersey.core.jersey-common@default:default"/>
-<setEntry value="org.glassfish.jersey.core.jersey-server@default:default"/>
-<setEntry value="org.slf4j.api@default:default"/>
-</setAttribute>
-<setAttribute key="selected_workspace_bundles">
-<setEntry value="nl.martijndwars.webpush@default:default"/>
-<setEntry value="org.apache.oltu@default:default"/>
-<setEntry value="org.condast.commons.authentication.ui@default:default"/>
-<setEntry value="org.condast.commons.authentication@default:default"/>
-<setEntry value="org.condast.commons.bugzilla@default:default"/>
-<setEntry value="org.condast.commons.data@default:default"/>
-<setEntry value="org.condast.commons.messaging@default:default"/>
-<setEntry value="org.condast.commons.persistence@default:default"/>
-<setEntry value="org.condast.commons.test@default:default"/>
-<setEntry value="org.condast.commons.tinkerpop@default:default"/>
-<setEntry value="org.condast.commons.ui@default:default"/>
-<setEntry value="org.condast.commons@default:default"/>
-<setEntry value="org.condast.js.bootstrap@default:default"/>
-<setEntry value="org.condast.js.commons@default:default"/>
-<setEntry value="org.condast.js.push@default:default"/>
-<setEntry value="org.covaid.commons.support@default:default"/>
-<setEntry value="org.covaid.core@default:default"/>
-<setEntry value="org.covaid.dashboard@default:default"/>
-<setEntry value="org.covaid.mobile@default:default"/>
-<setEntry value="org.covaid.orientdb@default:default"/>
-<setEntry value="org.covaid.rest@default:default"/>
-<setEntry value="org.covaid.ui@default:default"/>
-<setEntry value="org.openlayer.map@default:default"/>
-<setEntry value="test.condast.commons.js.push@default:default"/>
-</setAttribute>
-<booleanAttribute key="show_selected_only" value="false"/>
-<booleanAttribute key="tracing" value="false"/>
-<booleanAttribute key="useCustomFeatures" value="false"/>
-<booleanAttribute key="useDefaultConfigArea" value="true"/>
+    <booleanAttribute key="append.args" value="true"/>
+    <booleanAttribute key="askclear" value="false"/>
+    <booleanAttribute key="automaticAdd" value="true"/>
+    <booleanAttribute key="automaticValidate" value="true"/>
+    <stringAttribute key="bootstrap" value=""/>
+    <stringAttribute key="checked" value="[NONE]"/>
+    <booleanAttribute key="clearConfig" value="false"/>
+    <booleanAttribute key="clearws" value="false"/>
+    <stringAttribute key="configLocation" value="${workspace_loc}/.metadata/.plugins/org.eclipse.pde.core/org.covaid"/>
+    <booleanAttribute key="default" value="true"/>
+    <booleanAttribute key="default_auto_start" value="true"/>
+    <intAttribute key="default_start_level" value="4"/>
+    <setAttribute key="deselected_workspace_bundles">
+        <setEntry value="org.condast.commons.legal"/>
+        <setEntry value="org.condast.js.react"/>
+        <setEntry value="org.google.geo.mapping.ui"/>
+        <setEntry value="test.condast.commons"/>
+        <setEntry value="test.covaid.core"/>
+        <setEntry value="test.covaid.mobile"/>
+    </setAttribute>
+    <booleanAttribute key="includeOptional" value="true"/>
+    <booleanAttribute key="org.eclipse.jdt.launching.ATTR_USE_START_ON_FIRST_THREAD" value="true"/>
+    <stringAttribute key="org.eclipse.jdt.launching.JRE_CONTAINER" value="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.8"/>
+    <stringAttribute key="org.eclipse.jdt.launching.PROGRAM_ARGUMENTS" value="-os ${target.os} -ws ${target.ws} -arch ${target.arch} -nl ${target.nl} -consoleLog -console"/>
+    <stringAttribute key="org.eclipse.jdt.launching.SOURCE_PATH_PROVIDER" value="org.eclipse.pde.ui.workbenchClasspathProvider"/>
+    <stringAttribute key="org.eclipse.jdt.launching.VM_ARGUMENTS" value="-Declipse.ignoreApp=true -Dosgi.noShutdown=true&#13;&#10;-Dorg.eclipse.equinox.http.jetty.log.stderr.threshold=info&#13;&#10;-Dorg.osgi.framework.system.packages.extra=sun.misc"/>
+    <stringAttribute key="org.eclipse.rap.launch.browserMode" value="EXTERNAL"/>
+    <stringAttribute key="org.eclipse.rap.launch.contextpath" value="/"/>
+    <stringAttribute key="org.eclipse.rap.launch.dataLocation" value="${workspace_loc}/.metadata/.plugins/org.eclipse.rap.tools.launch/org.covaid"/>
+    <booleanAttribute key="org.eclipse.rap.launch.developmentMode" value="true"/>
+    <booleanAttribute key="org.eclipse.rap.launch.openBrowser" value="true"/>
+    <intAttribute key="org.eclipse.rap.launch.port" value="10080"/>
+    <stringAttribute key="org.eclipse.rap.launch.servletPath" value="/covaid"/>
+    <intAttribute key="org.eclipse.rap.launch.sessionTimeout" value="0"/>
+    <booleanAttribute key="org.eclipse.rap.launch.useDefaultDataLocation" value="true"/>
+    <booleanAttribute key="org.eclipse.rap.launch.useManualContextPath" value="false"/>
+    <booleanAttribute key="org.eclipse.rap.launch.useManualPort" value="true"/>
+    <booleanAttribute key="org.eclipse.rap.launch.useSessionTimeout" value="false"/>
+    <stringAttribute key="pde.version" value="3.3"/>
+    <booleanAttribute key="restart" value="true"/>
+    <setAttribute key="selected_target_bundles">
+        <setEntry value="com.fasterxml.jackson.core.jackson-annotations@default:default"/>
+        <setEntry value="com.fasterxml.jackson.core.jackson-core@default:default"/>
+        <setEntry value="com.fasterxml.jackson.core.jackson-databind@default:default"/>
+        <setEntry value="com.google.gson@default:default"/>
+        <setEntry value="com.googlecode.concurrentlinkedhashmap.lru@default:default"/>
+        <setEntry value="com.orientechnologies.orientdb-client@default:default"/>
+        <setEntry value="com.orientechnologies.orientdb-community@default:default"/>
+        <setEntry value="com.orientechnologies.orientdb-core@default:default"/>
+        <setEntry value="com.orientechnologies.orientdb-graphdb@default:default"/>
+        <setEntry value="com.orientechnologies.orientdb-object@default:default"/>
+        <setEntry value="com.orientechnologies.orientdb-server@default:default"/>
+        <setEntry value="com.orientechnologies.orientdb-tools@default:default"/>
+        <setEntry value="javassist@default:default"/>
+        <setEntry value="javax.activation@default:default"/>
+        <setEntry value="javax.annotation-api@default:default"/>
+        <setEntry value="javax.jms@default:default"/>
+        <setEntry value="javax.mail.glassfish@default:default"/>
+        <setEntry value="javax.persistence*2.2.0.v201708071007@default:default"/>
+        <setEntry value="javax.servlet@default:default"/>
+        <setEntry value="javax.validation.api@default:default"/>
+        <setEntry value="javax.ws.rs@default:default"/>
+        <setEntry value="javax.xml.bind@default:default"/>
+        <setEntry value="javax.xml@default:default"/>
+        <setEntry value="org.apache.commons.codec@default:default"/>
+        <setEntry value="org.apache.commons.fileupload@default:default"/>
+        <setEntry value="org.apache.commons.io@default:default"/>
+        <setEntry value="org.apache.commons.logging@default:default"/>
+        <setEntry value="org.apache.felix.gogo.command@default:default"/>
+        <setEntry value="org.apache.felix.gogo.runtime@default:default"/>
+        <setEntry value="org.apache.felix.gogo.shell@default:default"/>
+        <setEntry value="org.apache.felix.scr@1:true"/>
+        <setEntry value="org.apache.logging.log4j.api@default:default"/>
+        <setEntry value="org.apache.logging.log4j.core@default:default"/>
+        <setEntry value="org.codehaus.jettison.jettison@default:default"/>
+        <setEntry value="org.eclipse.core.commands@default:default"/>
+        <setEntry value="org.eclipse.core.contenttype@default:default"/>
+        <setEntry value="org.eclipse.core.jobs@default:default"/>
+        <setEntry value="org.eclipse.core.runtime@default:true"/>
+        <setEntry value="org.eclipse.equinox.app@default:default"/>
+        <setEntry value="org.eclipse.equinox.common@2:true"/>
+        <setEntry value="org.eclipse.equinox.console@default:default"/>
+        <setEntry value="org.eclipse.equinox.ds@1:true"/>
+        <setEntry value="org.eclipse.equinox.http.jetty@default:default"/>
+        <setEntry value="org.eclipse.equinox.http.registry@default:default"/>
+        <setEntry value="org.eclipse.equinox.http.servlet@default:default"/>
+        <setEntry value="org.eclipse.equinox.preferences@default:default"/>
+        <setEntry value="org.eclipse.equinox.registry@default:default"/>
+        <setEntry value="org.eclipse.equinox.security@default:default"/>
+        <setEntry value="org.eclipse.jetty.continuation@default:default"/>
+        <setEntry value="org.eclipse.jetty.http@default:default"/>
+        <setEntry value="org.eclipse.jetty.io@default:default"/>
+        <setEntry value="org.eclipse.jetty.security@default:default"/>
+        <setEntry value="org.eclipse.jetty.server@default:default"/>
+        <setEntry value="org.eclipse.jetty.servlet@default:default"/>
+        <setEntry value="org.eclipse.jetty.util@default:default"/>
+        <setEntry value="org.eclipse.osgi.services@default:default"/>
+        <setEntry value="org.eclipse.osgi.util@default:default"/>
+        <setEntry value="org.eclipse.osgi@-1:true"/>
+        <setEntry value="org.eclipse.persistence.antlr@default:default"/>
+        <setEntry value="org.eclipse.persistence.asm@default:default"/>
+        <setEntry value="org.eclipse.persistence.core@default:default"/>
+        <setEntry value="org.eclipse.persistence.jpa.jpql@default:default"/>
+        <setEntry value="org.eclipse.persistence.jpa@default:default"/>
+        <setEntry value="org.eclipse.rap.jface@default:default"/>
+        <setEntry value="org.eclipse.rap.nebula.widgets.richtext@default:default"/>
+        <setEntry value="org.eclipse.rap.rwt.osgi@default:default"/>
+        <setEntry value="org.eclipse.rap.rwt@default:default"/>
+        <setEntry value="org.glassfish.hk2.api@default:default"/>
+        <setEntry value="org.glassfish.hk2.external.aopalliance-repackaged@default:default"/>
+        <setEntry value="org.glassfish.hk2.external.javax.inject@default:default"/>
+        <setEntry value="org.glassfish.hk2.locator@default:default"/>
+        <setEntry value="org.glassfish.hk2.osgi-resource-locator@default:default"/>
+        <setEntry value="org.glassfish.hk2.utils@default:default"/>
+        <setEntry value="org.glassfish.jersey.bundles.repackaged.jersey-guava@default:default"/>
+        <setEntry value="org.glassfish.jersey.containers.jersey-container-servlet-core@default:default"/>
+        <setEntry value="org.glassfish.jersey.core.jersey-client@default:default"/>
+        <setEntry value="org.glassfish.jersey.core.jersey-common@default:default"/>
+        <setEntry value="org.glassfish.jersey.core.jersey-server@default:default"/>
+        <setEntry value="org.slf4j.api@default:default"/>
+    </setAttribute>
+    <setAttribute key="selected_workspace_bundles">
+        <setEntry value="nl.martijndwars.webpush@default:default"/>
+        <setEntry value="org.apache.oltu@default:default"/>
+        <setEntry value="org.condast.commons.authentication.ui@default:default"/>
+        <setEntry value="org.condast.commons.authentication@default:default"/>
+        <setEntry value="org.condast.commons.bugzilla@default:default"/>
+        <setEntry value="org.condast.commons.data@default:default"/>
+        <setEntry value="org.condast.commons.messaging@default:default"/>
+        <setEntry value="org.condast.commons.persistence@default:default"/>
+        <setEntry value="org.condast.commons.test@default:default"/>
+        <setEntry value="org.condast.commons.tinkerpop@default:default"/>
+        <setEntry value="org.condast.commons.ui@default:default"/>
+        <setEntry value="org.condast.commons@default:default"/>
+        <setEntry value="org.condast.js.bootstrap@default:default"/>
+        <setEntry value="org.condast.js.commons@default:default"/>
+        <setEntry value="org.condast.js.push@default:default"/>
+        <setEntry value="org.covaid.commons.support@default:default"/>
+        <setEntry value="org.covaid.core@default:default"/>
+        <setEntry value="org.covaid.dashboard@default:default"/>
+        <setEntry value="org.covaid.mobile@default:default"/>
+        <setEntry value="org.covaid.orientdb@default:default"/>
+        <setEntry value="org.covaid.rest@default:default"/>
+        <setEntry value="org.covaid.ui@default:default"/>
+        <setEntry value="org.eli.fundacolven@default:default"/>
+        <setEntry value="org.openlayer.map@default:default"/>
+        <setEntry value="test.condast.commons.js.push@default:default"/>
+    </setAttribute>
+    <booleanAttribute key="show_selected_only" value="false"/>
+    <booleanAttribute key="tracing" value="false"/>
+    <booleanAttribute key="useCustomFeatures" value="false"/>
+    <booleanAttribute key="useDefaultConfigArea" value="true"/>
 </launchConfiguration>

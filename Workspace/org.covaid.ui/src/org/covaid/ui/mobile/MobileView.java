@@ -33,7 +33,7 @@ public class MobileView extends AbstractView<MobileView.Commands>{
 	public String setHealthSlider( IMobile<?> mobile ){
 		String[] params = new String[1];
 		params[0] = String.valueOf( mobile.getHealth());
-		return perform( Commands.SET_HEALTH, Arrays.asList( params ));
+		return perform( Commands.SET_HEALTH, Arrays.asList( params ), false);
 	}
 
 	/**
@@ -46,6 +46,12 @@ public class MobileView extends AbstractView<MobileView.Commands>{
 	public String setSafetySlider( IMobile<?> mobile ){
 		String[] params = new String[1];
 		params[0] = String.valueOf( mobile.getHealth());
-		return perform( Commands.SET_SAFETY, Arrays.asList( params ));
+		return perform( Commands.SET_SAFETY, Arrays.asList( params ), false);
+	}
+
+	@Override
+	protected CommandTypes getCommandType(Commands command) {
+		// TODO Auto-generated method stub
+		return null;
 	}
 }

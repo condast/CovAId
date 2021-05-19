@@ -1,6 +1,6 @@
 package org.covaid.rest.service;
 
-import org.condast.commons.persistence.service.AbstractFactoryService;
+import org.condast.commons.persistence.service.FactoryService;
 import org.covaid.orientdb.object.IOrientEntityManagerFactory;
 import org.covaid.rest.Activator;
 import org.covaid.rest.core.Dispatcher;
@@ -16,7 +16,7 @@ import org.osgi.service.component.annotations.ReferencePolicy;
  */
 @Component( name="org.covaid.rest.entity.service",
 immediate=true)
-public class EntityManagerService extends AbstractFactoryService<IOrientEntityManagerFactory>{
+public class EntityManagerService extends FactoryService<IOrientEntityManagerFactory>{
 
 	private Dispatcher service = Dispatcher.getInstance();
 	
@@ -29,21 +29,13 @@ public class EntityManagerService extends AbstractFactoryService<IOrientEntityMa
 	policy=ReferencePolicy.DYNAMIC)
 	@Override
 	public synchronized void bindEMF( IOrientEntityManagerFactory emf) {
+		service.setEMF(emf);
 		super.bindEMF(emf);
 	}
 
 	@Override
 	public synchronized void unbindEMF( IOrientEntityManagerFactory emf) {
-		super.unbindEMF(emf);
-	}
-
-	protected void onBindFactory( IOrientEntityManagerFactory factory) {
-		service.setEMF(factory);
-	}
-
-
-	@Override
-	protected void onUnbindFactory( IOrientEntityManagerFactory factory) {
 		service.disconnect();
+		super.unbindEMF(emf);
 	}
 }

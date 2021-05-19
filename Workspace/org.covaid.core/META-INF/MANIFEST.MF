@@ -17,6 +17,7 @@ Import-Package: javassist.util.proxy;version="3.22.0.GA",
  org.condast.commons.number,
  org.condast.commons.preferences,
  org.condast.commons.strings,
+ org.condast.js.commons.utils,
  org.osgi.service.prefs;version="1.1.1"
 Export-Package: org.covaid.core.contagion,
  org.covaid.core.data,

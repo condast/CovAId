@@ -1,6 +1,7 @@
 package org.covaid.orientdb.db;
 
 import javax.persistence.EntityManager;
+import javax.persistence.EntityManagerFactory;
 
 import org.covaid.orientdb.core.AbstractPersistenceService;
 
@@ -78,5 +79,10 @@ public class DatabasePersistenceService extends AbstractPersistenceService {
 		if( result )
 			factory.close();
 		return result;
+	}
+
+	@Override
+	public EntityManagerFactory getFactory() {
+		return (EntityManagerFactory) factory;
 	}
 }
