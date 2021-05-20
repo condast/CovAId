@@ -11,7 +11,7 @@ Service-Component: OSGI-INF/contribution.xml,
  OSGI-INF/org.covaid.dashboard.service.location.xml,
  OSGI-INF/org.covaid.dashboard.service.login.xml,
  OSGI-INF/org.covaid.dashboard.service.doctor.data.xml
-Import-Package: javax.servlet;version="3.1.0.20170128",
+Import-Package: javax.servlet;version="3.1.0",
  javax.servlet.http;version="3.0.0",
  org.condast.commons.authentication.callback,
  org.condast.commons.authentication.core,
