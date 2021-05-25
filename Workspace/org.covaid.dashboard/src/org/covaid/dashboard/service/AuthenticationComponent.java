@@ -34,11 +34,11 @@ public class AuthenticationComponent{
 
 	@Reference( cardinality = ReferenceCardinality.AT_LEAST_ONE,
 			policy=ReferencePolicy.DYNAMIC)
-	public void setFactory( ILoginProvider factory ){
-		dispatcher.setFactory(factory);
+	public void setFactory( ILoginProvider provider ){
+		dispatcher.setLoginProvider(provider);
 	}
 
-	public void unsetFactory( ILoginProvider factory ){
-		dispatcher.unsetFactory(factory);
+	public void unsetFactory( ILoginProvider provider ){
+		dispatcher.unsetLoginProvider(provider);
 	}
 }

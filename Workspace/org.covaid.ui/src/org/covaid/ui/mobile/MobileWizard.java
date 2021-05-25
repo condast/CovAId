@@ -16,7 +16,6 @@ import org.condast.commons.Utils;
 import org.condast.commons.config.Config;
 import org.condast.commons.messaging.http.AbstractHttpRequest;
 import org.condast.commons.messaging.http.IHttpClientListener;
-import org.condast.commons.messaging.http.IHttpRequest.HttpStatus;
 import org.condast.commons.messaging.http.ResponseEvent;
 import org.condast.commons.number.NumberUtils;
 import org.condast.commons.strings.StringStyler;
@@ -28,7 +27,6 @@ import org.condast.commons.ui.xy.AbstractXYGraph;
 import org.condast.js.commons.controller.AbstractJavascriptController;
 import org.condast.js.commons.eval.IEvaluationListener;
 import org.condast.js.commons.parser.AbstractResourceParser;
-import org.condast.js.commons.parser.AbstractResourceParser.Attributes;
 import org.condast.js.commons.parser.AbstractResourceParser.Functions;
 import org.condast.js.commons.utils.AuthenticationData;
 import org.condast.js.commons.utils.AuthenticationData.Authentication;
@@ -695,8 +693,9 @@ public class MobileWizard extends Composite {
 			return 0;
 		}
 
+		
 		@Override
-		protected int onPaint(GC gc, int xprev, int yprev, int xcor, int xpos, Double value) {
+		protected int onPaint(GC gc, int xprev, int yprev, int xcor, int xpos, int ypos, Double value) {
 			busy = true;
 			Rectangle rect = getCanvasBounds();
 			double scaleX = rect.width/DEFAULT_HISTORY;
