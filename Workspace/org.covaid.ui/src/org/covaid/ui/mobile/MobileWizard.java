@@ -783,10 +783,10 @@ public class MobileWizard extends Composite {
 		}
 
 		@Override
-		protected void onHandleResponseFail(String id, HttpStatus status, ResponseEvent<IPushListener.Calls, StringBuilder> event)
+		protected void onHandleResponseFail(HttpStatus status, ResponseEvent<IPushListener.Calls, StringBuilder> event)
 				throws IOException {
 			logger.info("REQUEST: " + event.getRequest() + ", STATUS: " + status);
-			super.onHandleResponseFail(id, status, event);
+			super.onHandleResponseFail(status, event);
 		}
 	}
 
@@ -842,10 +842,10 @@ public class MobileWizard extends Composite {
 		}
 
 		@Override
-		protected void onHandleResponseFail(String id, HttpStatus status, ResponseEvent<Requests, StringBuilder> event)
+		protected void onHandleResponseFail(HttpStatus status, ResponseEvent<Requests, StringBuilder> event)
 				throws IOException {
 			logger.info("REQUEST: " + event.getRequest() + ", STATUS: " + status);
-			super.onHandleResponseFail(id, status, event);
+			super.onHandleResponseFail(status, event);
 		}
 	}
 
@@ -872,14 +872,14 @@ public class MobileWizard extends Composite {
 		
 
 		@Override
-		protected void onHandleResponseFail(String id, HttpStatus status, ResponseEvent<Requests, StringBuilder> event)
+		protected void onHandleResponseFail(HttpStatus status, ResponseEvent<Requests, StringBuilder> event)
 				throws IOException {
 			switch( event.getRequest()){
 			case PREDICTION:
 			case SURROUNDINGS:
 				break;
 			default:
-				super.onHandleResponseFail(id, status, event);
+				super.onHandleResponseFail(status, event);
 				break;
 			}	
 		}

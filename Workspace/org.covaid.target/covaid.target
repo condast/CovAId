@@ -1,0 +1,260 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<?pde version="3.8"?>
+<target name="covaid.target" sequenceNumber="254">
+<locations>
+	<location includeAllPlatforms="false" includeConfigurePhase="true" includeMode="planner" includeSource="true" type="InstallableUnit">
+		<repository location="https://download.eclipse.org/rt/rap/3.15"/>
+		<unit id="org.eclipse.rap.feature.feature.group" version="3.15.0.20201021-1259"/>
+	</location>
+	<location path="P:\Virgo\virgo-jetty-server-3.7.4.RELEASE\repository\nebula-2.4.1" type="Directory"/>
+	<location path="P:\Virgo\virgo-jetty-server-3.7.4.POM\repository\EclipseLink" type="Directory"/>
+	<location path="P:\Virgo\virgo-jetty-server-3.7.4.POM\repository\jpa" type="Directory"/>
+	<location path="P:\Virgo\virgo-jetty-server-3.7.4.POM\repository\security" type="Directory"/>
+	<location path="P:\Virgo\virgo-jetty-server-3.7.4.POM\repository\apache" type="Directory"/>
+	<location path="P:\Virgo\virgo-jetty-server-3.7.4.POM\repository\gson" type="Directory"/>
+	<location path="P:\Virgo\virgo-jetty-server-3.7.4.POM\repository\freemarker" type="Directory"/>
+	<location path="P:\Virgo\virgo-jetty-server-3.7.4.POM\repository\log" type="Directory"/>
+	<location path="P:\Virgo\virgo-jetty-server-3.7.4.POM\repository\ext" type="Directory"/>
+	<location path="P:\Virgo\virgo-jetty-server-3.7.4.POM\repository\core" type="Directory"/>
+	<location path="P:\Virgo\virgo-jetty-server-3.7.4.POM\repository\jaxrs" type="Directory"/>
+	<location path="P:\Virgo\virgo-jetty-server-3.7.4.POM\repository\http" type="Directory"/>
+	<location path="P:\Virgo\virgo-jetty-server-3.7.4.RELEASE\repository\orientdb" type="Directory"/>
+</locations>
+<includeBundles>
+<plugin id="javax.mail.glassfish"/>
+<plugin id="javax.persistence"/>
+<plugin id="javax.validation.api"/>
+<plugin id="org.apache.commons.lang3"/>
+<plugin id="org.apache.commons.logging"/>
+<plugin id="org.apache.felix.gogo.runtime"/>
+<plugin id="org.eclipse.equinox.console"/>
+<plugin id="org.eclipse.equinox.console.ssh"/>
+<plugin id="org.eclipse.equinox.security"/>
+<plugin id="org.eclipse.persistence.antlr"/>
+<plugin id="org.eclipse.persistence.asm"/>
+<plugin id="org.eclipse.persistence.core"/>
+<plugin id="org.eclipse.persistence.dbws"/>
+<plugin id="org.eclipse.persistence.jpa"/>
+<plugin id="org.eclipse.persistence.jpa.jpql"/>
+<plugin id="org.eclipse.persistence.nosql"/>
+<plugin id="org.freemarker.freemarker"/>
+<plugin id="org.glassfish.hk2.api"/>
+<plugin id="org.glassfish.hk2.external.aopalliance-repackaged"/>
+<plugin id="org.glassfish.hk2.external.javax.inject"/>
+<plugin id="org.glassfish.hk2.locator"/>
+<plugin id="org.glassfish.hk2.utils"/>
+<plugin id="org.glassfish.jersey.containers.jersey-container-servlet-core"/>
+<plugin id="org.glassfish.jersey.core.jersey-client"/>
+<plugin id="org.glassfish.jersey.core.jersey-common"/>
+<plugin id="org.glassfish.jersey.core.jersey-server"/>
+	<plugin id="com.orientechnologies.orientdb-server"/>
+	<plugin id="com.orientechnologies.orientdb-client"/>
+	<plugin id="com.orientechnologies.orientdb-core"/>
+	<plugin id="com.orientechnologies.orientdb-tools"/>
+	<plugin id="com.googlecode.concurrentlinkedhashmap.lru"/>
+	<plugin id="com.orientechnologies.orientdb-community"/>
+	<plugin id="com.orientechnologies.orientdb-distributed"/>
+	<plugin id="com.orientechnologies.orientdb-jdbc"/>
+	<plugin id="com.orientechnologies.orientdb-lucene"/>
+	<plugin id="com.orientechnologies.orientdb-object"/>
+	<plugin id="com.orientechnologies.orientdb-graphdb"/>
+	<plugin id="com.fasterxml.jackson.core.jackson-core"/>
+	<plugin id="com.fasterxml.jackson.core.jackson-databind"/>
+	<plugin id="org.codehaus.jettison.jettison"/>
+	<plugin id="com.fasterxml.jackson.core.jackson-annotations"/>
+	<plugin id="com.ibm.icu" version="67.1.0.v20200706-1749"/>
+	<plugin id="com.ibm.icu.source"/>
+	<plugin id="org.apache.commons.fileupload" version="1.3.2.v20170320-2229"/>
+	<plugin id="org.apache.commons.io" version="2.6.0.v20190123-2029"/>
+	<plugin id="org.eclipse.core.commands"/>
+	<plugin id="org.eclipse.core.commands.source"/>
+	<plugin id="org.eclipse.core.contenttype"/>
+	<plugin id="org.eclipse.core.contenttype.source"/>
+	<plugin id="org.eclipse.core.expressions"/>
+	<plugin id="org.eclipse.core.expressions.source"/>
+	<plugin id="org.eclipse.core.jobs"/>
+	<plugin id="org.eclipse.core.jobs.source"/>
+	<plugin id="org.eclipse.core.runtime.source"/>
+	<plugin id="org.eclipse.equinox.app"/>
+	<plugin id="org.eclipse.equinox.app.source"/>
+	<plugin id="org.eclipse.equinox.common" version="3.14.0.v20201102-2053"/>
+	<plugin id="org.eclipse.equinox.common.source"/>
+	<plugin id="org.eclipse.equinox.http.registry"/>
+	<plugin id="org.eclipse.equinox.http.registry.source"/>
+	<plugin id="org.eclipse.equinox.preferences" version="3.8.100.v20201102-2042"/>
+	<plugin id="org.eclipse.equinox.preferences.source"/>
+	<plugin id="org.eclipse.equinox.registry"/>
+	<plugin id="org.eclipse.equinox.registry.source"/>
+	<plugin id="org.eclipse.help"/>
+	<plugin id="org.eclipse.help.source"/>
+	<plugin id="org.eclipse.osgi" version="3.13.300.v20190218-1622"/>
+	<plugin id="org.eclipse.osgi.source"/>
+	<plugin id="org.eclipse.osgi.util" version="3.5.300.v20190708-1141"/>
+	<plugin id="org.eclipse.osgi.util.source"/>
+	<plugin id="org.eclipse.rap.filedialog"/>
+	<plugin id="org.eclipse.rap.filedialog.source"/>
+	<plugin id="org.eclipse.rap.fileupload"/>
+	<plugin id="org.eclipse.rap.fileupload.source"/>
+	<plugin id="org.eclipse.rap.jface"/>
+	<plugin id="org.eclipse.rap.jface.databinding"/>
+	<plugin id="org.eclipse.rap.jface.databinding.source"/>
+	<plugin id="org.eclipse.rap.jface.source"/>
+	<plugin id="org.eclipse.rap.nebula.jface.gridviewer"/>
+	<plugin id="org.eclipse.rap.nebula.jface.gridviewer.source"/>
+	<plugin id="org.eclipse.rap.nebula.widgets.grid"/>
+	<plugin id="org.eclipse.rap.nebula.widgets.grid.source"/>
+	<plugin id="org.eclipse.rap.nebula.widgets.richtext"/>
+	<plugin id="org.eclipse.rap.nebula.widgets.richtext.source"/>
+	<plugin id="org.eclipse.rap.rwt"/>
+	<plugin id="org.eclipse.rap.rwt.osgi"/>
+	<plugin id="org.eclipse.rap.rwt.osgi.source"/>
+	<plugin id="org.eclipse.rap.rwt.source"/>
+	<plugin id="org.eclipse.nebula.cwt"/>
+	<plugin id="org.eclipse.nebula.effects.stw"/>
+	<plugin id="org.eclipse.nebula.effects.stw.example"/>
+	<plugin id="org.eclipse.nebula.effects.stw.example.source"/>
+	<plugin id="org.eclipse.nebula.examples"/>
+	<plugin id="org.eclipse.nebula.jface.cdatetime"/>
+	<plugin id="org.eclipse.nebula.jface.cdatetime.source"/>
+	<plugin id="org.eclipse.nebula.paperclips.core"/>
+	<plugin id="org.eclipse.nebula.paperclips.widgets"/>
+	<plugin id="org.eclipse.nebula.visualization.example"/>
+	<plugin id="org.eclipse.nebula.visualization.widgets"/>
+	<plugin id="org.eclipse.nebula.visualization.xygraph"/>
+	<plugin id="org.eclipse.nebula.visualization.xygraph.exampleview"/>
+	<plugin id="org.eclipse.nebula.widgets.badgedlabel"/>
+	<plugin id="org.eclipse.nebula.widgets.badgedlabel.snippets"/>
+	<plugin id="org.eclipse.nebula.widgets.carousel"/>
+	<plugin id="org.eclipse.nebula.widgets.carousel.snippets"/>
+	<plugin id="org.eclipse.nebula.widgets.cdatetime"/>
+	<plugin id="org.eclipse.nebula.widgets.cdatetime.css"/>
+	<plugin id="org.eclipse.nebula.widgets.cdatetime.example"/>
+	<plugin id="org.eclipse.nebula.widgets.chips"/>
+	<plugin id="org.eclipse.nebula.widgets.compositetable"/>
+	<plugin id="org.eclipse.nebula.widgets.ctreecombo"/>
+	<plugin id="org.eclipse.nebula.widgets.ctreecombo.snippets"/>
+	<plugin id="org.eclipse.nebula.widgets.floatingtext"/>
+	<plugin id="org.eclipse.nebula.widgets.floatingtext.snippets"/>
+	<plugin id="org.eclipse.nebula.widgets.fontawesome"/>
+	<plugin id="org.eclipse.nebula.widgets.fontawesome.snippets"/>
+	<plugin id="org.eclipse.nebula.widgets.gallery"/>
+	<plugin id="org.eclipse.nebula.widgets.gallery.example"/>
+	<plugin id="org.eclipse.nebula.widgets.ganttchart"/>
+	<plugin id="org.eclipse.nebula.widgets.ganttchart.example"/>
+	<plugin id="org.eclipse.nebula.widgets.geomap"/>
+	<plugin id="org.eclipse.nebula.widgets.geomap.example"/>
+	<plugin id="org.eclipse.nebula.widgets.grid"/>
+	<plugin id="org.eclipse.nebula.widgets.grid.css"/>
+	<plugin id="org.eclipse.nebula.widgets.grid.example"/>
+	<plugin id="org.eclipse.nebula.widgets.led"/>
+	<plugin id="org.eclipse.nebula.widgets.led.snippets"/>
+	<plugin id="org.eclipse.nebula.widgets.nebulaslider"/>
+	<plugin id="org.eclipse.nebula.widgets.nebulaslider.snippets"/>
+	<plugin id="org.eclipse.nebula.widgets.opal.breadcrumb"/>
+	<plugin id="org.eclipse.nebula.widgets.opal.breadcrumb.snippets"/>
+	<plugin id="org.eclipse.nebula.widgets.opal.calculator"/>
+	<plugin id="org.eclipse.nebula.widgets.opal.calculator.snippets"/>
+	<plugin id="org.eclipse.nebula.widgets.opal.checkboxgroup"/>
+	<plugin id="org.eclipse.nebula.widgets.opal.checkboxgroup.snippets"/>
+	<plugin id="org.eclipse.nebula.widgets.opal.columnbrowser"/>
+	<plugin id="org.eclipse.nebula.widgets.opal.columnbrowser.snippets"/>
+	<plugin id="org.eclipse.nebula.widgets.opal.commons"/>
+	<plugin id="org.eclipse.nebula.widgets.opal.dialog"/>
+	<plugin id="org.eclipse.nebula.widgets.opal.dialog.snippets"/>
+	<plugin id="org.eclipse.nebula.widgets.opal.duallist"/>
+	<plugin id="org.eclipse.nebula.widgets.opal.duallist.snippets"/>
+	<plugin id="org.eclipse.nebula.widgets.opal.header"/>
+	<plugin id="org.eclipse.nebula.widgets.opal.header.snippets"/>
+	<plugin id="org.eclipse.nebula.widgets.opal.heapmanager"/>
+	<plugin id="org.eclipse.nebula.widgets.opal.heapmanager.snippets"/>
+	<plugin id="org.eclipse.nebula.widgets.opal.horizontalspinner"/>
+	<plugin id="org.eclipse.nebula.widgets.opal.horizontalspinner.snippets"/>
+	<plugin id="org.eclipse.nebula.widgets.opal.launcher"/>
+	<plugin id="org.eclipse.nebula.widgets.opal.launcher.snippets"/>
+	<plugin id="org.eclipse.nebula.widgets.opal.logindialog"/>
+	<plugin id="org.eclipse.nebula.widgets.opal.logindialog.snippets"/>
+	<plugin id="org.eclipse.nebula.widgets.opal.multichoice"/>
+	<plugin id="org.eclipse.nebula.widgets.opal.multichoice.snippets"/>
+	<plugin id="org.eclipse.nebula.widgets.opal.notifier"/>
+	<plugin id="org.eclipse.nebula.widgets.opal.notifier.snippets"/>
+	<plugin id="org.eclipse.nebula.widgets.opal.panels"/>
+	<plugin id="org.eclipse.nebula.widgets.opal.panels.snippets"/>
+	<plugin id="org.eclipse.nebula.widgets.opal.preferencewindow"/>
+	<plugin id="org.eclipse.nebula.widgets.opal.preferencewindow.snippets"/>
+	<plugin id="org.eclipse.nebula.widgets.opal.promptsupport"/>
+	<plugin id="org.eclipse.nebula.widgets.opal.promptsupport.snippets"/>
+	<plugin id="org.eclipse.nebula.widgets.opal.propertytable"/>
+	<plugin id="org.eclipse.nebula.widgets.opal.propertytable.snippets"/>
+	<plugin id="org.eclipse.nebula.widgets.opal.rangeslider"/>
+	<plugin id="org.eclipse.nebula.widgets.opal.rangeslider.snippets"/>
+	<plugin id="org.eclipse.nebula.widgets.opal.roundedtoolbar"/>
+	<plugin id="org.eclipse.nebula.widgets.opal.roundedtoolbar.snippets"/>
+	<plugin id="org.eclipse.nebula.widgets.opal.starrating"/>
+	<plugin id="org.eclipse.nebula.widgets.opal.starrating.snippets"/>
+	<plugin id="org.eclipse.nebula.widgets.opal.switchbutton"/>
+	<plugin id="org.eclipse.nebula.widgets.opal.switchbutton.snippets"/>
+	<plugin id="org.eclipse.nebula.widgets.opal.textassist"/>
+	<plugin id="org.eclipse.nebula.widgets.opal.textassist.snippets"/>
+	<plugin id="org.eclipse.nebula.widgets.opal.tipoftheday"/>
+	<plugin id="org.eclipse.nebula.widgets.opal.tipoftheday.snippets"/>
+	<plugin id="org.eclipse.nebula.widgets.oscilloscope"/>
+	<plugin id="org.eclipse.nebula.widgets.oscilloscope.css"/>
+	<plugin id="org.eclipse.nebula.widgets.oscilloscope.example"/>
+	<plugin id="org.eclipse.nebula.widgets.paperclips.example"/>
+	<plugin id="org.eclipse.nebula.widgets.passwordrevealer"/>
+	<plugin id="org.eclipse.nebula.widgets.passwordrevealer.snippets"/>
+	<plugin id="org.eclipse.nebula.widgets.pgroup"/>
+	<plugin id="org.eclipse.nebula.widgets.pgroup.example"/>
+	<plugin id="org.eclipse.nebula.widgets.progresscircle"/>
+	<plugin id="org.eclipse.nebula.widgets.progresscircle.snippets"/>
+	<plugin id="org.eclipse.nebula.widgets.pshelf"/>
+	<plugin id="org.eclipse.nebula.widgets.pshelf.css"/>
+	<plugin id="org.eclipse.nebula.widgets.pshelf.example"/>
+	<plugin id="org.eclipse.nebula.widgets.richtext"/>
+	<plugin id="org.eclipse.nebula.widgets.splitbutton"/>
+	<plugin id="org.eclipse.nebula.widgets.splitbutton.snippets"/>
+	<plugin id="org.eclipse.nebula.widgets.stepbar"/>
+	<plugin id="org.eclipse.nebula.widgets.stepbar.snippets"/>
+	<plugin id="org.eclipse.nebula.widgets.tablecombo"/>
+	<plugin id="org.eclipse.nebula.widgets.tablecombo.css"/>
+	<plugin id="org.eclipse.nebula.widgets.tablecombo.example"/>
+	<plugin id="org.eclipse.nebula.widgets.xviewer"/>
+	<plugin id="org.eclipse.nebula.widgets.xviewer.core"/>
+	<plugin id="org.eclipse.nebula.widgets.xviewer.example"/>
+	<plugin id="javassist" version="3.22.0.GA"/>
+	<plugin id="org.eclipse.equinox.http.servlet"/>
+	<plugin id="javax.annotation-api"/>
+	<plugin id="com.mysql.jdbc"/>
+	<plugin id="org.eclipse.gemini.dbaccess.mysql"/>
+	<plugin id="org.eclipse.gemini.dbaccess.util"/>
+	<plugin id="org.eclipse.gemini.jpa" version="1.2.0.M1"/>
+	<plugin id="org.apache.felix.scr"/>
+	<plugin id="org.eclipse.jetty.xml"/>
+	<plugin id="org.eclipse.jetty.webapp"/>
+	<plugin id="org.eclipse.jetty.util"/>
+	<plugin id="org.eclipse.jetty.servlet"/>
+	<plugin id="org.eclipse.jetty.server"/>
+	<plugin id="org.eclipse.jetty.security"/>
+	<plugin id="org.eclipse.jetty.io"/>
+	<plugin id="org.eclipse.jetty.http"/>
+	<plugin id="org.eclipse.jetty.deploy"/>
+	<plugin id="org.eclipse.jetty.continuation"/>
+	<plugin id="org.eclipse.osgi.services" version="3.8.0.v20190206-2147"/>
+	<plugin id="javax.servlet" version="3.1.0.v201410161800"/>
+	<plugin id="org.osgi.service.jdbc"/>
+	<plugin id="org.osgi.service.jndi"/>
+	<plugin id="javax.activation"/>
+	<plugin id="org.apache.felix.gogo.shell"/>
+	<plugin id="com.google.gson"/>
+	<plugin id="slf4j.api"/>
+	<plugin id="slf4j.jcl"/>
+	<plugin id="org.eclipse.core.runtime" version="3.20.0.v20201027-1526"/>
+	<plugin id="javax.ws.rs-api"/>
+	<plugin id="org.glassfish.jersey.bundles.repackaged.jersey-guava"/>
+	<plugin id="javax.servlet.source"/>
+	<plugin id="org.glassfish.hk2.osgi-resource-locator"/>
+	<plugin id="org.eclipse.equinox.http.jetty"/>
+	<plugin id="org.apache.commons.commons-codec"/>
+	<plugin id="org.eclipse.equinox.ds" version="1.4.200.v20131126-2331"/>
+</includeBundles>
+</target>

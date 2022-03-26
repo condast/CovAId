@@ -5,7 +5,7 @@ Bundle-SymbolicName: org.covaid.mobile;singleton:=true
 Bundle-Version: 1.0.0.qualifier
 Bundle-Activator: org.covaid.mobile.Activator
 Bundle-Vendor: Condast
-Bundle-RequiredExecutionEnvironment: JavaSE-1.7
+Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Automatic-Module-Name: org.covaid.rest
 Import-Package: com.google.gson;version="2.7.0",
  com.orientechnologies.orient.core.entity;version="2.2.37",
@@ -20,7 +20,6 @@ Import-Package: com.google.gson;version="2.7.0",
  org.condast.commons.data.plane,
  org.condast.commons.i18n,
  org.condast.commons.messaging.http,
- org.condast.commons.messaging.push,
  org.condast.commons.messaging.rest,
  org.condast.commons.persistence.service,
  org.condast.commons.project,

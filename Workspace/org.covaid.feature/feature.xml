@@ -18,36 +18,37 @@
 
    <requires>
       <import plugin="com.google.gson"/>
-      <import plugin="org.apache.commons.codec"/>
       <import plugin="org.apache.commons.logging"/>
       <import plugin="org.condast.commons.messaging"/>
       <import plugin="org.condast.commons"/>
-      <import plugin="org.slf4j.api"/>
       <import plugin="javassist"/>
       <import plugin="org.condast.commons.authentication"/>
       <import plugin="org.condast.commons.data"/>
-      <import plugin="org.eclipse.equinox.preferences"/>
-      <import plugin="javax.persistence"/>
-      <import plugin="org.condast.commons.authentication.ui"/>
-      <import plugin="org.condast.commons.bugzilla"/>
-      <import plugin="org.condast.commons.persistence"/>
-      <import plugin="org.condast.commons.ui"/>
       <import plugin="org.condast.js.commons"/>
-      <import plugin="org.eclipse.core.commands"/>
+      <import plugin="org.eclipse.equinox.preferences"/>
+      <import plugin="javax.servlet"/>
+      <import plugin="org.condast.commons.bugzilla"/>
+      <import plugin="org.condast.commons.ui"/>
       <import plugin="org.eclipse.equinox.security"/>
-      <import plugin="org.eclipse.rap.jface"/>
       <import plugin="org.eclipse.rap.rwt"/>
       <import plugin="org.eclipse.osgi"/>
       <import plugin="org.eclipse.osgi.services"/>
       <import plugin="com.orientechnologies.orientdb-core"/>
       <import plugin="com.orientechnologies.orientdb-object"/>
       <import plugin="com.orientechnologies.orientdb-graphdb"/>
-      <import plugin="javax.servlet"/>
-      <import plugin="javax.ws.rs"/>
+      <import plugin="javax.persistence"/>
+      <import plugin="org.condast.commons.persistence"/>
       <import plugin="org.glassfish.jersey.core.jersey-common"/>
       <import plugin="org.glassfish.jersey.core.jersey-server"/>
       <import plugin="org.glassfish.jersey.containers.jersey-container-servlet-core"/>
+      <import plugin="org.eclipse.core.commands"/>
+      <import plugin="org.eclipse.rap.jface"/>
       <import plugin="org.openlayer.map"/>
+      <import plugin="org.apache.commons.commons-codec"/>
+      <import plugin="slf4j.api"/>
+      <import plugin="org.condast.js.push"/>
+      <import plugin="org.eclipse.rap.filedialog"/>
+      <import plugin="javax.ws.rs-api"/>
    </requires>
 
    <plugin

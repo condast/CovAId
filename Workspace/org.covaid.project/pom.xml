@@ -11,15 +11,20 @@
     <version>1.0.0-SNAPSHOT</version>
     <packaging>pom</packaging>
 
+  	<licenses>
+    	<license>
+      		<name>Apache License, Version 2.0</name>
+      		<url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+      		<distribution>repo</distribution>
+    	</license>
+  	</licenses>
+
     <properties>
 	    <maven.compiler.target>1.8</maven.compiler.target>
     	<maven.compiler.source>1.8</maven.compiler.source>        
-    	<tycho.version>0.26.0</tycho.version>
+    	<tycho.version>2.3.0</tycho.version>
         <generics>P:/GitHub</generics>
-        <virgo-root>file:${generics}/Root/Workspace/Virgo</virgo-root>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>  
-        <oxygen-update-repo.url>http://download.eclipse.org/eclipse/updates/4.7</oxygen-update-repo.url>
-        <rap-repo.url>http://download.eclipse.org/rt/rap/3.4/</rap-repo.url>
         <condast-commons>file:${generics}/org.condast.commons/Workspace</condast-commons>
         <condast-js>file:${generics}/org.condast.js/Workspace</condast-js>
         <condast-symbiot>file:${generics}/org.condast.symbiotic/Workspace</condast-symbiot>
@@ -27,21 +32,6 @@
     </properties>
 
     <repositories>
-        <repository>
-            <id>oxygen-update</id>
-            <url>${oxygen-update-repo.url}</url>
-            <layout>p2</layout>
-        </repository>
-        <repository>
-            <id>rap-update</id>
-            <url>${rap-repo.url}</url>
-            <layout>p2</layout>
-        </repository>
-        <repository>
-            <id>condast-repo</id>
-            <url>${condast-repo.url}</url>
-            <layout>p2</layout>
-        </repository>
          <repository>
             <id>org-condast-commons</id>
             <url>${condast-commons}/org.condast.commons.update/target/site/</url>
@@ -55,13 +45,9 @@
     </repositories>
 
   <dependencies>
-    <dependency>
-      <groupId>org.eclipse.core</groupId>
-      <artifactId>runtime</artifactId>
-      <version>3.10.0-v20140318-2214</version>
-    </dependency>
   </dependencies>
   <modules>
+    <module>../org.covaid.target</module>
     <module>../org.covaid.core</module>
     <module>../org.covaid.ui</module>
     <module>../org.covaid.commons.support</module>
@@ -87,6 +73,14 @@
                 <artifactId>target-platform-configuration</artifactId>
                 <version>${tycho.version}</version>
                 <configuration>
+ 					<pomDependencies>consider</pomDependencies>
+					<target>
+						<artifact>
+							<groupId>org.covaid</groupId>
+							<artifactId>covaid.target</artifactId>
+							<version>${project.version}</version>
+						</artifact>
+					</target>
                       <environments>
                         <environment>
                             <os>linux</os>
@@ -116,6 +110,25 @@
                     </environments>
                 </configuration>
             </plugin>
+			<plugin>
+  				<groupId>org.eclipse.tycho</groupId>
+  				<artifactId>tycho-packaging-plugin</artifactId>
+  				<version>${tycho.version}</version>
+			</plugin>
+	      	<plugin>
+    	  		<groupId>org.eclipse.tycho</groupId>
+	        	<artifactId>tycho-p2-plugin</artifactId>
+		        <version>${tycho.version}</version>
+    		    <executions>
+        			<execution>
+		        	    <id>attach-p2-metadata</id>
+        		    	<phase>package</phase>
+			            <goals>
+    	    				<goal>p2-metadata</goal>
+			            </goals>
+        		   </execution>
+        		</executions>
+	      	</plugin>      	
         </plugins>
     </build>
 </project> 

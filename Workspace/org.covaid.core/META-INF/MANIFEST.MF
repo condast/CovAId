@@ -5,10 +5,9 @@ Bundle-SymbolicName: org.covaid.core
 Bundle-Version: 1.0.0.qualifier
 Bundle-Vendor: Condast
 Automatic-Module-Name: org.covaid.core
-Bundle-RequiredExecutionEnvironment: JavaSE-1.7
+Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Import-Package: javassist.util.proxy;version="3.22.0.GA",
  org.condast.commons,
- org.condast.commons.auth,
  org.condast.commons.authentication.user,
  org.condast.commons.data.latlng,
  org.condast.commons.data.plane,

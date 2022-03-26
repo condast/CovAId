@@ -4,7 +4,7 @@ Bundle-Name: CovAId Dashboard
 Bundle-SymbolicName: org.covaid.dashboard;singleton:=true
 Bundle-Version: 1.0.0.qualifier
 Bundle-Vendor: condast
-Bundle-RequiredExecutionEnvironment: JavaSE-1.7
+Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Service-Component: OSGI-INF/contribution.xml,
  OSGI-INF/org.covaid.dashboard.bugzilla.provider.xml,
  OSGI-INF/org.covaid.dashboard.field.provider.xml,
@@ -26,9 +26,9 @@ Import-Package: javax.servlet;version="3.1.0",
  org.condast.commons.ui.location,
  org.condast.commons.ui.logger,
  org.condast.commons.ui.rwt,
+ org.condast.commons.ui.session,
  org.condast.commons.ui.xml,
  org.condast.commons.xml,
- org.condast.js.commons.session,
  org.condast.js.push.core.advice,
  org.covaid.core.data,
  org.covaid.core.def,

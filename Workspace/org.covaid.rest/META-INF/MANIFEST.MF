@@ -5,10 +5,9 @@ Bundle-SymbolicName: org.covaid.rest;singleton:=true
 Bundle-Version: 1.0.0.qualifier
 Bundle-Activator: org.covaid.rest.Activator
 Bundle-Vendor: Condast
-Bundle-RequiredExecutionEnvironment: JavaSE-1.7
+Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Automatic-Module-Name: org.covaid.rest
 Import-Package: com.google.gson;version="2.7.0",
- com.google.gson.stream;version="2.7.0",
  com.orientechnologies.orient.core.entity;version="2.2.37",
  com.orientechnologies.orient.object.jpa,
  javax.persistence;version="2.2.0",
@@ -23,7 +22,6 @@ Import-Package: com.google.gson;version="2.7.0",
  org.condast.commons.messaging.rest,
  org.condast.commons.persistence.service,
  org.condast.commons.strings,
- org.condast.js.commons.push,
  org.condast.js.push.core.builder,
  org.covaid.core.data,
  org.covaid.core.data.frogger,

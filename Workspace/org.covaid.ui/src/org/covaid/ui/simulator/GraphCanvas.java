@@ -13,7 +13,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
 
-import org.condast.commons.ui.session.PushSession;
+import org.condast.commons.ui.session.RefreshSession;
 import org.covaid.core.def.IContagion;
 import org.covaid.core.def.IFieldEnvironment;
 import org.covaid.core.def.IDomainListener;
@@ -33,7 +33,7 @@ import org.eclipse.swt.graphics.Rectangle;
 public class GraphCanvas extends Canvas {
 	private static final long serialVersionUID = 1L;
 
-	private PushSession<DomainEvent<Date>> session;
+	private RefreshSession session;
 
 	private Map<IFieldDomain, List<Data>> domains;
 
@@ -87,7 +87,7 @@ public class GraphCanvas extends Canvas {
 		super(parent, style);
 		this.createComposite(parent, style);
 		this.domains = new HashMap<>();
-		session = new PushSession<DomainEvent<Date>>();
+		session = new RefreshSession();
 		session.start();
 	}
 

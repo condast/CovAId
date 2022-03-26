@@ -10,10 +10,9 @@ import java.util.Map;
 import org.condast.commons.data.plane.Field;
 import org.condast.commons.data.plane.IField;
 import org.condast.commons.strings.StringStyler;
-import org.condast.commons.ui.session.PushSession;
+import org.condast.commons.ui.session.RefreshSession;
 import org.covaid.core.def.IContagion;
 import org.covaid.core.def.IFieldEnvironment;
-import org.covaid.core.environment.DomainEvent;
 import org.covaid.core.environment.IDomain;
 import org.covaid.core.environment.IEnvironmentListener;
 import org.covaid.core.environment.field.CovaidDomain;
@@ -82,7 +81,7 @@ public class SimulatorComposite extends Composite {
 	private Slider sliderRisk;
 	private Button btnStartButton;
 
-	private PushSession<DomainEvent<Date>> session;
+	private RefreshSession session;
 
 	private IFieldEnvironment environment;
 
@@ -132,7 +131,7 @@ public class SimulatorComposite extends Composite {
 		super(parent, style);
 		this.canvases = new HashMap<>();
 		this.createComposite(parent, style);
-		session = new PushSession<DomainEvent<Date>>();
+		session = new RefreshSession();
 		session.start();
 	}
 

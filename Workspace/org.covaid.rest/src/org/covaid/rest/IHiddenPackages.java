@@ -2,6 +2,8 @@ package org.covaid.rest;
 
 import org.osgi.framework.*;
 import org.glassfish.jersey.*;
+import com.orientechnologies.orient.core.entity.*;
+import com.orientechnologies.orient.*;
 
 //https://tools.reactpwa.com/vapid?email=info%40eetmee.nl
 //"subject": "mailto:info@eetmee.nl",

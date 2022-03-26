@@ -114,7 +114,7 @@ public class CovaidLoginModule extends AbstractLoginModule {
 		}else {
 			logger.info( S_HANDLER_FOUND + provider.getClass().getName() );		
 		}
-		return provider.createCallbackHandler();
+		return null;//provider.createCallbackHandler();
 	}
 
 	@Override
