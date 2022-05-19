@@ -47,6 +47,6 @@ public class AuthenticationManager extends AbstractAuthenticationManager<DoctorD
 			return;
 		ILoginUser user = null;//getData().getUser();
 		setData(userData);
-		provider.logout( user.getId(), user.getToken() );
+		provider.logout( user.getId(), user.getSecurity() );
 	}	
 }

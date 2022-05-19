@@ -494,24 +494,19 @@ public class FroggerComposite extends Composite {
 		super.dispose();
 	}
 	
-	private class WebClient extends AbstractHttpRequest<Requests, StringBuilder>{
+	private class WebClient extends AbstractHttpRequest<Requests>{
 	
 		public WebClient() {
 			super( config.getServerContext() + S_COVAID_CONTEXT );
 		}
 
-		protected void sendGet(Requests request, Map<String, String> parameters ) throws IOException {
-			super.sendGet(request, parameters, null);
-		}
-
 		@Override
-		protected void sendGet(Requests request, Map<String, String> parameters, StringBuilder data) throws IOException {
-			super.sendGet(request, parameters, data);
+		protected void sendGet(Requests request, Map<String, String> parameters) throws IOException {
+			super.sendGet(request, parameters);
 		}
 	
 		@Override
-		protected String onHandleResponse(ResponseEvent<Requests, StringBuilder> event, StringBuilder data)
-				throws IOException {
+		protected String onHandleResponse(ResponseEvent<Requests> event)throws IOException {
 			return event.getResponse();
 		}
 	}
@@ -530,18 +525,18 @@ public class FroggerComposite extends Composite {
 		}
 	}
 	
-	private class SessionHandler extends AbstractSessionHandler<ResponseEvent<Requests, StringBuilder>> implements IHttpClientListener<Requests, StringBuilder>{
+	private class SessionHandler extends AbstractSessionHandler<ResponseEvent<Requests>> implements IHttpClientListener<Requests>{
 
 		protected SessionHandler(Display display) {
 			super(display);
 		}
 
 		@Override
-		protected void onHandleSession(SessionEvent<ResponseEvent<Requests, StringBuilder>> sevent) {
+		protected void onHandleSession(SessionEvent<ResponseEvent<Requests>> sevent) {
 			if( sevent.getData() == null )
 				return;
 			Gson gson = new Gson();
-			ResponseEvent<Requests, StringBuilder> response = sevent.getData();
+			ResponseEvent<Requests> response = sevent.getData();
 			Requests request = sevent.getData().getRequest(); 
 			switch( request) {
 			case REGISTER:
@@ -589,7 +584,7 @@ public class FroggerComposite extends Composite {
 		}
 
 		@Override
-		public void notifyResponse(ResponseEvent<Requests, StringBuilder> event) {
+		public void notifyResponse(ResponseEvent<Requests> event) {
 			addData(event);
 		}		
 	}

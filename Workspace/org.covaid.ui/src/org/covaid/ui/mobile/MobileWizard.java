@@ -469,7 +469,7 @@ public class MobileWizard extends Composite {
 						builder.append( "var mobile-id = ");
 						MobileWebClient client = new MobileWebClient();
 						Map<String, String> params = new HashMap<>();
-						client.sendGet( Requests.CREATE, params, builder);
+						client.sendGet( Requests.CREATE, params);
 						return builder.toString();
 					default:
 						break;
@@ -757,7 +757,7 @@ public class MobileWizard extends Composite {
 		}	
 	}
 
-	private class PushWebClient extends AbstractHttpRequest<IPushListener.Calls, StringBuilder>{
+	private class PushWebClient extends AbstractHttpRequest<IPushListener.Calls>{
 		
 		public PushWebClient() {
 			super( config.getServerContext() + S_COVAID_PUSH_CONTEXT);
@@ -770,8 +770,7 @@ public class MobileWizard extends Composite {
 
 
 		@Override
-		protected String onHandleResponse(ResponseEvent<IPushListener.Calls, StringBuilder> event, StringBuilder data)
-				throws IOException {
+		protected String onHandleResponse(ResponseEvent<IPushListener.Calls> event) throws IOException {
 			switch( event.getRequest()) {
 			case SEND:
 				break;
@@ -783,32 +782,27 @@ public class MobileWizard extends Composite {
 		}
 
 		@Override
-		protected void onHandleResponseFail(HttpStatus status, ResponseEvent<IPushListener.Calls, StringBuilder> event)
+		protected void onHandleResponseFail(HttpStatus status, ResponseEvent<IPushListener.Calls> event)
 				throws IOException {
 			logger.info("REQUEST: " + event.getRequest() + ", STATUS: " + status);
 			super.onHandleResponseFail(status, event);
 		}
 	}
 
-	private class MobileWebClient extends AbstractHttpRequest<Requests, StringBuilder>{
+	private class MobileWebClient extends AbstractHttpRequest<Requests>{
 	
 		public MobileWebClient() {
 			super( config.getServerContext() + S_COVAID_MOBILE_CONTEXT);
 		}
 
-		@Override
-		protected void sendGet(Requests request, Map<String, String> parameters ) throws IOException {
-			super.sendGet(request, parameters);
-		}
 
 		@Override
-		protected void sendGet(Requests request, Map<String, String> parameters, StringBuilder data) throws IOException {
-			super.sendGet(request, parameters, data);
+		protected void sendGet(Requests request, Map<String, String> parameters) throws IOException {
+			super.sendGet(request, parameters);
 		}
 	
 		@Override
-		protected String onHandleResponse(ResponseEvent<Requests, StringBuilder> event, StringBuilder data)
-				throws IOException {
+		protected String onHandleResponse(ResponseEvent<Requests> event) throws IOException {
 			Gson gson = new Gson();
 			switch( event.getRequest()) {
 			case CREATE://is usually not called, but done directly from html
@@ -842,14 +836,14 @@ public class MobileWizard extends Composite {
 		}
 
 		@Override
-		protected void onHandleResponseFail(HttpStatus status, ResponseEvent<Requests, StringBuilder> event)
+		protected void onHandleResponseFail(HttpStatus status, ResponseEvent<Requests> event)
 				throws IOException {
 			logger.info("REQUEST: " + event.getRequest() + ", STATUS: " + status);
 			super.onHandleResponseFail(status, event);
 		}
 	}
 
-	private class WebClient extends AbstractHttpRequest<Requests, StringBuilder>{
+	private class WebClient extends AbstractHttpRequest<Requests>{
 		
 		public WebClient() {
 			super( config.getServerContext() + S_COVAID_CONTEXT );
@@ -858,21 +852,15 @@ public class MobileWizard extends Composite {
 		protected void sendGet(Requests request, Map<String, String> parameters ) throws IOException {
 			super.sendGet(request, parameters);
 		}
-
-		@Override
-		protected void sendGet(Requests request, Map<String, String> parameters, StringBuilder data) throws IOException {
-			super.sendGet(request, parameters, data);
-		}
 	
 		@Override
-		protected String onHandleResponse(ResponseEvent<Requests, StringBuilder> event, StringBuilder data)
-				throws IOException {
+		protected String onHandleResponse(ResponseEvent<Requests> event)throws IOException {
 			return event.getResponse();
 		}
 		
 
 		@Override
-		protected void onHandleResponseFail(HttpStatus status, ResponseEvent<Requests, StringBuilder> event)
+		protected void onHandleResponseFail(HttpStatus status, ResponseEvent<Requests> event)
 				throws IOException {
 			switch( event.getRequest()){
 			case PREDICTION:
@@ -926,18 +914,18 @@ public class MobileWizard extends Composite {
 		}		
 	}
 
-	private class SessionHandler extends AbstractSessionHandler<ResponseEvent<Requests, StringBuilder>> implements IHttpClientListener<Requests, StringBuilder>{
+	private class SessionHandler extends AbstractSessionHandler<ResponseEvent<Requests>> implements IHttpClientListener<Requests>{
 
 		protected SessionHandler(Display display) {
 			super(display);
 		}
 
 		@Override
-		protected void onHandleSession(SessionEvent<ResponseEvent<Requests, StringBuilder>> sevent) {
+		protected void onHandleSession(SessionEvent<ResponseEvent<Requests>> sevent) {
 			if( sevent.getData() == null )
 				return;
 			Gson gson = new Gson();
-			ResponseEvent<Requests, StringBuilder> response = sevent.getData();
+			ResponseEvent<Requests> response = sevent.getData();
 			switch( sevent.getData().getRequest()) {
 			case GET:
 				btnSafety.setEnabled(authData != null );
@@ -998,7 +986,7 @@ public class MobileWizard extends Composite {
 		}
 
 		@Override
-		public void notifyResponse(ResponseEvent<Requests, StringBuilder> event) {
+		public void notifyResponse(ResponseEvent<Requests> event) {
 			addData(event);
 		}		
 	}
