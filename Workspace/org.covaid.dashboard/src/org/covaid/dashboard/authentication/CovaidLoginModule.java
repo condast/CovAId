@@ -141,10 +141,4 @@ public class CovaidLoginModule extends AbstractLoginModule {
 	public boolean abort() throws LoginException {
          return true;
     }
-
-    @Override
-	public boolean logout() throws LoginException {
-    	AuthenticationDispatcher.getInstance().logoutRequest();
-    	return true;
-    }
 }

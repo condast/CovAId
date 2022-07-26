@@ -40,13 +40,13 @@ public class Dispatcher implements IAuthenticationListener{
 			listener.notifyLoginChanged(event);
 	}
 	
-	public boolean isRegistered(long id, long token) {
+	public boolean isRegistered(long id, long security) {
 			return false;
 		//return provider.isRegistered(id, name);
 	}
 
-	public boolean isLoggedIn( long userId, long token ) {
-		return user.isCorrect(userId, String.valueOf( token ));
+	public boolean isLoggedIn( long userId, long security ) {
+		return user.isCorrect(userId, security );
 	}
 	
 	public ILoginUser getUser() {

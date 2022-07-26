@@ -5,12 +5,7 @@ Bundle-SymbolicName: org.covaid.dashboard;singleton:=true
 Bundle-Version: 1.0.0.qualifier
 Bundle-Vendor: condast
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
-Service-Component: OSGI-INF/contribution.xml,
- OSGI-INF/org.covaid.dashboard.bugzilla.provider.xml,
- OSGI-INF/org.covaid.dashboard.field.provider.xml,
- OSGI-INF/org.covaid.dashboard.service.location.xml,
- OSGI-INF/org.covaid.dashboard.service.login.xml,
- OSGI-INF/org.covaid.dashboard.service.doctor.data.xml
+Service-Component: OSGI-INF/contribution.xml
 Import-Package: javax.servlet;version="3.1.0",
  javax.servlet.http;version="3.0.0",
  org.condast.commons.authentication.callback,

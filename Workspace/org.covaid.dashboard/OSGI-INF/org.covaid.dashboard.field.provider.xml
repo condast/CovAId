@@ -1,7 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<scr:component xmlns:scr="http://www.osgi.org/xmlns/scr/v1.1.0" name="org.covaid.dashboard.field.provider">
-   <service>
-      <provide interface="org.covaid.core.field.IFieldProvider"/>
-   </service>
-   <implementation class="org.covaid.dashboard.service.FieldProvider"/>
-</scr:component>

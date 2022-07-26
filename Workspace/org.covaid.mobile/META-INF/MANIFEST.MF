@@ -21,6 +21,7 @@ Import-Package: com.google.gson;version="2.7.0",
  org.condast.commons.i18n,
  org.condast.commons.messaging.http,
  org.condast.commons.messaging.rest,
+ org.condast.commons.parser,
  org.condast.commons.persistence.service,
  org.condast.commons.project,
  org.condast.commons.strings,
@@ -41,7 +42,4 @@ Import-Package: com.google.gson;version="2.7.0",
  org.glassfish.jersey.servlet;version="2.25.1",
  org.osgi.framework;version="1.5.0",
  org.osgi.service.component.annotations;version="1.1.0"
-Service-Component: OSGI-INF/org.covaid.mobile.entity.service.xml,
- OSGI-INF/org.covaid.mobile.service.field.xml,
- OSGI-INF/org.covaid.mobile.doctor.data.xml
 Bundle-ActivationPolicy: lazy

@@ -1,5 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<scr:component xmlns:scr="http://www.osgi.org/xmlns/scr/v1.1.0" immediate="true" name="org.covaid.dashboard.service.location">
-   <reference bind="bind" cardinality="1..n" interface="org.condast.commons.ui.location.ILocationChangeListener" policy="dynamic" unbind="unbind"/>
-   <implementation class="org.covaid.dashboard.service.LocationService"/>
-</scr:component>
