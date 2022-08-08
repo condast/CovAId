@@ -16,6 +16,7 @@
 	<target name="dist" depends="init" description="generate the distribution">
 		<!-- Create the distribution directory -->
 		<mkdir dir="${feature-dir}/${bundle-name}/${TODAY_COMBINED}" />
+		<delete><fileset dir="${latest-dir}/${bundle-name}"/></delete>
 		<mkdir dir="${latest-dir}/${bundle-name}" />
 
 		<!-- Put everything in ${build} into the ${DSTAMP} folder -->
