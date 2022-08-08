@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="org.churuata.update" default="dist" basedir=".">
+	<description>Copy Jars to Release dirs</description>
+	<property name="bundle-name" value="org.covaid" />
+	<property name="release-dir" location="D:\Releases" />
+	<property name="feature-dir" location="${release-dir}/release" />
+	<property name="latest-dir" location="${release-dir}/latest" />
+	<property name="src-dir" location="${basedir}/target/site/plugins" />
+
+	<target name="init">
+		<tstamp>
+		  <format property="TODAY_COMBINED"
+		          pattern="yyyyMMddhhmm"/>
+		</tstamp>	</target>
+
+	<target name="dist" depends="init" description="generate the distribution">
+		<!-- Create the distribution directory -->
+		<mkdir dir="${feature-dir}/${TODAY_COMBINED}/${bundle-name}" />
+		<mkdir dir="${latest-dir}/${bundle-name}" />
+
+		<!-- Put everything in ${build} into the ${DSTAMP} folder -->
+		<copy todir="${feature-dir}/${TODAY_COMBINED}/${bundle-name}">
+			<fileset dir="${src-dir}" />
+		</copy>
+		<copy todir="${latest-dir}/${bundle-name}">
+			<fileset dir="${src-dir}" />
+		</copy>
+	</target>
+</project>
