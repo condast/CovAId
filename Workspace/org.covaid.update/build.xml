@@ -15,11 +15,11 @@
 
 	<target name="dist" depends="init" description="generate the distribution">
 		<!-- Create the distribution directory -->
-		<mkdir dir="${feature-dir}/${TODAY_COMBINED}/${bundle-name}" />
+		<mkdir dir="${feature-dir}/${bundle-name}/${TODAY_COMBINED}" />
 		<mkdir dir="${latest-dir}/${bundle-name}" />
 
 		<!-- Put everything in ${build} into the ${DSTAMP} folder -->
-		<copy todir="${feature-dir}/${TODAY_COMBINED}/${bundle-name}">
+		<copy todir="${feature-dir}/${bundle-name}/${TODAY_COMBINED}">
 			<fileset dir="${src-dir}" />
 		</copy>
 		<copy todir="${latest-dir}/${bundle-name}">
