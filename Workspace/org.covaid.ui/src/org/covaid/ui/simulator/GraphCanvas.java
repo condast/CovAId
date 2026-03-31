@@ -13,7 +13,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
 
-import org.condast.commons.ui.session.RefreshSession;
+import org.condast.commons.ui.widgets.session.RefreshSession;
 import org.covaid.core.def.IContagion;
 import org.covaid.core.def.IFieldEnvironment;
 import org.covaid.core.def.IDomainListener;
@@ -21,7 +21,6 @@ import org.covaid.core.def.IPerson;
 import org.covaid.core.environment.IDomain.DomainEvents;
 import org.covaid.core.environment.field.IFieldDomain;
 import org.covaid.core.model.Contagion;
-import org.covaid.core.environment.DomainEvent;
 import org.covaid.core.environment.IDomain;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.PaintListener;

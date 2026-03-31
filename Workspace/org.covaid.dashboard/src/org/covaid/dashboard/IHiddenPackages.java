@@ -6,7 +6,7 @@ import javax.servlet.http.*;
 import org.eclipse.equinox.security.auth.*;
 import org.covaid.core.environment.*;
 
-import org.condast.commons.ui.logger.*;
+import org.condast.commons.ui.widgets.logger.*;
 
 import org.covaid.ui.map.*;
 import org.eclipse.rap.rwt.service.*;

@@ -13,19 +13,19 @@ import java.util.TreeMap;
 import java.util.logging.Logger;
 
 import org.condast.commons.Utils;
-import org.condast.commons.config.Config;
 import org.condast.commons.messaging.http.AbstractHttpRequest;
 import org.condast.commons.messaging.http.IHttpClientListener;
 import org.condast.commons.messaging.http.ResponseEvent;
 import org.condast.commons.number.NumberUtils;
 import org.condast.commons.parser.AbstractResourceParser;
 import org.condast.commons.parser.AbstractResourceParser.Functions;
+import org.condast.commons.preferences.config.Config;
 import org.condast.commons.strings.StringStyler;
 import org.condast.commons.strings.StringUtils;
-import org.condast.commons.ui.session.AbstractSessionHandler;
 import org.condast.commons.ui.session.SessionEvent;
-import org.condast.commons.ui.xy.AbstractMultiXYGraph;
-import org.condast.commons.ui.xy.AbstractXYGraph;
+import org.condast.commons.ui.widgets.session.AbstractSessionHandler;
+import org.condast.commons.ui.widgets.xy.AbstractMultiXYGraph;
+import org.condast.commons.ui.widgets.xy.AbstractXYGraph;
 import org.condast.js.commons.controller.AbstractJavascriptController;
 import org.condast.js.commons.eval.IEvaluationListener;
 import org.condast.js.commons.utils.AuthenticationData;
@@ -315,7 +315,7 @@ public class MobileWizard extends Composite {
 	 */
 	public MobileWizard(Composite parent, int style) {
 		super(parent, style | SWT.NO_SCROLL);
-		config = new Config();
+		config = Config.getInstance();
 		this.link = Links.DOWNLOAD;
 		createPage(parent, style | SWT.NO_SCROLL);
 		this.browser.addListener(SWT.Show, new ClientListener("var handleEvent = function( event ){\r\n" + 

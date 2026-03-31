@@ -2,9 +2,8 @@ package org.covaid.mobile.push;
 
 import java.io.IOException;
 import java.util.Properties;
-
-import org.condast.commons.config.Config;
-import org.condast.commons.config.ConfigBuilder;
+import org.condast.commons.preferences.config.Config;
+import org.condast.commons.preferences.config.ConfigBuilder;
 import org.condast.js.push.core.AbstractPush;
 import org.condast.js.push.core.advice.Advice;
 import org.condast.js.push.core.advice.IAdvice;
@@ -23,7 +22,7 @@ public class Push extends AbstractPush{
 	
 	private Push() {
 		super( S_COVAID );
-		config = new Config();
+		config = Config.getInstance();
 		ConfigBuilder builder = new ConfigBuilder();
 		builder.build();
 		properties = builder.getParsedUnit(S_COVAID);

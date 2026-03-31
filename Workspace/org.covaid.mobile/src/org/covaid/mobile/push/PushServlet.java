@@ -5,8 +5,8 @@ import java.util.Date;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.condast.commons.config.Config;
 import org.condast.commons.parser.AbstractResourceParser;
+import org.condast.commons.preferences.config.Config;
 import org.condast.commons.strings.StringStyler;
 import org.condast.js.push.core.AbstractPushServlet;
 import org.condast.js.push.core.IPushListener;
@@ -37,7 +37,7 @@ public class PushServlet extends AbstractPushServlet {
 	
 	public PushServlet() {
 		super( TITLE );
-		config = new Config();
+		config = Config.getInstance();
 		this.addPushListener(push);
 	}
 	

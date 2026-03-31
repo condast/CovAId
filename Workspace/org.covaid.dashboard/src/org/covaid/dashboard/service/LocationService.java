@@ -1,6 +1,6 @@
 package org.covaid.dashboard.service;
 
-import org.condast.commons.ui.location.ILocationChangeListener;
+import org.condast.commons.ui.widgets.location.ILocationChangeListener;
 import org.covaid.dashboard.core.LocationDispatcher;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;

@@ -1,17 +1,16 @@
 package org.covaid.dashboard;
 
 import java.util.Locale;
-
+import org.condast.commons.preferences.xml.AbstractXMLBuilder;
+import org.condast.commons.preferences.xml.AbstractXMLBuilder.Selection;
 import org.condast.commons.strings.StringStyler;
 import org.condast.commons.strings.StringUtils;
 import org.condast.commons.ui.activate.ActivationEvent;
 import org.condast.commons.ui.activate.IActivateListener;
 import org.condast.commons.ui.activate.IActivateWidget;
-import org.condast.commons.ui.xml.XMLFactoryBuilder;
-import org.condast.commons.xml.AbstractXMLBuilder;
+import org.condast.commons.ui.widgets.xml.XMLFactoryBuilder;
 import org.condast.commons.xml.BuildEvent;
 import org.condast.commons.xml.IBuildListener;
-import org.condast.commons.xml.AbstractXMLBuilder.Selection;
 import org.covaid.dashboard.authentication.AuthenticationManager;
 import org.covaid.dashboard.core.Dispatcher;
 import org.eclipse.rap.rwt.RWT;
@@ -137,7 +136,7 @@ public class BasicEntryPoint extends AbstractEntryPoint {
 	}
 
 
-	private class RWTUiSessionHandler extends org.condast.commons.ui.rwt.AbstractRWTSessionSupport{
+	private class RWTUiSessionHandler extends org.condast.commons.ui.widgets.rwt.AbstractRWTSessionSupport{
 
 		public RWTUiSessionHandler(Display display) {
 			super(display, Integer.MAX_VALUE);

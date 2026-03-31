@@ -2,8 +2,7 @@ package org.covaid.dashboard.core;
 
 import java.util.ArrayList;
 import java.util.Collection;
-
-import org.condast.commons.ui.location.ILocationChangeListener;
+import org.condast.commons.ui.widgets.location.ILocationChangeListener;
 
 public class LocationDispatcher {
 

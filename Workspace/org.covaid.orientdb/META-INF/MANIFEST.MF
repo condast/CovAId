@@ -44,3 +44,5 @@ Automatic-Module-Name: org.covaid.orientdb
 Bundle-ActivationPolicy: lazy
 Export-Package: org.covaid.orientdb.def,
  org.covaid.orientdb.object
+Service-Component: OSGI-INF/org.covaid.orientdb.entity.manager.xml,
+ OSGI-INF/org.covaid.orientdb.service.LoginConsumer.xml
