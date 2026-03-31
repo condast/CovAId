@@ -3,6 +3,11 @@ bin/
 target/
 .settings/
 
+
+#Persistence
+persistence.xml
+META-INF/sql/*.sql
+
 # Compiled class file
 *~
 *.class
