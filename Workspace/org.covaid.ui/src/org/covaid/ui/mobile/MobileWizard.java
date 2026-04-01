@@ -216,7 +216,7 @@ public class MobileWizard extends Composite {
 	private int token;
 	private long subscriptionId;
 
-	private Push push = Push.getInstance();
+	//private Push push = Push.getInstance();
 	
 	private Logger logger = Logger.getLogger(this.getClass().getName());
 	
@@ -462,7 +462,7 @@ public class MobileWizard extends Composite {
 						token = Long.toHexString(idCounter).hashCode();
 						break;
 					case VAPID:
-						result = push.getPublicKey();
+						result = null;//push.getPublicKey();
 						break;
 					case SCRIPT:
 						StringBuilder builder = new StringBuilder();
@@ -813,7 +813,7 @@ public class MobileWizard extends Composite {
 				if( mobile.getHealth() < 20) {
 					PushWebClient pushClient = new PushWebClient(); 
 					//CovaidImages image = CovaidImages.getInstance();
-					IAdvice advice = push.createAdvice(subscriptionId, mobile.getId(), mobile.getIdentifier(), "Doctor", AdviceTypes.PROGRESS, "Shall I schedule an appointment?", CovaidImages.Images.getPath( Images.DOCTOR_CORONAVIRUS), CovaidImages.Images.getPath( Images.DOCTOR_CORONAVIRUS), 0);
+					IAdvice advice = null;//push.createAdvice(subscriptionId, mobile.getId(), mobile.getIdentifier(), "Doctor", AdviceTypes.PROGRESS, "Shall I schedule an appointment?", CovaidImages.Images.getPath( Images.DOCTOR_CORONAVIRUS), CovaidImages.Images.getPath( Images.DOCTOR_CORONAVIRUS), 0);
 					advice.addNotification( IAdvice.Notifications.THANKS,  CovaidImages.Images.getPath( Images.DOCTOR_CORONAVIRUS));
 					advice.addNotification( IAdvice.Notifications.DONT_CARE,  CovaidImages.Images.getPath(Images.COVID_19 ));
 					try {

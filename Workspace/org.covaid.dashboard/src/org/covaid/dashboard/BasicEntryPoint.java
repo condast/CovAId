@@ -73,12 +73,9 @@ public class BasicEntryPoint extends AbstractEntryPoint {
 								if( lc != null )
 									lc.activate(true);
 								break;
-							case SYSTEM:
-								if( debug != null )
-									debug.activate(true);
-								break;
 							default:
-								debug.activate(false);
+								if( debug != null )
+									debug.activate(false);
 								break;
 							}
 							super.widgetSelected(e);

@@ -2,12 +2,12 @@
 <?pde version="3.8"?>
 <target name="covaid.target" sequenceNumber="254">
 <locations>
-    <location followRepositoryReferences="false" includeAllPlatforms="false" includeConfigurePhase="false" includeMode="slicer" includeSource="true" type="InstallableUnit">
-      <unit id="org.eclipse.rap.equinox.target.feature.feature.group" version="3.16.0.20210308-1200"/>
-      <unit id="org.eclipse.rap.examples.feature.feature.group" version="3.16.0.20210201-1206"/>
-      <unit id="org.eclipse.rap.feature.feature.group" version="3.16.0.20210304-1215"/>
-      <unit id="org.eclipse.rap.sdk.feature.feature.group" version="3.16.0.20210304-1215"/>
-      <repository location="https://download.eclipse.org/rt/rap/3.16/R-20210310-0041/"/>
+    <location includeAllPlatforms="false" includeConfigurePhase="false" includeMode="slicer" includeSource="true" type="InstallableUnit">
+      <unit id="org.eclipse.rap.equinox.target.feature.feature.group" version="3.20.0.20220309-1200"/>
+      <unit id="org.eclipse.rap.examples.feature.feature.group" version="3.20.0.20220309-1200"/>
+      <unit id="org.eclipse.rap.feature.feature.group" version="3.20.0.20220309-1200"/>
+      <unit id="org.eclipse.rap.sdk.feature.feature.group" version="3.20.0.20220309-1200"/>
+      <repository location="https://download.eclipse.org/rt/rap/3.20/R-20220309-1623/"/>
     </location>
 	<location path="P:\Virgo\virgo-jetty-server-3.7.4.POM\repository\EclipseLink" type="Directory"/>
 	<location path="P:\Virgo\virgo-jetty-server-3.7.4.POM\repository\jpa" type="Directory"/>
@@ -23,15 +23,9 @@
 	<location includeDependencyDepth="none" includeDependencyScopes="compile" includeSource="true" missingManifest="generate" type="Maven">
 		<dependencies>
 			<dependency>
-				<groupId>org.osgi</groupId>
-				<artifactId>org.osgi.util.function</artifactId>
-				<version>1.2.0</version>
-				<type>jar</type>
-			</dependency>
-			<dependency>
-				<groupId>org.osgi</groupId>
-				<artifactId>org.osgi.util.promise</artifactId>
-				<version>1.3.0</version>
+				<groupId>javax.servlet</groupId>
+				<artifactId>javax.servlet-api</artifactId>
+				<version>4.0.1</version>
 				<type>jar</type>
 			</dependency>
 		</dependencies>
@@ -42,8 +36,7 @@
 		<plugin id="com.fasterxml.jackson.core.jackson-annotations"/>
 		<plugin id="com.fasterxml.jackson.core.jackson-core"/>
 		<plugin id="com.fasterxml.jackson.core.jackson-databind"/>
-		<plugin id="com.google.gson" version="2.8.2"/>
-		<plugin id="com.google.gson" version="2.9.0"/>
+		<plugin id="com.google.gson"/>
 		<plugin id="com.googlecode.concurrentlinkedhashmap.lru"/>
 		<plugin id="com.hazelcast"/>
 		<plugin id="com.hazelcast.aws"/>
@@ -70,14 +63,11 @@
 		<plugin id="jackson-mapper-asl"/>
 		<plugin id="jackson-xc"/>
 		<plugin id="jakarta.xml.bind-api"/>
-		<plugin id="javassist" version="3.27.0.GA"/>
-		<plugin id="javassist" version="3.22.0.GA"/>
+		<plugin id="javassist"/>
 		<plugin id="javax.annotation-api"/>
 		<plugin id="javax.mail"/>
 		<plugin id="javax.persistence"/>
-		<plugin id="javax.servlet" version="3.0.0.v201112011016"/>
-		<plugin id="javax.servlet" version="3.1.0.v201410161800"/>
-		<plugin id="javax.servlet.source"/>
+		<plugin id="javax.servlet"/>
 		<plugin id="javax.validation.api"/>
 		<plugin id="javax.ws.rs-api"/>
 		<plugin id="javax.xml"/>
@@ -94,11 +84,11 @@
 		<plugin id="org.apache.commons.logging"/>
 		<plugin id="org.apache.felix.gogo.command"/>
 		<plugin id="org.apache.felix.gogo.command.source"/>
-		<plugin id="org.apache.felix.gogo.runtime" version="1.1.4.v20210111-1007"/>
+		<plugin id="org.apache.felix.gogo.runtime"/>
 		<plugin id="org.apache.felix.gogo.runtime.source"/>
-		<plugin id="org.apache.felix.gogo.shell" version="1.1.4.v20210111-1007"/>
+		<plugin id="org.apache.felix.gogo.shell"/>
 		<plugin id="org.apache.felix.gogo.shell.source"/>
-		<plugin id="org.apache.felix.scr" version="2.1.24.v20200924-1939"/>
+		<plugin id="org.apache.felix.scr"/>
 		<plugin id="org.apache.felix.scr.source"/>
 		<plugin id="org.apache.httpcomponents.httpclient"/>
 		<plugin id="org.apache.httpcomponents.httpcore"/>
@@ -128,10 +118,8 @@
 		<plugin id="org.eclipse.equinox.cm.source"/>
 		<plugin id="org.eclipse.equinox.common"/>
 		<plugin id="org.eclipse.equinox.common.source"/>
-		<plugin id="org.eclipse.equinox.console" version="1.1.200.v20150929-1405"/>
-		<plugin id="org.eclipse.equinox.console" version="1.4.300.v20210211-2058"/>
+		<plugin id="org.eclipse.equinox.console" version="1.4.500.v20211021-1418"/>
 		<plugin id="org.eclipse.equinox.console.source"/>
-		<plugin id="org.eclipse.equinox.console.ssh"/>
 		<plugin id="org.eclipse.equinox.ds"/>
 		<plugin id="org.eclipse.equinox.event"/>
 		<plugin id="org.eclipse.equinox.event.source"/>
@@ -155,8 +143,6 @@
 		<plugin id="org.eclipse.help.source"/>
 		<plugin id="org.eclipse.jdt.junit.runtime"/>
 		<plugin id="org.eclipse.jdt.junit.runtime.source"/>
-		<plugin id="org.eclipse.jetty.continuation"/>
-		<plugin id="org.eclipse.jetty.continuation.source"/>
 		<plugin id="org.eclipse.jetty.http"/>
 		<plugin id="org.eclipse.jetty.http.source"/>
 		<plugin id="org.eclipse.jetty.io"/>
@@ -260,5 +246,6 @@
 		<plugin id="slf4j.api"/>
 		<plugin id="slf4j.jcl"/>
 		<plugin id="javax.activation"/>
+		<plugin id="javax.servlet-api"/>
 	</includeBundles>
 </target>

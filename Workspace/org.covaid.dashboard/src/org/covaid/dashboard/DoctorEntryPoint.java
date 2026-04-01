@@ -45,14 +45,7 @@ public class DoctorEntryPoint extends AbstractEntryPoint {
 			ex.printStackTrace();
 		}
 	}
-	
-	@Override
-	protected void finalize() throws Throwable {
-		dispatcher.removeDoctorListener(session);
-		root.removeDoctorListener(session);
-		super.finalize();
-	}
-	
+		
 	private class SessionHandler extends AbstractSessionHandler<DoctorDataEvent> implements IDoctorDataListener{
 
 		protected SessionHandler( Display display) {

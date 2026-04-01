@@ -14,20 +14,19 @@ public class Push extends AbstractPush{
 	private static String CONTEXT = "covaid/mobile";
 	private static final String S_PUSH = "push"; 
 
-	private Config config;
-	
 	private static Push push = new Push(); 
 	
 	private Properties properties;
 	
 	private Push() {
 		super( S_COVAID );
-		config = Config.getInstance();
-		ConfigBuilder builder = new ConfigBuilder();
-		builder.build();
-		properties = builder.getParsedUnit(S_COVAID);
-		super.setPublicKey(getPublicKey());
-		super.setPrivateKey(getPrivateKey());
+		try {
+			properties = ConfigBuilder.getConfig(S_COVAID);
+			super.setPublicKey(getPublicKey());
+			super.setPrivateKey(getPrivateKey());
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 	}
 	
 	public static final Push getInstance() {
@@ -39,7 +38,8 @@ public class Push extends AbstractPush{
 	}
 
 	public String getPublicKey() {
-		return properties.getProperty(ConfigBuilder.Nodes.PUBLIC_KEY.name());
+		String key = properties.getProperty(ConfigBuilder.Nodes.PUBLIC_KEY.name());
+		return key;
 	}
 
 	public String getPrivateKey() {
@@ -47,6 +47,7 @@ public class Push extends AbstractPush{
 	}
 
 	public String getServerContext( String service ) {
+		Config config = Config.getInstance();
 		String serverContext = config.getServerContext();
 		return serverContext+ CONTEXT +"/" + service ;		
 	}

@@ -30,7 +30,7 @@
 				</composite>
 			</item>
 			<item name="Log">
-				<composite class="org.condast.commons.ui.logger.LogComposite" name="log-composite">
+				<composite class="org.condast.commons.ui.widgets.logger.LogComposite" name="log-composite">
 					<layout-data type="grid-data">
 						<horizontal spacing="fill" grab-excess="true" columns="1" />
 						<vertical spacing="fill" />
