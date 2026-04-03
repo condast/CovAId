@@ -9,7 +9,6 @@
       <unit id="org.eclipse.rap.sdk.feature.feature.group" version="3.29.0.20240605-1200"/>
       <repository location="https://download.eclipse.org/rt/rap/3.29/R-20240605-1615/"/>
     </location>
-    <location path="P:\Virgo\virgo-jetty-server-3.7.4.POM\repository\EclipseLink" type="Directory"/>
 	<location path="P:\Virgo\virgo-jetty-server-3.7.4.POM\repository\jpa" type="Directory"/>
 	<location path="P:\Virgo\virgo-jetty-server-3.7.4.POM\repository\orientdb" type="Directory"/>
 	<location includeDependencyDepth="none" includeDependencyScopes="compile" includeSource="true" missingManifest="generate" type="Maven">
@@ -39,6 +38,18 @@
 				<type>jar</type>
 			</dependency>
 			<dependency>
+				<groupId>jakarta.validation</groupId>
+				<artifactId>jakarta.validation-api</artifactId>
+				<version>2.0.2</version>
+				<type>jar</type>
+			</dependency>
+			<dependency>
+				<groupId>jakarta.xml.bind</groupId>
+				<artifactId>jakarta.xml.bind-api</artifactId>
+				<version>2.3.3</version>
+				<type>jar</type>
+			</dependency>
+			<dependency>
 				<groupId>javax.activation</groupId>
 				<artifactId>activation</artifactId>
 				<version>1.1.1</version>
@@ -62,13 +73,6 @@
 				<version>2.1.1</version>
 				<type>jar</type>
 			</dependency>
-			<!-- Source: https://mvnrepository.com/artifact/jakarta.validation/jakarta.validation-api -->
-			<dependency>
-			    <groupId>jakarta.validation</groupId>
-			    <artifactId>jakarta.validation-api</artifactId>
-			    <version>2.0.2</version>
-			    <scope>compile</scope>
-			</dependency>
 			<dependency>
 				<groupId>mysql</groupId>
 				<artifactId>mysql-connector-java</artifactId>
@@ -79,6 +83,42 @@
 				<groupId>org.eclipse.jetty.orbit</groupId>
 				<artifactId>javax.servlet</artifactId>
 				<version>3.0.0.v201112011016</version>
+				<type>jar</type>
+			</dependency>
+			<dependency>
+				<groupId>org.eclipse.persistence</groupId>
+				<artifactId>javax.persistence</artifactId>
+				<version>2.2.1</version>
+				<type>jar</type>
+			</dependency>
+			<dependency>
+				<groupId>org.eclipse.persistence</groupId>
+				<artifactId>org.eclipse.persistence.asm</artifactId>
+				<version>9.4.0</version>
+				<type>jar</type>
+			</dependency>
+			<dependency>
+				<groupId>org.eclipse.persistence</groupId>
+				<artifactId>org.eclipse.persistence.core</artifactId>
+				<version>2.7.16</version>
+				<type>jar</type>
+			</dependency>
+			<dependency>
+				<groupId>org.eclipse.persistence</groupId>
+				<artifactId>org.eclipse.persistence.jpa.jpql</artifactId>
+				<version>2.7.16</version>
+				<type>jar</type>
+			</dependency>
+			<dependency>
+				<groupId>org.eclipse.persistence</groupId>
+				<artifactId>org.eclipse.persistence.jpa</artifactId>
+				<version>2.7.16</version>
+				<type>jar</type>
+			</dependency>
+			<dependency>
+				<groupId>org.eclipse.persistence</groupId>
+				<artifactId>org.eclipse.persistence.nosql</artifactId>
+				<version>2.7.16</version>
 				<type>jar</type>
 			</dependency>
 			<dependency>
@@ -135,34 +175,33 @@
 				<version>2.26-b03</version>
 				<type>jar</type>
 			</dependency>
-			<!-- Source: https://mvnrepository.com/artifact/org.glassfish.jersey.inject/jersey-hk2 -->
-			<dependency>
-			    <groupId>org.glassfish.jersey.inject</groupId>
-			    <artifactId>jersey-hk2</artifactId>
-			    <version>2.26</version>
-			    <scope>compile</scope>
-			</dependency>
 			<dependency>
 				<groupId>org.glassfish.jersey.containers</groupId>
 				<artifactId>jersey-container-servlet-core</artifactId>
-				<version>2.26</version>
+				<version>2.48</version>
 				<type>jar</type>
 			</dependency>
 			<dependency>
 				<groupId>org.glassfish.jersey.core</groupId>
 				<artifactId>jersey-client</artifactId>
-				<version>2.26</version>
+				<version>2.48</version>
 				<type>jar</type>
 			</dependency>
 			<dependency>
 				<groupId>org.glassfish.jersey.core</groupId>
 				<artifactId>jersey-common</artifactId>
-				<version>2.26</version>
+				<version>2.48</version>
 				<type>jar</type>
 			</dependency>
 			<dependency>
 				<groupId>org.glassfish.jersey.core</groupId>
 				<artifactId>jersey-server</artifactId>
+				<version>2.48</version>
+				<type>jar</type>
+			</dependency>
+			<dependency>
+				<groupId>org.glassfish.jersey.inject</groupId>
+				<artifactId>jersey-hk2</artifactId>
 				<version>2.26</version>
 				<type>jar</type>
 			</dependency>
@@ -229,19 +268,17 @@
 		<plugin id="jakarta.xml.bind-api"/>
 		<plugin id="javassist"/>
 		<plugin id="javax.annotation-api"/>
-		<plugin id="javax.persistence"/>
 		<plugin id="javax.ws.rs-api"/>
 		<plugin id="org.codehaus.jettison.jettison"/>
 		<plugin id="org.eclipse.gemini.dbaccess.mysql"/>
 		<plugin id="org.eclipse.gemini.dbaccess.util"/>
 		<plugin id="org.eclipse.gemini.jpa"/>
 		<plugin id="org.eclipse.persistence.antlr"/>
-		<plugin id="org.eclipse.persistence.asm"/>
-		<plugin id="org.eclipse.persistence.core"/>
-		<plugin id="org.eclipse.persistence.dbws"/>
-		<plugin id="org.eclipse.persistence.jpa"/>
-		<plugin id="org.eclipse.persistence.jpa.jpql"/>
-		<plugin id="org.eclipse.persistence.nosql"/>
+		<plugin id="org.eclipse.persistence.asm" version="9.4.0"/>
+		<plugin id="org.eclipse.persistence.core" version="2.7.16.v20250613-47773a333b"/>
+		<plugin id="org.eclipse.persistence.jpa" version="2.7.16.v20250613-47773a333b"/>
+		<plugin id="org.eclipse.persistence.jpa.jpql" version="2.7.16.v20250613-47773a333b"/>
+		<plugin id="org.eclipse.persistence.nosql" version="2.7.16.v20250613-47773a333b"/>
 		<plugin id="org.glassfish.jersey.bundles.repackaged.jersey-guava"/>
 		<plugin id="org.objectweb.asm.commons" version="9.9.1"/>
 		<plugin id="org.objectweb.asm.util"/>
@@ -476,5 +513,7 @@
 		<plugin id="jakarta.validation.jakarta.validation-api.source"/>
 		<plugin id="org.eclipse.equinox.http.servlet"/>
 		<plugin id="org.eclipse.equinox.http.servlet.source"/>
+		<plugin id="javax.persistence"/>
+		<plugin id="javax.persistence.source"/>
 	</includeBundles>
 </target>
