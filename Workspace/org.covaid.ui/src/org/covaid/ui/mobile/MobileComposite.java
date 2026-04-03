@@ -7,6 +7,7 @@ import java.util.Date;
 import java.util.Timer;
 import java.util.TimerTask;
 
+import org.condast.js.commons.utils.AuthenticationData;
 import org.covaid.core.mobile.IMobileRegistration;
 import org.covaid.ui.frogger.FroggerComposite;
 import org.eclipse.swt.SWT;
@@ -52,6 +53,7 @@ public class MobileComposite extends Composite {
 		wizard = new MobileWizard(this, SWT.BORDER);
 		wizard.setLayoutData(new GridData(SWT.FILL, SWT.FILL, false, true, 1, 1));
 		froggerComposite = new FroggerComposite(this, SWT.NONE);
+		froggerComposite.setInput( AuthenticationData.getInstance());
 		froggerComposite.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 3, 1));
 		froggerComposite.addUpdateListener(updateListener);
 		

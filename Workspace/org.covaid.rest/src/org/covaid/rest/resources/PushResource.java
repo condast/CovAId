@@ -25,7 +25,7 @@ import org.covaid.rest.push.Push;
 @Path("/push")
 public class PushResource{
 
-	public static final String S_ERR_UNKNOWN_REQUEST = "An invalid request was rertrieved: ";
+	public static final String S_ERR_UNKNOWN_REQUEST = "An invalid request was retrieved: ";
 	public static final String S_ERR_INVALID_VESSEL = "A request was received from an unknown vessel:";
 	
 	public static final String S_RES_INDEX_JS = "/resources/html/push.html";
