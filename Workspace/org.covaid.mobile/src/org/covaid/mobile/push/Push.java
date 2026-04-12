@@ -21,7 +21,7 @@ public class Push extends AbstractPush{
 	private Push() {
 		super( S_COVAID );
 		try {
-			properties = ConfigBuilder.getConfig(S_COVAID);
+			properties = null;//ConfigBuilder.getConfig(S_COVAID);
 			super.setPublicKey(getPublicKey());
 			super.setPrivateKey(getPrivateKey());
 		} catch (Exception e) {

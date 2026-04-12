@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <?pde version="3.8"?>
-<target name="covaid.target" sequenceNumber="254">
+<target name="covaid-3x.target" sequenceNumber="254">
 <locations>
     <location includeAllPlatforms="false" includeConfigurePhase="false" includeMode="planner" includeSource="true" type="InstallableUnit">
       <unit id="org.eclipse.rap.equinox.target.feature.feature.group" version="3.29.0.20240605-1200"/>

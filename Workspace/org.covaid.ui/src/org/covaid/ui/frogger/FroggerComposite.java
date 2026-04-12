@@ -15,7 +15,7 @@ import org.condast.commons.messaging.http.ResponseEvent;
 import org.condast.commons.preferences.config.Config;
 import org.condast.commons.strings.StringStyler;
 import org.condast.commons.ui.session.SessionEvent;
-import org.condast.commons.ui.widgets.session.AbstractSessionHandler;
+import org.condast.commons.ui.session.AbstractSessionHandler;
 import org.condast.js.commons.utils.AuthenticationData;
 import org.covaid.core.data.ContagionData;
 import org.covaid.core.data.frogger.HubData;

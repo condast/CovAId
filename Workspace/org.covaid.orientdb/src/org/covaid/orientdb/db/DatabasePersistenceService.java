@@ -1,7 +1,6 @@
 package org.covaid.orientdb.db;
 
 import javax.persistence.EntityManager;
-import javax.persistence.EntityManagerFactory;
 
 import org.covaid.orientdb.core.AbstractPersistenceService;
 
@@ -34,13 +33,6 @@ public class DatabasePersistenceService extends AbstractPersistenceService {
 		return service;
 	}
 	
-	@Override
-	public EntityManager getManager() {
-		//if( this.factory == null )
-		return null;
-		//return//database.getnull;
-	}
-
 	/**
 	 * Create a database
 	 * @return
@@ -82,7 +74,8 @@ public class DatabasePersistenceService extends AbstractPersistenceService {
 	}
 
 	@Override
-	public EntityManagerFactory getFactory() {
-		return (EntityManagerFactory) factory;
+	public EntityManager getManager() {
+		// TODO Auto-generated method stub
+		return null;
 	}
 }

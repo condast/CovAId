@@ -1,6 +1,6 @@
 package org.covaid.mobile.service;
 
-import org.condast.commons.persistence.service.FactoryService;
+import org.condast.commons.persistence.service.AbstractFactoryService;
 import org.covaid.mobile.Activator;
 import org.covaid.mobile.core.Dispatcher;
 import org.covaid.orientdb.object.IOrientEntityManagerFactory;
@@ -16,7 +16,7 @@ import org.osgi.service.component.annotations.ReferencePolicy;
  */
 @Component( name="org.covaid.mobile.entity.service",
 immediate=true)
-public class EntityManagerService extends FactoryService<IOrientEntityManagerFactory>{
+public class EntityManagerService extends AbstractFactoryService<IOrientEntityManagerFactory>{
 
 	private Dispatcher service = Dispatcher.getInstance();
 	
@@ -28,14 +28,28 @@ public class EntityManagerService extends FactoryService<IOrientEntityManagerFac
 	@Reference( cardinality = ReferenceCardinality.MANDATORY,
 	policy=ReferencePolicy.DYNAMIC)
 	@Override
-	public synchronized void bindEMF( IOrientEntityManagerFactory emf) {
+	public synchronized void bindFactory( IOrientEntityManagerFactory emf) {
 		service.setEMF(emf);
-		super.bindEMF(emf);
+		super.bindFactory(emf);
 	}
 
 	@Override
-	public synchronized void unbindEMF( IOrientEntityManagerFactory emf) {
+	public synchronized void unbindFactory( IOrientEntityManagerFactory emf) {
 		service.disconnect();
-		super.unbindEMF(emf);
+		super.unbindFactory(emf);
+	}
+
+
+	@Override
+	public void activate() {
+		// TODO Auto-generated method stub
+		
+	}
+
+
+	@Override
+	public void deactivate() {
+		// TODO Auto-generated method stub
+		
 	}
 }

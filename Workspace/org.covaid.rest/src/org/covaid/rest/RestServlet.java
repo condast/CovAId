@@ -1,7 +1,7 @@
 package org.covaid.rest;
 
-import javax.servlet.Servlet;
-import javax.ws.rs.ApplicationPath;
+import jakarta.servlet.Servlet;
+import jakarta.ws.rs.ApplicationPath;
 
 import org.condast.commons.messaging.http.AbstractServletWrapper;
 import org.condast.commons.messaging.rest.CorsFilter;

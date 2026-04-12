@@ -4,7 +4,6 @@ import java.io.File;
 import java.util.List;
 import java.util.logging.Logger;
 
-import javax.persistence.EntityManager;
 import org.condast.commons.persistence.service.IPersistenceService;
 import org.condast.commons.project.ProjectFolderUtils;
 import org.condast.commons.service.IPersistencyServiceListener;
@@ -90,7 +89,6 @@ public abstract class AbstractPersistenceService implements IPersistenceService{
 	protected abstract boolean onConnect();
 	protected abstract boolean onDisconnect();
 	
-	@Override
 	public synchronized void connect() {
 		if( !this.isEnabled() )
 			throw new ServiceConnectionException( "The " + this.name + S_ERR_NO_SERVICE_FOUND );
@@ -110,13 +108,6 @@ public abstract class AbstractPersistenceService implements IPersistenceService{
 		}catch( Exception ex ){
 			ex.printStackTrace();
 		}
-	}
-
-	@Override
-	public EntityManager getManager() {
-		//if( this.factory == null )
-		return null;
-		//return//database.getnull;
 	}
 
 	@Override
