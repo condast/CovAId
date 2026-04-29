@@ -61,6 +61,27 @@
 				<version>1.3.2</version>
 				<type>jar</type>
 			</dependency>
+			<!-- Source: https://mvnrepository.com/artifact/javax.validation/validation-api -->
+			<dependency>
+			    <groupId>javax.validation</groupId>
+			    <artifactId>validation-api</artifactId>
+			    <version>2.0.1.Final</version>
+			    <scope>compile</scope>
+			</dependency>
+			<!-- Source: https://mvnrepository.com/artifact/javax.servlet.jsp/javax.servlet.jsp-api -->
+			<dependency>
+			    <groupId>javax.servlet.jsp</groupId>
+			    <artifactId>javax.servlet.jsp-api</artifactId>
+			    <version>2.3.3</version>
+			    <scope>provided</scope>
+			</dependency>
+			<!-- Source: https://mvnrepository.com/artifact/javax.el/javax.el-api -->
+			<dependency>
+			    <groupId>javax.el</groupId>
+			    <artifactId>javax.el-api</artifactId>
+			    <version>3.0.1-b06</version>
+			    <scope>compile</scope>
+			</dependency>			
 			<dependency>
 				<groupId>javax.mail</groupId>
 				<artifactId>javax.mail-api</artifactId>
@@ -89,6 +110,12 @@
 				<groupId>org.eclipse.persistence</groupId>
 				<artifactId>javax.persistence</artifactId>
 				<version>2.2.1</version>
+				<type>jar</type>
+			</dependency>
+			<dependency>
+				<groupId>org.eclipse.persistence</groupId>
+				<artifactId>org.eclipse.persistence.antlr</artifactId>
+				<version>2.7.16</version>
 				<type>jar</type>
 			</dependency>
 			<dependency>
@@ -205,6 +232,13 @@
 				<version>2.26</version>
 				<type>jar</type>
 			</dependency>
+			<!-- Source: https://mvnrepository.com/artifact/org.glassfish.jersey.ext/jersey-bean-validation -->
+			<dependency>
+			    <groupId>org.glassfish.jersey.ext</groupId>
+			    <artifactId>jersey-bean-validation</artifactId>
+			    <version>2.48</version>
+			    <scope>compile</scope>
+			</dependency>
 			<dependency>
 				<groupId>org.javassist</groupId>
 				<artifactId>javassist</artifactId>
@@ -274,11 +308,11 @@
 		<plugin id="org.eclipse.gemini.dbaccess.util"/>
 		<plugin id="org.eclipse.gemini.jpa"/>
 		<plugin id="org.eclipse.persistence.antlr"/>
-		<plugin id="org.eclipse.persistence.asm" version="9.4.0"/>
-		<plugin id="org.eclipse.persistence.core" version="2.7.16.v20250613-47773a333b"/>
-		<plugin id="org.eclipse.persistence.jpa" version="2.7.16.v20250613-47773a333b"/>
-		<plugin id="org.eclipse.persistence.jpa.jpql" version="2.7.16.v20250613-47773a333b"/>
-		<plugin id="org.eclipse.persistence.nosql" version="2.7.16.v20250613-47773a333b"/>
+		<plugin id="org.eclipse.persistence.asm"/>
+		<plugin id="org.eclipse.persistence.core"/>
+		<plugin id="org.eclipse.persistence.jpa"/>
+		<plugin id="org.eclipse.persistence.jpa.jpql"/>
+		<plugin id="org.eclipse.persistence.nosql"/>
 		<plugin id="org.glassfish.jersey.bundles.repackaged.jersey-guava"/>
 		<plugin id="org.objectweb.asm.commons" version="9.9.1"/>
 		<plugin id="org.objectweb.asm.util"/>
@@ -515,5 +549,14 @@
 		<plugin id="org.eclipse.equinox.http.servlet.source"/>
 		<plugin id="javax.persistence"/>
 		<plugin id="javax.persistence.source"/>
+		<plugin id="org.eclipse.persistence.antlr.source"/>
+		<plugin id="javax.validation.api"/>
+		<plugin id="javax.validation.api.source"/>
+		<plugin id="org.glassfish.jersey.ext.jersey-bean-validation"/>
+		<plugin id="org.glassfish.jersey.ext.jersey-bean-validation.source"/>
+		<plugin id="javax.servlet.jsp-api"/>
+		<plugin id="javax.servlet.jsp-api.source"/>
+		<plugin id="javax.el-api"/>
+		<plugin id="javax.el-api.source"/>
 	</includeBundles>
 </target>
