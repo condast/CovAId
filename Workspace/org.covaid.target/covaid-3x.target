@@ -273,12 +273,11 @@
 		<plugin id="org.eclipse.gemini.dbaccess.mysql"/>
 		<plugin id="org.eclipse.gemini.dbaccess.util"/>
 		<plugin id="org.eclipse.gemini.jpa"/>
-		<plugin id="org.eclipse.persistence.antlr"/>
-		<plugin id="org.eclipse.persistence.asm" version="9.4.0"/>
-		<plugin id="org.eclipse.persistence.core" version="2.7.16.v20250613-47773a333b"/>
-		<plugin id="org.eclipse.persistence.jpa" version="2.7.16.v20250613-47773a333b"/>
-		<plugin id="org.eclipse.persistence.jpa.jpql" version="2.7.16.v20250613-47773a333b"/>
-		<plugin id="org.eclipse.persistence.nosql" version="2.7.16.v20250613-47773a333b"/>
+		<plugin id="org.eclipse.persistence.asm"/>
+		<plugin id="org.eclipse.persistence.core"/>
+		<plugin id="org.eclipse.persistence.jpa"/>
+		<plugin id="org.eclipse.persistence.jpa.jpql"/>
+		<plugin id="org.eclipse.persistence.nosql"/>
 		<plugin id="org.glassfish.jersey.bundles.repackaged.jersey-guava"/>
 		<plugin id="org.objectweb.asm.commons" version="9.9.1"/>
 		<plugin id="org.objectweb.asm.util"/>
