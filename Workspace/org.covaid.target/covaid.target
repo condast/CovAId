@@ -16,7 +16,7 @@
 			<dependency>
 				<groupId>com.google.code.gson</groupId>
 				<artifactId>gson</artifactId>
-				<version>2.13.2</version>
+				<version>2.14.0</version>
 				<type>jar</type>
 			</dependency>
 			<dependency>
@@ -263,39 +263,14 @@
 				<version>1.0.1</version>
 				<type>jar</type>
 			</dependency>
-			<dependency>
-				<groupId>org.ow2.asm</groupId>
-				<artifactId>asm-commons</artifactId>
-				<version>9.9.1</version>
-				<type>jar</type>
-			</dependency>
-			<dependency>
-				<groupId>org.ow2.asm</groupId>
-				<artifactId>asm-tree</artifactId>
-				<version>9.9.1</version>
-				<type>jar</type>
-			</dependency>
-			<dependency>
-				<groupId>org.ow2.asm</groupId>
-				<artifactId>asm</artifactId>
-				<version>9.9.1</version>
-				<type>jar</type>
-			</dependency>
 		</dependencies>
 	</location>
 </locations>
 	<includeBundles>
-		<plugin id="com.fasterxml.jackson.core.jackson-annotations"/>
-		<plugin id="com.fasterxml.jackson.core.jackson-core"/>
-		<plugin id="com.fasterxml.jackson.core.jackson-databind"/>
 		<plugin id="com.googlecode.concurrentlinkedhashmap.lru"/>
 		<plugin id="com.orientechnologies.orientdb-client"/>
-		<plugin id="com.orientechnologies.orientdb-community"/>
 		<plugin id="com.orientechnologies.orientdb-core"/>
-		<plugin id="com.orientechnologies.orientdb-distributed"/>
 		<plugin id="com.orientechnologies.orientdb-graphdb"/>
-		<plugin id="com.orientechnologies.orientdb-jdbc"/>
-		<plugin id="com.orientechnologies.orientdb-lucene"/>
 		<plugin id="com.orientechnologies.orientdb-object"/>
 		<plugin id="com.orientechnologies.orientdb-server"/>
 		<plugin id="com.orientechnologies.orientdb-tools"/>
@@ -303,10 +278,9 @@
 		<plugin id="javassist"/>
 		<plugin id="javax.annotation-api"/>
 		<plugin id="javax.ws.rs-api"/>
-		<plugin id="org.codehaus.jettison.jettison"/>
 		<plugin id="org.eclipse.gemini.dbaccess.mysql"/>
 		<plugin id="org.eclipse.gemini.dbaccess.util"/>
-		<plugin id="org.eclipse.gemini.jpa"/>
+		<plugin id="org.eclipse.gemini.jpa" version="1.2.0.M1"/>
 		<plugin id="org.eclipse.persistence.antlr"/>
 		<plugin id="org.eclipse.persistence.asm"/>
 		<plugin id="org.eclipse.persistence.core"/>
@@ -314,7 +288,7 @@
 		<plugin id="org.eclipse.persistence.jpa.jpql"/>
 		<plugin id="org.eclipse.persistence.nosql"/>
 		<plugin id="org.glassfish.jersey.bundles.repackaged.jersey-guava"/>
-		<plugin id="org.objectweb.asm.commons" version="9.9.1"/>
+		<plugin id="org.objectweb.asm.commons"/>
 		<plugin id="org.objectweb.asm.util"/>
 		<plugin id="com.ibm.icu"/>
 		<plugin id="com.ibm.icu.source"/>
@@ -452,8 +426,8 @@
 		<plugin id="org.hamcrest.core.source"/>
 		<plugin id="org.junit"/>
 		<plugin id="org.junit.source"/>
-		<plugin id="org.objectweb.asm" version="9.9.1"/>
-		<plugin id="org.objectweb.asm.tree" version="9.9.1"/>
+		<plugin id="org.objectweb.asm"/>
+		<plugin id="org.objectweb.asm.tree"/>
 		<plugin id="org.objectweb.asm.tree.analysis"/>
 		<plugin id="org.osgi.service.cm"/>
 		<plugin id="org.osgi.service.cm.source"/>
@@ -502,18 +476,15 @@
 		<plugin id="org.eclipse.equinox.security.source"/>
 		<plugin id="org.freemarker.freemarker"/>
 		<plugin id="org.freemarker.freemarker.source"/>
-		<plugin id="org.objectweb.asm.commons.source"/>
-		<plugin id="org.objectweb.asm.source"/>
-		<plugin id="org.objectweb.asm.tree.source"/>
 		<plugin id="org.osgi.service.http"/>
 		<plugin id="org.osgi.service.http.source"/>
-		<plugin id="org.osgi.service.jdbc"/>
+		<plugin id="org.osgi.service.jdbc" version="1.1.0.202212101352"/>
 		<plugin id="org.osgi.service.jdbc.source"/>
-		<plugin id="org.osgi.service.jndi"/>
+		<plugin id="org.osgi.service.jndi" version="1.0.1.202109301733"/>
 		<plugin id="org.osgi.service.jndi.source"/>
 		<plugin id="wrapped.javax.activation.activation"/>
 		<plugin id="wrapped.javax.activation.activation.source"/>
-		<plugin id="com.mysql.jdbc"/>
+		<plugin id="com.mysql.jdbc" version="5.1.49"/>
 		<plugin id="com.mysql.jdbc.source"/>
 		<plugin id="jakarta.annotation-api"/>
 		<plugin id="jakarta.annotation-api.source"/>
@@ -558,5 +529,6 @@
 		<plugin id="javax.servlet.jsp-api.source"/>
 		<plugin id="javax.el-api"/>
 		<plugin id="javax.el-api.source"/>
+		<plugin id="org.eclipse.persistence.asm.source"/>
 	</includeBundles>
 </target>

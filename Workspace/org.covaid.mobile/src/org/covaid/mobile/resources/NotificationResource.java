@@ -13,7 +13,7 @@ import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import org.condast.commons.Utils;
-import org.condast.commons.messaging.http.IHttpRequest.HttpStatus;
+import org.condast.commons.jpa.messaging.IHttpRequest.HttpStatus;
 import org.covaid.core.model.Doctor;
 import org.covaid.mobile.core.Dispatcher;
 import org.covaid.mobile.model.Notification;

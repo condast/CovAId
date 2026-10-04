@@ -9,11 +9,12 @@ import javax.security.auth.Subject;
 import javax.security.auth.callback.Callback;
 import javax.security.auth.callback.CallbackHandler;
 import javax.security.auth.login.LoginException;
-import org.condast.commons.authentication.callback.LoginUserCallback;
-import org.condast.commons.authentication.core.IAuthenticationManager;
-import org.condast.commons.authentication.core.ILoginProvider;
-import org.condast.commons.authentication.module.AbstractLoginModule;
-import org.condast.commons.authentication.user.ILoginUser;
+import org.condast.commons.data.user.ILoginUser;
+import org.condast.commons.jpa.authentication.callback.LoginUserCallback;
+import org.condast.commons.jpa.authentication.core.IAuthenticationManager;
+import org.condast.commons.jpa.authentication.module.AbstractLoginModule;
+import org.condast.commons.jpa.authentication.core.ILoginProvider;
+
 import org.covaid.core.data.DoctorData;
 import org.covaid.dashboard.core.Dispatcher;
 

@@ -17,7 +17,7 @@ import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import org.condast.commons.Utils;
-import org.condast.commons.messaging.http.IHttpRequest.HttpStatus;
+import org.condast.commons.jpa.messaging.IHttpRequest.HttpStatus;
 import org.covaid.core.def.IContagion;
 import org.covaid.core.def.IContagion.SupportedContagion;
 import org.covaid.core.def.ILocation;
@@ -55,7 +55,7 @@ public class MobileResource {
 		MobileService service = null;
 		try{
 			service = new MobileService(dispatcher);
-			service.open();
+			dispatcher.open();
 			IMobile<Date> mobile = service.create( DateFormat.getTimeInstance().format( Calendar.getInstance().getTime()), dispatcher.getField());
 			dispatcher.addMobile(mobile);
 			Gson gson = new Gson();
@@ -68,7 +68,7 @@ public class MobileResource {
 		}
 		finally {
 			if( service != null )
-				service.close();			
+				dispatcher.close();			
 		}
 		return result;
 	}
@@ -91,7 +91,7 @@ public class MobileResource {
 		MobileService service = null;
 		try{
 			service = new MobileService(dispatcher);
-			service.open();
+			dispatcher.open();
 			dispatcher.removeMobile(identifier);
 			boolean result = service.remove(identifier);
 			if( !result )
@@ -103,8 +103,8 @@ public class MobileResource {
 			return Response.serverError().build();
 		}
 		finally {
-			if( service != null )
-				service.close();			
+			if( dispatcher != null )
+				dispatcher.close();			
 		}
 		return response;
 	}
@@ -130,7 +130,7 @@ public class MobileResource {
 			IMobile<Date> mobile = dispatcher.getMobile(identifier);
 			service = new MobileService(dispatcher);
 			if( mobile == null ) {
-				service.open();
+				dispatcher.open();
 				Collection<IMobile<Date>> results = service.find(identifier);
 				if( Utils.assertNull( results ))
 					return Response.noContent().build();
@@ -145,8 +145,8 @@ public class MobileResource {
 			return Response.serverError().build();
 		}
 		finally {
-			if( service != null )
-				service.close();			
+			if( dispatcher != null )
+				dispatcher.close();			
 		}
 		return result;
 	}
@@ -171,7 +171,7 @@ public class MobileResource {
 		MobileService service = null;
 		try{
 			service = new MobileService(dispatcher);
-			service.open();
+			dispatcher.open();
 			IMobile<Date> mobile = dispatcher.getMobile(identifier);
 			if( mobile == null ) {
 				Collection<IMobile<Date>> results = service.find(identifier);
@@ -189,8 +189,8 @@ public class MobileResource {
 			return Response.serverError().build();
 		}
 		finally {
-			if( service != null )
-				service.close();			
+			if( dispatcher != null )
+				dispatcher.close();			
 		}
 		return result;
 	}
@@ -218,7 +218,7 @@ public class MobileResource {
 			IMobile<Date> mobile = dispatcher.getMobile(identifier);
 			service = new MobileService(dispatcher);
 			if( mobile == null ) {
-				service.open();
+				dispatcher.open();
 				Collection<IMobile<Date>> results = service.find(identifier);
 				if( Utils.assertNull( results ))
 					return Response.noContent().build();
@@ -234,8 +234,8 @@ public class MobileResource {
 			return Response.serverError().build();
 		}
 		finally {
-			if( service != null )
-				service.close();			
+			if( dispatcher != null )
+				dispatcher.close();			
 		}
 		return result;
 	}
@@ -261,7 +261,7 @@ public class MobileResource {
 			IMobile<Date> mobile = dispatcher.getMobile(identifier);
 			service = new MobileService(dispatcher);
 			if( mobile == null ) {
-				service.open();
+				dispatcher.open();
 				Collection<IMobile<Date>> results = service.find(identifier);
 				if( Utils.assertNull( results ))
 					return Response.noContent().build();
@@ -276,8 +276,8 @@ public class MobileResource {
 			return Response.serverError().build();
 		}
 		finally {
-			if( service != null )
-				service.close();			
+			if( dispatcher != null )
+				dispatcher.close();			
 		}
 		return result;
 	}
@@ -303,7 +303,7 @@ public class MobileResource {
 		try{
 			IMobile<Date> mobile = dispatcher.getMobile(identifier);
 			service = new MobileService(dispatcher);
-			service.open();
+			dispatcher.open();
 			if( mobile == null ) {
 				Collection<IMobile<Date>> results = service.find(identifier);
 				if( Utils.assertNull( results ))
@@ -320,8 +320,8 @@ public class MobileResource {
 			return Response.serverError().build();
 		}
 		finally {
-			if( service != null )
-				service.close();			
+			if( dispatcher != null )
+				dispatcher.close();			
 		}
 		return result;
 	}
@@ -348,7 +348,7 @@ public class MobileResource {
 			IMobile<Date> mobile = dispatcher.getMobile(identifier);
 			if( mobile == null ) {
 				service = new MobileService(dispatcher);
-				service.open();
+				dispatcher.open();
 				Collection<IMobile<Date>> results = service.find(identifier);
 				if( Utils.assertNull( results ))
 					return Response.noContent().build();
@@ -364,8 +364,8 @@ public class MobileResource {
 			return Response.serverError().build();
 		}
 		finally {
-			if( service != null )
-				service.close();			
+			if( dispatcher != null )
+				dispatcher.close();			
 		}
 		return result;
 	}

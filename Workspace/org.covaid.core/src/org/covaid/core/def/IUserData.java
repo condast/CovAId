@@ -1,8 +1,7 @@
 package org.covaid.core.def;
 
 import java.util.Date;
-
-import org.condast.commons.authentication.user.ILoginUser;
+import org.condast.commons.data.user.ILoginUser;
 
 public interface IUserData {
 

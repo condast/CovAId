@@ -53,7 +53,7 @@ public class MobileComposite extends Composite {
 		wizard = new MobileWizard(this, SWT.BORDER);
 		wizard.setLayoutData(new GridData(SWT.FILL, SWT.FILL, false, true, 1, 1));
 		froggerComposite = new FroggerComposite(this, SWT.NONE);
-		froggerComposite.setInput( AuthenticationData.getInstance());
+		froggerComposite.setInput( new AuthenticationData( 0l, 0l, null ));
 		froggerComposite.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 3, 1));
 		froggerComposite.addUpdateListener(updateListener);
 		

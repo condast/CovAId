@@ -4,6 +4,8 @@ import java.util.Collection;
 import java.util.Map;
 import java.util.TreeMap;
 
+import javax.persistence.EntityManagerFactory;
+
 import org.covaid.core.data.TimelineCollection;
 import org.covaid.core.data.frogger.HubData;
 import org.covaid.core.data.frogger.LocationData;
@@ -250,5 +252,11 @@ public class Dispatcher extends AbstractPersistenceService {
 		public LocationData[] getSurroundings( int radius, int step ){
 			return domain.getSurroundings(radius, step);
 		}
+	}
+
+	@Override
+	public EntityManagerFactory getFactory() {
+		// TODO Auto-generated method stub
+		return null;
 	}
 }

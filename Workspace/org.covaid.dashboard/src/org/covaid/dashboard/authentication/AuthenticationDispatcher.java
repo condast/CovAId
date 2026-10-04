@@ -1,6 +1,6 @@
 package org.covaid.dashboard.authentication;
 
-import org.condast.commons.authentication.core.AbstractLoginClient;
+import org.condast.commons.jpa.authentication.core.AbstractLoginClient;
 
 public class AuthenticationDispatcher extends AbstractLoginClient{
 

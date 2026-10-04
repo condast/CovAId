@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<scr:component xmlns:scr="http://www.osgi.org/xmlns/scr/v1.4.0" name="org.covaid.ui.http.CovaidUIWebResources">
+   <property name="osgi.http.whiteboard.resource.pattern" type="String" value="/covaid/images/*"/>
+   <property name="osgi.http.whiteboard.resource.prefix" type="String" value="/images"/>
+   <service>
+      <provide interface="org.covaid.ui.http.CovaidUIWebResources"/>
+   </service>
+   <implementation class="org.covaid.ui.http.CovaidUIWebResources"/>
+</scr:component>

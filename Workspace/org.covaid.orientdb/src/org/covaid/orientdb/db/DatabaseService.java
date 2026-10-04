@@ -6,8 +6,8 @@ import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 
-import org.condast.commons.authentication.core.AuthenticationEvent;
-import org.condast.commons.authentication.user.ILoginUser;
+import org.condast.commons.data.user.ILoginUser;
+import org.condast.commons.jpa.authentication.core.AuthenticationEvent;
 import org.covaid.core.data.StoredNode;
 
 import com.orientechnologies.orient.core.db.document.ODatabaseDocumentTx;

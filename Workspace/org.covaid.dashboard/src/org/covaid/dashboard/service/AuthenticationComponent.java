@@ -2,7 +2,7 @@ package org.covaid.dashboard.service;
 
 import java.util.logging.Logger;
 
-import org.condast.commons.authentication.core.ILoginProvider;
+import org.condast.commons.jpa.authentication.core.ILoginProvider;
 import org.covaid.dashboard.authentication.AuthenticationDispatcher;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;

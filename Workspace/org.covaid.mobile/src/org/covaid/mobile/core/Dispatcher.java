@@ -11,6 +11,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
+import javax.persistence.EntityManagerFactory;
+
 import org.condast.commons.data.plane.IField;
 import org.condast.commons.project.ProjectFolderUtils;
 import org.covaid.core.def.IMobile;
@@ -161,5 +163,11 @@ public class Dispatcher extends AbstractPersistenceService implements IDoctorDat
 	@Override
 	public void removeDoctorDataListener(IDoctorDataListener listener) {
 		this.listeners.remove(listener);
+	}
+
+	@Override
+	public EntityManagerFactory getFactory() {
+		// TODO Auto-generated method stub
+		return null;
 	}
 }

@@ -13,17 +13,17 @@ import java.util.TreeMap;
 import java.util.logging.Logger;
 
 import org.condast.commons.Utils;
-import org.condast.commons.messaging.http.AbstractHttpRequest;
-import org.condast.commons.messaging.http.IHttpClientListener;
-import org.condast.commons.messaging.http.ResponseEvent;
+import org.condast.commons.jpa.messaging.AbstractHttpRequest;
+import org.condast.commons.jpa.messaging.IHttpClientListener;
+import org.condast.commons.jpa.messaging.ResponseEvent;
 import org.condast.commons.number.NumberUtils;
 import org.condast.commons.parser.AbstractResourceParser;
 import org.condast.commons.parser.AbstractResourceParser.Functions;
 import org.condast.commons.preferences.config.Config;
 import org.condast.commons.strings.StringStyler;
 import org.condast.commons.strings.StringUtils;
+import org.condast.commons.ui.session.AbstractSessionHandler;
 import org.condast.commons.ui.session.SessionEvent;
-import org.condast.commons.ui.widgets.session.AbstractSessionHandler;
 import org.condast.commons.ui.widgets.xy.AbstractMultiXYGraph;
 import org.condast.commons.ui.widgets.xy.AbstractXYGraph;
 import org.condast.js.commons.controller.AbstractJavascriptController;
@@ -294,7 +294,7 @@ public class MobileWizard extends Composite {
 	private IEvaluationListener<Object> elistener = (event) ->{
 		try {
 			logger.fine("CALLBACK");
-			AuthenticationData authData = AuthenticationData.getInstance();
+			AuthenticationData authData = null;//AuthenticationData.getInstance();
 			if(!CanvasController.S_CALLBACK_ID.equals(event.getId()))
 				return;
 			MobileWebClient client = new MobileWebClient();
@@ -413,7 +413,7 @@ public class MobileWizard extends Composite {
 			@Override
 			protected String onHandleAuthentication( String id, AuthenticationData.Authentication authentication) {
 				StringBuilder builder = new StringBuilder();
-				AuthenticationData authData = AuthenticationData.getInstance();
+				AuthenticationData authData = null;//AuthenticationData.getInstance();
 				switch( authentication ) {
 				case TOKEN:
 					builder.append( token );
@@ -523,7 +523,7 @@ public class MobileWizard extends Composite {
 		canvasSafety.setBackground(getDisplay().getSystemColor(SWT.COLOR_TRANSPARENT));
 		canvasSafety.addPaintListener(safetyListener);
 				
-		AuthenticationData authData = AuthenticationData.getInstance();
+		AuthenticationData authData = null;//AuthenticationData.getInstance();
 		btnSafety = new Button(grpIndication, SWT.CHECK);
 		btnSafety.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, false, false, 2, 1));
 		btnSafety.setBackground( getDisplay().getSystemColor(SWT.COLOR_TRANSPARENT));
@@ -568,14 +568,14 @@ public class MobileWizard extends Composite {
 	private String createVariables( String args ) throws Exception {
 		StringBuilder builder = new StringBuilder();
 		String[] split = args.split("[&]");
-		AuthenticationData authData = AuthenticationData.getInstance();
+		AuthenticationData authData = null;//AuthenticationData.getInstance();
 		Map<Authentication, String> auth = new HashMap<>();
 		for( String str: split ) {
 			builder.append("var " + str + ";\n");
 			String[] split1 = str.split("[=]");
 			auth.put(AuthenticationData.Authentication.valueOf(split1[0].toUpperCase()), split1[1]);
 		}
-		authData.setData(auth);
+		//authData.setData(auth);
 		this.btnSafety.setEnabled(authData !=null);
 		this.btnSafety.setSelection(this.protection);
 		if( mobile == null ) {
@@ -621,7 +621,7 @@ public class MobileWizard extends Composite {
 		try {
 			if( busy )
 				return;
-			AuthenticationData authData = AuthenticationData.getInstance();
+			AuthenticationData authData = null;//AuthenticationData.getInstance();
 			WebClient client = new WebClient();
 			client.addListener(session);
 			Map<String, String> params = authData.toMap();
@@ -650,7 +650,7 @@ public class MobileWizard extends Composite {
 	
 	public void dispose() {
 		if( this.mobile != null ) {
-			AuthenticationData authData = AuthenticationData.getInstance();
+			AuthenticationData authData = null;//AuthenticationData.getInstance();
 			MobileWebClient client = new MobileWebClient();
 			Map<String, String> params = authData.toMap();
 			try {
@@ -805,7 +805,7 @@ public class MobileWizard extends Composite {
 		@Override
 		protected String onHandleResponse(ResponseEvent<Requests> event) throws IOException {
 			Gson gson = new Gson();
-			AuthenticationData authData = AuthenticationData.getInstance();
+			AuthenticationData authData = null;//AuthenticationData.getInstance();
 			switch( event.getRequest()) {
 			case CREATE://is usually not called, but done directly from html
 				mobile = gson.fromJson( event.getResponse(), DateMobile.class );
@@ -891,7 +891,7 @@ public class MobileWizard extends Composite {
 
 	protected void setProtection( boolean protection ) {
 		try {
-			AuthenticationData authData = AuthenticationData.getInstance();
+			AuthenticationData authData = null;//AuthenticationData.getInstance();
 			WebClient client = new WebClient();
 			client.addListener(session);
 			Map<String, String> params = authData.toMap();
@@ -909,7 +909,7 @@ public class MobileWizard extends Composite {
 				return;
 			WebClient client = new WebClient();
 			client.addListener(session);
-			AuthenticationData authData = AuthenticationData.getInstance();
+			AuthenticationData authData = null;//AuthenticationData.getInstance();
 			Map<String, String> params = authData.toMap();
 			client.sendGet(Requests.PROTECTED, params);
 			client.removeListener(session);
@@ -930,7 +930,7 @@ public class MobileWizard extends Composite {
 				return;
 			Gson gson = new Gson();
 			ResponseEvent<Requests> response = sevent.getData();
-			AuthenticationData authData = AuthenticationData.getInstance();
+			AuthenticationData authData = null;//AuthenticationData.getInstance();
 			switch( sevent.getData().getRequest()) {
 			case GET:
 				btnSafety.setEnabled(authData != null );
