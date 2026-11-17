@@ -12,7 +12,6 @@ import org.condast.commons.xml.BuildEvent;
 import org.condast.commons.xml.IBuildListener;
 import org.condast.js.commons.ui.widgets.rwt.AbstractRWTSessionSupport;
 import org.condast.js.commons.ui.widgets.xml.XMLFactoryBuilder;
-import org.covaid.dashboard.authentication.AuthenticationManager;
 import org.covaid.dashboard.core.Dispatcher;
 import org.eclipse.rap.rwt.RWT;
 import org.eclipse.rap.rwt.application.AbstractEntryPoint;
@@ -106,7 +105,7 @@ public class BasicEntryPoint extends AbstractEntryPoint {
 			handler = new RWTUiSessionHandler(parent.getDisplay());
 			//Set the RWT Locale
 			parent.setData( RWT.CUSTOM_VARIANT, S_COVAID );
-			Locale locale = new Locale( "nl", "NL" );
+			Locale locale = Locale.of( "nl", "NL" );
 			RWT.setLocale(locale);
 			RWT.getUISession().setLocale(locale);
 			Locale.setDefault( locale );
@@ -124,13 +123,11 @@ public class BasicEntryPoint extends AbstractEntryPoint {
 			ex.printStackTrace();
 		}
 	}
-	
-	
+		
 	@Override
 	protected void finalize() throws Throwable {
 		//evc.setVesselService(null);
 		handler.dispose();
-		super.finalize();
 	}
 
 
@@ -142,7 +139,7 @@ public class BasicEntryPoint extends AbstractEntryPoint {
 
 		@Override
 		protected void onHandleTimeout(boolean reload) {
-			AuthenticationManager.getInstance().logout();
+			//AuthenticationDispatcher.getInstance().logout();
 		}
 		
 	}

@@ -2,8 +2,8 @@ package org.covaid.dashboard;
 
 import java.util.Locale;
 
-import org.condast.commons.ui.session.AbstractSessionHandler;
-import org.condast.commons.ui.session.SessionEvent;
+import org.condast.js.commons.session.AbstractSessionHandler;
+import org.condast.js.commons.session.SessionEvent;
 import org.covaid.core.doctor.DoctorDataEvent;
 import org.covaid.core.doctor.IDoctorDataListener;
 import org.covaid.dashboard.core.Dispatcher;

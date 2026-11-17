@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="Karaf Generator" default="generate-karaf"
+	basedir=".">
+
+	<property name="karaf.dir"
+		location="${basedir}/src/main/feature" />
+
+	<target name="init-karaf"
+		depends="create-directories, generate-karaf" />
+
+	<target name="create-directories">
+		<mkdir dir="${karaf.dir}" />
+	</target>
+
+    <!-- We read feature.xml from org.condast.commons.feature and create a template for Karaf features -->
+	<target name="generate-karaf" depends="create-directories">
+
+		<xslt in="${basedir}/feature.xml"
+			out="${karaf.dir}/features.xml.template"
+			style="${basedir}/karaf-features.xsl">
+
+            <param name="repositoryGroupId" expression="${project.groupId}" />
+            <param name="version" expression="${project.version}" />
+            <param name="majorVersion" expression="${major.version}" />
+
+		</xslt>
+	</target>
+</project>

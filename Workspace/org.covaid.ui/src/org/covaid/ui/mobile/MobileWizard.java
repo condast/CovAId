@@ -18,16 +18,17 @@ import org.condast.commons.jpa.messaging.IHttpClientListener;
 import org.condast.commons.jpa.messaging.ResponseEvent;
 import org.condast.commons.number.NumberUtils;
 import org.condast.commons.parser.AbstractResourceParser;
-import org.condast.commons.parser.AbstractResourceParser.Functions;
+import org.condast.commons.parser.IResourceParser;
+import org.condast.commons.parser.IResourceParser.Functions;
 import org.condast.commons.preferences.config.Config;
 import org.condast.commons.strings.StringStyler;
 import org.condast.commons.strings.StringUtils;
-import org.condast.commons.ui.session.AbstractSessionHandler;
-import org.condast.commons.ui.session.SessionEvent;
 import org.condast.commons.ui.widgets.xy.AbstractMultiXYGraph;
 import org.condast.commons.ui.widgets.xy.AbstractXYGraph;
 import org.condast.js.commons.controller.AbstractJavascriptController;
 import org.condast.js.commons.eval.IEvaluationListener;
+import org.condast.js.commons.session.AbstractSessionHandler;
+import org.condast.js.commons.session.SessionEvent;
 import org.condast.js.commons.utils.AuthenticationData;
 import org.condast.js.commons.utils.AuthenticationData.Authentication;
 import org.condast.js.commons.wizard.AbstractHtmlParser;
@@ -433,7 +434,7 @@ public class MobileWizard extends Composite {
 
 			
 			@Override
-			protected String onHandleValues(Functions function, String id, AbstractResourceParser.Attributes attr) {
+			protected String onHandleValues(Functions function, String id, IResourceParser.Attributes attr) {
 				int result = 0;
 				Labels label = Labels.valueOf(id.toUpperCase());
 				switch( attr ) {
@@ -450,7 +451,7 @@ public class MobileWizard extends Composite {
 			}
 			
 			@Override
-			protected String onHandleFunction(Functions function, String id, AbstractResourceParser.Attributes attr) {
+			protected String onHandleFunction(Functions function, String id, IResourceParser.Attributes attr) {
 				String result = null;
 				try {
 					switch( function ) {
@@ -475,7 +476,7 @@ public class MobileWizard extends Composite {
 					e.printStackTrace();
 				}
 				return result;
-			}	
+			}
 		};
 
 		grpDaysForecast = new Group(this, SWT.NONE);
@@ -796,12 +797,6 @@ public class MobileWizard extends Composite {
 			super( config.getServerContext() + S_COVAID_MOBILE_CONTEXT);
 		}
 
-
-		@Override
-		protected void sendGet(Requests request, Map<String, String> parameters) throws IOException {
-			super.sendGet(request, parameters);
-		}
-	
 		@Override
 		protected String onHandleResponse(ResponseEvent<Requests> event) throws IOException {
 			Gson gson = new Gson();
@@ -851,10 +846,6 @@ public class MobileWizard extends Composite {
 			super( config.getServerContext() + S_COVAID_CONTEXT );
 		}
 
-		protected void sendGet(Requests request, Map<String, String> parameters ) throws IOException {
-			super.sendGet(request, parameters);
-		}
-	
 		@Override
 		protected String onHandleResponse(ResponseEvent<Requests> event)throws IOException {
 			return event.getResponse();

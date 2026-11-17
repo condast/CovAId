@@ -4,7 +4,7 @@ Bundle-Name: General Support for non OSGI jars that are needed
 Bundle-SymbolicName: org.covaid.commons.support
 Bundle-Version: 1.0.0.qualifier
 Bundle-Vendor: Condast
-Bundle-RequiredExecutionEnvironment: JavaSE-1.7
+Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-ClassPath: lib/jsr305-3.0.2.jar,
  .,
  lib/gremlin-java-2.6.0.jar,

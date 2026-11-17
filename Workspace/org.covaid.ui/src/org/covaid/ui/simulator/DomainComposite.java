@@ -11,8 +11,8 @@ import java.util.logging.Logger;
 
 import org.condast.commons.data.plane.Field;
 import org.condast.commons.data.plane.IField;
-import org.condast.commons.ui.session.AbstractSessionHandler;
-import org.condast.commons.ui.session.SessionEvent;
+import org.condast.js.commons.session.AbstractSessionHandler;
+import org.condast.js.commons.session.SessionEvent;
 import org.covaid.core.def.IContagion;
 import org.covaid.core.def.IFieldEnvironment;
 import org.covaid.core.def.IDomainListener;

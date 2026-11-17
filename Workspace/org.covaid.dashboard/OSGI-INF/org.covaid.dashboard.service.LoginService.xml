@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<scr:component xmlns:scr="http://www.osgi.org/xmlns/scr/v1.3.0" immediate="true" name="org.covaid.dashboard.service.LoginService">
+   <service>
+      <provide interface="org.covaid.dashboard.service.LoginService"/>
+   </service>
+   <reference cardinality="1..1" field="loginProvider" interface="org.condast.commons.jpa.authentication.core.ILoginProvider" name="loginProvider" policy="dynamic"/>
+   <implementation class="org.covaid.dashboard.service.LoginService"/>
+</scr:component>

@@ -8,7 +8,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.covaid</groupId>
     <artifactId>org.covaid.parent</artifactId>
-    <version>1.0.0-SNAPSHOT</version>
+    <version>${revision}</version>
     <packaging>pom</packaging>
 
   	<licenses>
@@ -20,40 +20,63 @@
   	</licenses>
 
     <properties>
-		<bundle-name>org.covaid</bundle-name>
- 	    <maven.compiler.target>1.8</maven.compiler.target>
-    	<maven.compiler.source>1.8</maven.compiler.source>        
-    	<tycho.version>2.3.0</tycho.version>
-        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>  
         <generics>P:/GitHub</generics>
+ 		<maven.compiler.release>22</maven.compiler.release>		
+    	<tycho.version>5.0.4</tycho.version>
+		<bundle-name>org.covaid</bundle-name>
+        <major.version>1.0.0</major.version>
+        <minor.version>SNAPSHOT</minor.version>
+        <revision>${major.version}-${minor.version}</revision>
+        <build.name>RAP3X</build.name>
+
+        <project.root>${generics}/${bundle.name}</project.root>
+        <workspace.root>P:/Windows/Condast/Workspace/${bundle.name}</workspace.root>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>  
+
+        <condast.commons>file:${generics}/org.condast.commons/Workspace</condast.commons>
+        <condast.js>file:${generics}/org.condast.js/Workspace/</condast.js>
+        <update.site>${project.root}/Workspace/${bundle.name}.update/target/repository/plugins</update.site>
 		<release-dir>P:/Releases</release-dir>
-        <condast-commons>file:${generics}/org.condast.commons/Workspace</condast-commons>
-        <condast-js>file:${generics}/org.condast.js/Workspace</condast-js>
-        <condast-symbiot>file:${generics}/org.condast.symbiotic/Workspace</condast-symbiot>
     </properties>
 
-	<distributionManagement>
-		<repository>
-			<id>release directory</id>
-			<url>file:${release-dir}/release</url>
-		</repository>
-	</distributionManagement>
+    <profiles>
+        <profile>
+            <id>local-deploy</id>
+            <distributionManagement>
+                <repository>
+                  <id>local-releases</id>
+                  <url>http://localhost:8081/repository/maven-releases/</url>
+                </repository>
+                <snapshotRepository>
+                  <id>local-snapshots</id>
+                  <url>http://localhost:8081/repository/maven-snapshots/</url>
+                </snapshotRepository>
+                <site>
+                   <id>nexus-eclipse-updates</id>
+                   <url>${p2.update.site}/${bundle.name}/</url>
+                </site>
+            </distributionManagement>
+        </profile>
+        <profile>
+            <id>cloud-deploy</id>
+            <distributionManagement>
+                <repository>
+                    <id>cloud-releases</id>
+                    <url>http://localhost:18081/repository/maven-releases/</url>
+                </repository>
+                <snapshotRepository>
+                    <id>cloud-snapshots</id>
+                    <url>http://localhost:18081/repository/maven-snapshots/</url>
+                </snapshotRepository>
+                <site>
+                   <id>nexus-eclipse-updates</id>
+                   <url>${p2.update.site}/${bundle.name}/</url>
+                </site>
 
-    <repositories>
-         <repository>
-            <id>org-condast-commons</id>
-            <url>${condast-commons}/org.condast.commons.update/target/site/</url>
-            <layout>p2</layout>
-        </repository>
-        <repository>
-            <id>org-condast-js</id>
-            <url>${condast-js}/org.condast.js.update/target/site/</url>
-            <layout>p2</layout>
-       </repository>
-    </repositories>
+            </distributionManagement>
+        </profile>
+    </profiles>
 
-  <dependencies>
-  </dependencies>
   <modules>
     <module>../org.covaid.target</module>
     <module>../org.covaid.core</module>
@@ -81,13 +104,19 @@
                 <artifactId>target-platform-configuration</artifactId>
                 <version>${tycho.version}</version>
                 <configuration>
+                    <executionEnvironment>JavaSE-22</executionEnvironment>
  					<pomDependencies>consider</pomDependencies>
 					<target>
 						<artifact>
-							<groupId>org.covaid</groupId>
-							<artifactId>covaid.target</artifactId>
+							<groupId>org.condast.commons.jpa</groupId>
+							<artifactId>org.condast.commons.jpa.target</artifactId>
 							<version>${project.version}</version>
 						</artifact>
+						<artifact>
+			                <groupId>org.covaid</groupId>
+			                <artifactId>org.covaid.target</artifactId>
+			                <version>1.0.0-SNAPSHOT</version>
+			            </artifact>
 					</target>
                       <environments>
                         <environment>
@@ -118,25 +147,49 @@
                     </environments>
                 </configuration>
             </plugin>
-			<plugin>
-  				<groupId>org.eclipse.tycho</groupId>
-  				<artifactId>tycho-packaging-plugin</artifactId>
-  				<version>${tycho.version}</version>
-			</plugin>
-	      	<plugin>
-    	  		<groupId>org.eclipse.tycho</groupId>
-	        	<artifactId>tycho-p2-plugin</artifactId>
-		        <version>${tycho.version}</version>
-    		    <executions>
-        			<execution>
-		        	    <id>attach-p2-metadata</id>
-        		    	<phase>package</phase>
-			            <goals>
-    	    				<goal>p2-metadata</goal>
-			            </goals>
-        		   </execution>
-        		</executions>
-	      	</plugin>      	
+            <plugin>
+               <groupId>org.eclipse.tycho</groupId>
+               <artifactId>tycho-p2-repository-plugin</artifactId>
+               <version>${tycho.version}</version>
+               <configuration>
+                 <skipArchive>true</skipArchive>
+                 <includeAllDependencies>false</includeAllDependencies>
+               </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-resources-plugin</artifactId>
+                <version>3.2.0</version>
+                <executions>
+                    <execution>
+                        <id>copy-resource-one</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>copy-resources</goal>
+                        </goals>
+                        <configuration>
+                            <overwrite>true</overwrite>
+                            <outputDirectory>${release.dir}/${maven.build.timestamp}</outputDirectory>
+                                <resources>
+                                    <resource>
+                                        <directory>${update.site}</directory>
+                                    </resource>
+                                </resources>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.sonatype.central</groupId>
+                <artifactId>central-publishing-maven-plugin</artifactId>
+                <version>0.12.0</version>
+                <extensions>true</extensions>
+                <configuration>
+                    <publishingServerId>central</publishingServerId>
+                    <autoPublish>false</autoPublish>
+                    <waitUntil>validated</waitUntil>
+                </configuration>
+            </plugin>            
         </plugins>
     </build>
 </project> 

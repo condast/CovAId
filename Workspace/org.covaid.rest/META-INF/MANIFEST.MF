@@ -17,10 +17,10 @@ Import-Package: com.google.gson;version="2.7.0",
  nl.martijndwars.webpush.core,
  org.condast.commons,
  org.condast.commons.i18n,
+ org.condast.commons.jpa.persistence.service,
  org.condast.commons.jpa.rest,
  org.condast.commons.messaging.push,
  org.condast.commons.messaging.rest,
- org.condast.commons.persistence.service,
  org.condast.commons.strings,
  org.condast.js.push.core.builder,
  org.covaid.core.data,
@@ -34,7 +34,8 @@ Import-Package: com.google.gson;version="2.7.0",
  org.glassfish.jersey.server;version="2.25.1",
  org.glassfish.jersey.servlet;version="2.25.1",
  org.osgi.framework;version="1.5.0",
- org.osgi.service.component.annotations;version="1.1.0"
+ org.osgi.service.component.annotations;version="1.1.0",
+ org.osgi.service.http.whiteboard.propertytypes;version="[1.1.0,2.0.0)"
 Bundle-ActivationPolicy: lazy
 Export-Package: org.covaid.rest.core
 Service-Component: OSGI-INF/org.covaid.rest.RestServlet.xml,

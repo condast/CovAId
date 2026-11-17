@@ -6,14 +6,11 @@ import java.util.Calendar;
 import java.util.Collection;
 import java.util.Date;
 
-import javax.persistence.EntityManager;
-
 import org.condast.commons.data.plane.IField;
-import org.condast.commons.persistence.service.AbstractEntityService;
-import org.condast.commons.persistence.service.IPersistenceService;
 import org.covaid.core.def.IMobile;
 import org.covaid.core.model.date.DateMobile;
 import org.covaid.orientdb.def.IOrientPersistenceService;
+import org.covaid.orientdb.object.AbstractEntityService;
 
 public class MobileService extends AbstractEntityService<IMobile>{
 
@@ -21,12 +18,8 @@ public class MobileService extends AbstractEntityService<IMobile>{
 	public static final String S_QUERY_FIND_MOBILE = S_QUERY_FIND_ALL + "WHERE identifier='";
 
 	
-	protected MobileService(Class<IMobile> clss, IPersistenceService<EntityManager> service) {
-		super(clss, service);
-	}
-
 	public MobileService( IOrientPersistenceService service ) {
-		this( IMobile.class,null/*service */ );
+		super( IMobile.class, service );
 	}
 
 	public IMobile<Date> create( String name, IField field ) {

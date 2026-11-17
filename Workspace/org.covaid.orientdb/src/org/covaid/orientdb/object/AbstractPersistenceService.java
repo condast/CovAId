@@ -8,7 +8,7 @@ import java.util.concurrent.locks.ReentrantLock;
 import java.util.logging.Logger;
 
 import org.condast.commons.Utils;
-import org.condast.commons.persistence.service.IPersistenceService;
+import org.condast.commons.jpa.persistence.service.IPersistenceService;
 import org.condast.commons.service.IPersistencyServiceListener;
 import org.condast.commons.service.ServiceConnectionException;
 

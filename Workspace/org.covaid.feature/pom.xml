@@ -7,11 +7,77 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xs
   <parent>
     <artifactId>org.covaid.parent</artifactId>
     <groupId>org.covaid</groupId>
-    <version>1.0.0-SNAPSHOT</version>
+    <version>${revision}</version>
     <relativePath>../org.covaid.project</relativePath>
   </parent>
 
   <packaging>eclipse-feature</packaging>
 
   <artifactId>org.covaid.feature</artifactId>
+
+  <build>
+  		<plugins>
+			<plugin>
+			    <groupId>org.apache.maven.plugins</groupId>
+			    <artifactId>maven-antrun-plugin</artifactId>
+			    <version>3.2.0</version>
+			    <executions>
+			        <execution>
+			            <id>generate-karaf-feature</id>
+			            <phase>generate-resources</phase>
+			            <goals>
+			                <goal>run</goal>
+			            </goals>
+			            <configuration>
+							<target>
+								<echo message="GENERATING KARAF FEATURE"/>
+                                <echo message="ASSIGNING VERSIONING TO FEATURE SET"/>
+                                <echo message="GroupId: ${project.groupId}"/>
+                                <echo message="Version: ${project.version}"/>
+                                <echo message="Major version: ${major.version}"/>
+                                <echo message="Base directory: ${project.basedir}"/>
+								
+								<!-- 1. Generate the template using Ant/XSLT -->
+								<ant
+								      antfile="${project.basedir}/createKarafFeature.xml"
+								      dir="${project.basedir}"
+								      target="generate-karaf"
+								      inheritAll="true"/>
+
+         						<!-- 2. Create the Maven output directory -->
+   							    <mkdir dir="${project.build.directory}"/>				
+							    
+							    <!-- 3. Expand Maven properties into the final XML -->
+							    <copy
+							        file="${project.basedir}/src/main/feature/features.xml.template"
+							        tofile="${project.build.directory}/features.xml"
+							        overwrite="true">
+							
+							        <filterchain>
+							            <expandproperties/>
+							        </filterchain>					
+							    </copy>
+							    <echo message="Generated Karaf descriptor: ${project.build.directory}/features.xml"/>
+			                </target>
+			            </configuration>
+			        </execution>
+					<execution>
+					    <id>attach-karaf-feature</id>
+					    <phase>package</phase>
+					    <goals>
+					        <goal>run</goal>
+					    </goals>
+					    <configuration>
+					        <target xmlns:mvn="http://maven.apache.org/ANTRUN">
+					            <mvn:attachartifact
+					                file="${project.basedir}/target/features.xml"
+					                type="xml"
+					                classifier="features"/>
+					        </target>
+					    </configuration>
+					</execution>			        
+			    </executions>
+			</plugin>  				
+  		</plugins>
+  </build>
 </project> 

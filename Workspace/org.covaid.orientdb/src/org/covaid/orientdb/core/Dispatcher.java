@@ -56,7 +56,7 @@ public class Dispatcher implements IAuthenticationListener{
 	@Override
 	public void notifyLoginChanged(AuthenticationEvent event) {
 		switch( event.getEvent() ) {
-		case LOGOUT:
+		case LOGOFF:
 			user = null;
 			break;
 		default:

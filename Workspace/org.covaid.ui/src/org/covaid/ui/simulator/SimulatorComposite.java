@@ -10,7 +10,7 @@ import java.util.Map;
 import org.condast.commons.data.plane.Field;
 import org.condast.commons.data.plane.IField;
 import org.condast.commons.strings.StringStyler;
-import org.condast.commons.ui.session.RefreshSession;
+import org.condast.js.commons.session.RefreshSession;
 import org.covaid.core.def.IContagion;
 import org.covaid.core.def.IFieldEnvironment;
 import org.covaid.core.environment.IDomain;

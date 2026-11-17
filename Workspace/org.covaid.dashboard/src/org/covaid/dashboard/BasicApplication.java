@@ -10,9 +10,9 @@ import org.eclipse.rap.rwt.client.WebClient;
 
 public class BasicApplication implements ApplicationConfiguration {
 
-	private static final String S_ENTRY_POINT = "/home";
-	private static final String S_MOBILE_ENTRY_POINT = "/mobile";
-	private static final String S_DOCTOR_ENTRY_POINT = "/doctor";
+	private static final String S_ENTRY_POINT = "/covaid";
+	private static final String S_MOBILE_ENTRY_POINT = S_ENTRY_POINT + "-mobile";
+	private static final String S_DOCTOR_ENTRY_POINT = S_ENTRY_POINT + "-doctor";
 
 	private static final String S_COVAID_THEME = "covaid.theme";
 	private static final String S_THEME_CSS = "themes/theme.css";
@@ -25,8 +25,8 @@ public class BasicApplication implements ApplicationConfiguration {
         properties.put( WebClient.THEME_ID, S_COVAID_THEME );
         
         application.setOperationMode( OperationMode.SWT_COMPATIBILITY );       
-        application.addEntryPoint( S_ENTRY_POINT, MobileEntryPoint.class, properties);
-        application.addEntryPoint( S_MOBILE_ENTRY_POINT, BasicEntryPoint.class, properties);
+        application.addEntryPoint( S_ENTRY_POINT, BasicEntryPoint.class, properties);
+        application.addEntryPoint( S_MOBILE_ENTRY_POINT, MobileEntryPoint.class, properties);
         application.addEntryPoint( S_DOCTOR_ENTRY_POINT, DoctorEntryPoint.class, properties);
      }
 }

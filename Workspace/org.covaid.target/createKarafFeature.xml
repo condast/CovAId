@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="Karaf Generator"
+         default="generate-karaf"
+         basedir=".">
+
+    <!-- Target definition -->
+    <property name="target.file"
+              location="${basedir}/covaid-maven.target"/>
+
+    <!-- Generated Karaf features -->
+    <property name="karaf.dir"
+              location="${basedir}/src/main/feature"/>
+
+    <!-- XSL transformation -->
+    <property name="karaf.xsl"
+              location="${basedir}/karaf-target.xsl"/>
+
+    <target name="generate-karaf">
+
+        <!-- Validate input -->
+        <available file="${target.file}"
+                   property="target.exists"/>
+
+        <fail unless="target.exists"
+              message="Target definition not found: ${target.file}"/>
+
+        <available file="${karaf.xsl}"
+                   property="stylesheet.exists"/>
+
+        <fail unless="stylesheet.exists"
+              message="XSL stylesheet not found: ${karaf.xsl}"/>
+
+        <!-- Prepare output directory -->
+        <mkdir dir="${karaf.dir}"/>
+
+        <!-- Generate the Karaf feature template -->
+        <xslt in="${target.file}"
+              out="${karaf.dir}/features.xml.template"
+              style="${karaf.xsl}"
+              force="true">
+
+            <param name="version"
+                   expression="${karaf.version}"/>
+
+        </xslt>
+
+        <echo message="Karaf feature template generated."/>
+
+    </target>
+
+</project>

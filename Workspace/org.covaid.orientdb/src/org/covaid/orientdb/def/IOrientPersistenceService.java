@@ -2,7 +2,7 @@ package org.covaid.orientdb.def;
 
 import java.util.Map;
 
-import org.condast.commons.persistence.service.IPersistenceService;
+import org.condast.commons.jpa.persistence.service.IPersistenceService;
 import org.condast.commons.service.IPersistencyServiceListener;
 import org.covaid.orientdb.object.IOrientEntityManagerFactory;
 

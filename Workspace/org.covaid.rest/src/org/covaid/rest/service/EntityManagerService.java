@@ -1,6 +1,6 @@
 package org.covaid.rest.service;
 
-import org.condast.commons.persistence.service.FactoryService;
+import org.condast.commons.jpa.persistence.service.FactoryService;
 import org.covaid.orientdb.object.IOrientEntityManagerFactory;
 import org.covaid.rest.Activator;
 import org.covaid.rest.core.Dispatcher;

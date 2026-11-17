@@ -5,7 +5,7 @@ import java.util.List;
 import java.util.logging.Logger;
 
 import javax.persistence.EntityManager;
-import org.condast.commons.persistence.service.IPersistenceService;
+import org.condast.commons.jpa.persistence.service.IPersistenceService;
 import org.condast.commons.project.ProjectFolderUtils;
 import org.condast.commons.service.IPersistencyServiceListener;
 import org.condast.commons.service.IPersistencyServiceListener.Services;

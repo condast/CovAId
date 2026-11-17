@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<scr:component xmlns:scr="http://www.osgi.org/xmlns/scr/v1.4.0" name="org.covaid.mobile.rest.RestServlet">
+   <property name="osgi.http.whiteboard.servlet.name" type="String" value="covaid.rest"/>
+   <property name="osgi.http.whiteboard.servlet.pattern" type="String" value="/covaid/*"/>
+   <service scope="prototype">
+      <provide interface="javax.servlet.Servlet"/>
+   </service>
+   <implementation class="org.covaid.mobile.rest.RestServlet"/>
+</scr:component>
